@@ -15,19 +15,6 @@ function HomepageHeader() {
           {siteConfig.title}
         </h1>
         <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="cta-button"
-            to="/about">
-            Learn More About Us
-          </Link>
-          <Link
-            className="cta-button"
-            to="/services"
-            style={{marginLeft: '1rem'}}>
-            Our Services
-          </Link>
-        </div>
       </div>
     </header>
   );

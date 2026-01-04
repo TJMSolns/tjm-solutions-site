@@ -1,0 +1,24 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shopping bag icon representing commerce -->
+  <defs>
+    <style>
+      .commerce-primary { fill: #c00000; }
+      .commerce-accent { fill: #1f1f20; }
+    </style>
+  </defs>
+  
+  <!-- Bag handle -->
+  <path class="commerce-primary" d="M 70 50 Q 70 30 100 30 Q 130 30 130 50" stroke="#c00000" stroke-width="3" fill="none"/>
+  
+  <!-- Bag body -->
+  <rect class="commerce-primary" x="60" y="50" width="80" height="90" rx="5"/>
+  
+  <!-- Bag highlight -->
+  <rect class="commerce-accent" x="65" y="60" width="8" height="70" opacity="0.3"/>
+  
+  <!-- Shopping arrow/growth inside -->
+  <path class="commerce-accent" d="M 100 100 L 85 115 M 100 100 L 115 115" stroke="#1f1f20" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Dollar sign accent -->
+  <text x="100" y="75" font-size="24" font-weight="bold" class="commerce-accent" text-anchor="middle" dominant-baseline="middle">$</text>
+</svg>

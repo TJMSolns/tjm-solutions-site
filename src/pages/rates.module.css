@@ -1,0 +1,209 @@
+.ratesContainer {
+  min-height: 100vh;
+}
+
+.hero {
+  background: 
+    linear-gradient(135deg, rgba(192, 0, 0, 0.92) 0%, rgba(165, 0, 0, 0.92) 100%),
+    url(/img/banner.jpg) center / cover no-repeat;
+  background-attachment: fixed;
+  color: white;
+  padding: 80px 20px;
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+[data-theme='dark'] .hero {
+  background: 
+    linear-gradient(135deg, rgba(255, 77, 77, 0.80) 0%, rgba(229, 0, 0, 0.80) 100%),
+    url(/img/banner.jpg) center / cover no-repeat;
+  background-attachment: fixed;
+}
+
+.hero h1 {
+  margin: 0 0 20px 0;
+  font-size: 2.5em;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1.25em;
+  opacity: 0.95;
+  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.engagementGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px;
+  margin: 60px 0;
+}
+
+.engagementCard {
+  padding: 32px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-theme='dark'] .engagementCard {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.engagementCard:hover {
+  border-color: #c00000;
+  box-shadow: 0 8px 24px rgba(192, 0, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+[data-theme='dark'] .engagementCard:hover {
+  border-color: #ff4d4d;
+  box-shadow: 0 8px 24px rgba(255, 77, 77, 0.2);
+}
+
+.engagementCard h3 {
+  color: #c00000;
+  margin: 0 0 12px 0;
+  font-size: 1.4em;
+  font-weight: 700;
+}
+
+.engagementDescription {
+  font-size: 0.95em;
+  color: #1f1f20;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+  flex: 1;
+}
+
+[data-theme='dark'] .engagementDescription {
+  color: #d1d5db;
+}
+
+.rateAmount {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 20px;
+}
+
+.amount {
+  font-size: 2.5em;
+  color: #c00000;
+  font-weight: 800;
+}
+
+.period {
+  font-size: 1em;
+  color: #1f1f20;
+  font-weight: 500;
+}
+
+[data-theme='dark'] .period {
+  color: #d1d5db;
+}
+
+.disclaimer {
+  text-align: center;
+  background: #ffe6e6;
+  padding: 32px;
+  border-radius: 12px;
+  margin: 60px 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .disclaimer {
+    background: rgba(255, 77, 77, 0.1);
+  }
+}
+
+.disclaimer p {
+  margin: 0;
+  color: #1f1f20;
+  font-size: 0.95em;
+  line-height: 1.8;
+}
+
+[data-theme='dark'] .disclaimer p {
+  color: #d1d5db;
+}
+
+.ctaSection {
+  text-align: center;
+  padding: 60px 40px;
+  background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+  border-radius: 12px;
+  margin: 60px 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ctaSection {
+    background: rgba(255, 77, 77, 0.1);
+  }
+}
+
+.ctaSection h2 {
+  color: #c00000;
+  margin: 0 0 16px 0;
+  font-size: 2em;
+}
+
+.ctaSection p {
+  color: #1f1f20;
+  font-size: 1.1em;
+  margin: 0 0 32px 0;
+  line-height: 1.8;
+}
+
+[data-theme='dark'] .ctaSection p {
+  color: #d1d5db;
+}
+
+.ctaButton {
+  display: inline-block;
+  padding: 14px 32px;
+  background-color: #c00000;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 1em;
+}
+
+.ctaButton:hover {
+  background-color: #a50000;
+  box-shadow: 0 4px 12px rgba(192, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 60px 20px;
+  }
+
+  .hero h1 {
+    font-size: 2em;
+  }
+
+  .ratesGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .ctaSection {
+    padding: 40px 20px;
+  }
+
+  .ctaSection h2 {
+    font-size: 1.5em;
+  }
+}

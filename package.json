@@ -5,7 +5,10 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
+    "stop": "lsof -ti :3000 | xargs kill -9 2>/dev/null || true",
     "build": "docusaurus build",
+    "wcag": "start-server-and-test \"npm run serve -- --build --port 3000 --host 127.0.0.1\" http://127.0.0.1:3000 \"npm run wcag:check\"",
+    "wcag:check": "pa11y --standard WCAG2AA http://127.0.0.1:3000 && pa11y --standard WCAG2AA http://127.0.0.1:3000/about && pa11y --standard WCAG2AA http://127.0.0.1:3000/rates && pa11y --standard WCAG2AA http://127.0.0.1:3000/articles",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -27,6 +30,8 @@
     "@docusaurus/module-type-aliases": "3.9.2",
     "@docusaurus/tsconfig": "3.9.2",
     "@docusaurus/types": "3.9.2",
+    "pa11y": "^9.0.1",
+    "start-server-and-test": "^2.1.3",
     "typescript": "~5.6.2"
   },
   "browserslist": {

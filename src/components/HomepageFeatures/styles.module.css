@@ -1,11 +1,126 @@
 .features {
-  display: flex;
-  align-items: center;
-  padding: 2rem 0;
+  padding: 60px 0;
+  width: 100%;
+  background: white;
+}
+
+[data-theme='dark'] .features {
+  background: #111827;
+}
+
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
   width: 100%;
 }
 
-.featureSvg {
-  height: 200px;
-  width: 200px;
+.serviceCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  position: relative;
+  height: 300px;
+}
+
+[data-theme='dark'] .serviceCard {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.serviceCard:hover {
+  box-shadow: 0 8px 24px rgba(192, 0, 0, 0.12);
+  transform: translateY(-4px);
+  border-color: #c00000;
+}
+
+[data-theme='dark'] .serviceCard:hover {
+  box-shadow: 0 8px 24px rgba(255, 77, 77, 0.2);
+}
+
+.serviceImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+  overflow: hidden;
+}
+
+[data-theme='dark'] .serviceImage {
+  background: #111827;
+}
+
+.serviceImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.serviceContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
+  backdrop-filter: blur(2px);
+}
+
+[data-theme='dark'] .serviceContent {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+.serviceContent h3 {
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+.serviceContent p {
+  color: #ffffff;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.9em;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .servicesGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .serviceCard {
+    height: 250px;
+  }
+
+  .serviceContent {
+    padding: 16px;
+  }
+
+  .serviceContent h3 {
+    font-size: 1.1em;
+    margin-bottom: 6px;
+  }
+
+  .serviceContent p {
+    font-size: 0.85em;
+  }
+
+  .features {
+    padding: 40px 0;
+  }
 }

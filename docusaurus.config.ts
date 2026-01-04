@@ -4,7 +4,7 @@ import type { Config } from '@docusaurus/types';
 const config: Config = {
   title: 'TJM Solutions',
   tagline: 'Architecture, Engineering, and Advisory',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/tjm-solutions-logo.png',
 
   // === Site URL configuration ===
   // Primary public site
@@ -20,7 +20,13 @@ const config: Config = {
 
   // Handle broken links strictly (you want to know)
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+
+  // === Markdown Configuration ===
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   // === Internationalization ===
   i18n: {
@@ -53,22 +59,34 @@ const config: Config = {
   // === Theme configuration ===
   themeConfig: {
     image: 'img/social-card.png',
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: false,
+      respectPrefersColorScheme: true,
+    },
 
     navbar: {
       title: 'TJM Solutions',
       logo: {
         alt: 'TJM Solutions Logo',
-        src: 'img/logo.svg',
+        src: 'img/tjm-solutions-logo.png',
+        width: 32,
+        height: 32,
       },
       items: [
         {
-          to: '/docs/intro',
-          label: 'Docs',
+          to: '/about',
+          label: 'About',
           position: 'left',
         },
         {
-          to: '/blog',
-          label: 'Blog',
+          to: '/rates',
+          label: 'Rates',
+          position: 'left',
+        },
+        {
+          to: '/articles',
+          label: 'Articles',
           position: 'left',
         },
         {
@@ -83,17 +101,38 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Company',
           items: [
             {
-              label: 'Introduction',
-              to: '/docs/intro',
+              label: 'About',
+              to: '/about',
+            },
+            {
+              label: 'Rates',
+              to: '/rates',
             },
           ],
         },
         {
-          title: 'Company',
+          title: 'Resources',
           items: [
+            {
+              label: 'Articles',
+              to: '/articles',
+            },
+            {
+              label: 'Medium',
+              href: 'https://tmoores.medium.com/',
+            },
+          ],
+        },
+        {
+          title: 'Connect',
+          items: [
+            {
+              label: 'Email',
+              href: 'mailto:tony@tjm.solutions',
+            },
             {
               label: 'GitHub',
               href: 'https://github.com/TJMSolns',
@@ -101,7 +140,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} TJM Solutions`,
+      copyright: `Copyright © ${new Date().getFullYear()} TJM Solutions LLC | Manchester, New Hampshire, USA`,
     },
 
     prism: {

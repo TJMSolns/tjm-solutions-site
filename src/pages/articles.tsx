@@ -6,28 +6,38 @@ interface Article {
   title: string;
   subtitle: string;
   url: string;
+  image: string;
+  date: string;
 }
 
 const articles: Article[] = [
   {
-    title: 'An Introduction to Reactive Commerce',
-    subtitle: 'How to Invigorate Digital Commerce by Applying Reactive Microservice Architectures and Where it Makes a Difference',
-    url: 'https://tmoores.medium.com/an-introduction-to-reactive-commerce-1fe9eaccf9f8',
-  },
-  {
     title: 'Headless Commerce: Advice for Goal Hangers',
     subtitle: 'Strategic guidance on implementing headless commerce architectures',
     url: 'https://tmoores.medium.com/headless-commerce-advice-for-goal-hangers-5e8dbab354cb',
+    image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800',
+    date: '2022-12-16',
+  },
+  {
+    title: 'An Introduction to Reactive Commerce',
+    subtitle: 'How to Invigorate Digital Commerce by Applying Reactive Microservice Architectures and Where it Makes a Difference',
+    url: 'https://tmoores.medium.com/an-introduction-to-reactive-commerce-1fe9eaccf9f8',
+    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+    date: '2022-12-20',
   },
   {
     title: 'Agility and the Headless Commerce Debate',
     subtitle: 'Making a Decision for the Whole Business',
     url: 'https://tmoores.medium.com/agility-and-the-headless-commerce-debate-making-a-decision-for-the-whole-business-253ead850070',
+    image: 'https://images.unsplash.com/photo-1464207687429-7505649dae38?w=800',
+    date: '2021-07-07',
   },
   {
     title: 'Why Do They Call Them Apartments When They\'re All Stuck Together?',
     subtitle: 'Exploring microservices architecture and system boundaries',
     url: 'https://tmoores.medium.com/why-do-they-call-them-apartments-when-theyre-all-stuck-together-450268cd1c88',
+    image: 'https://images.unsplash.com/photo-1486718448742-163732cd1544?w=800',
+    date: '2021-03-14',
   },
 ];
 
@@ -54,6 +64,9 @@ export default function Articles(): ReactNode {
                   rel="noopener noreferrer"
                   className={styles.articleCard}
                 >
+                  <div className={styles.articleImage}>
+                    <img src={article.image} alt={article.title} />
+                  </div>
                   <div className={styles.articleContent}>
                     <h3>{article.title}</h3>
                     <p className={styles.articleSubtitle}>{article.subtitle}</p>

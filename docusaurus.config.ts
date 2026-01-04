@@ -39,16 +39,8 @@ const config: Config = {
     [
       'classic',
       {
-        docs: {
-          sidebarPath: './sidebars.ts',
-          editUrl:
-            'https://github.com/TJMSolns/tjm-solutions-site/tree/main/',
-        },
-        blog: {
-          showReadingTime: true,
-          editUrl:
-            'https://github.com/TJMSolns/tjm-solutions-site/tree/main/',
-        },
+        docs: false,
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },

@@ -1,0 +1,28 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- User experience/interface icon -->
+  <defs>
+    <style>
+      .experience-primary { fill: #c00000; }
+      .experience-accent { fill: #1f1f20; }
+    </style>
+  </defs>
+  
+  <!-- Monitor/Screen -->
+  <rect class="experience-primary" x="45" y="40" width="110" height="85" rx="5" stroke="#1f1f20" stroke-width="2" fill="none"/>
+  <rect class="experience-primary" x="50" y="45" width="100" height="75" rx="3"/>
+  
+  <!-- Screen glare/highlight -->
+  <rect class="experience-accent" x="55" y="50" width="12" height="50" opacity="0.2" rx="2"/>
+  
+  <!-- Monitor stand -->
+  <rect class="experience-accent" x="85" y="125" width="30" height="25" rx="3"/>
+  <rect class="experience-accent" x="55" y="150" width="90" height="8" rx="2"/>
+  
+  <!-- Cursor/pointer -->
+  <path class="experience-accent" d="M 90 80 L 105 95 L 100 110 Z" stroke="#1f1f20" stroke-width="1"/>
+  
+  <!-- Smile/happy face indicator for engagement -->
+  <circle class="experience-primary" cx="130" cy="65" r="4"/>
+  <circle class="experience-primary" cx="145" cy="65" r="4"/>
+  <path class="experience-accent" d="M 130 75 Q 137.5 80 145 75" stroke="#1f1f20" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>

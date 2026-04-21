@@ -1,0 +1,146 @@
+---
+title: "Why Pattern Matching Matters"
+description: "How algebraic data types and pattern matching let the compiler enforce business logic completeness, eliminating entire categories of runtime errors in commerce systems."
+date: 2026-02-08
+authors: [tony]
+tags: [functional-programming, architecture]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 6
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/why-pattern-matching-matters-6cd8023ef6bc" />
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 6*
+
+By this point in the series, we've spent a lot of time making the mechanics of code disappear. We stopped mutating values because mutable values drift. We stopped depending on external state because it breaks determinism. We stopped writing statements because expressions are clearer, safer, and easier to compose. And, most recently, we stopped writing loops because functional transformations let the business logic stand on its own.
+
+But there is another way imperative languages obscure meaning — and this one is subtler. It happens any time a developer tries to figure out *what kind of thing* something is before deciding what to do with it.
+
+<!-- truncate -->
+
+In Java, this shows up everywhere:
+
+- `if (type.equals("percentage")) …`
+- `if (instanceof DiscountRule) …`
+- `switch(type)` with a long list of string cases
+- deep inheritance chains built just to support branching
+- boolean flags like `isBOGO` or `requiresThreshold`
+- configuration objects stuffed with fields that only matter sometimes
+
+All of these are symptoms of the same underlying issue: **the shape of the data is not expressed in the type system. And because the type system doesn't know the shape, the compiler can't help you handle it.**
+
+Pattern matching is how Scala, and functional programming more broadly, fixes this. It restores clarity not by offering a nicer way to write an `if/else`, but by giving developers a way to express domain structure directly — in a way the compiler can reason about.
+
+In digital commerce, where the shape of a promotion, a return, or a shipment directly determines how the system behaves, this becomes not just a stylistic improvement but a correctness guarantee.
+
+## Where Imperative Branching Breaks Down
+
+Let's take promotions, which are never as simple as they sound. Here are just a few common rules:
+
+- A percentage discount on eligible items
+- A fixed amount off
+- Buy X Get Y of equal or lesser value
+- Free shipping over some threshold
+- Category-based discounts
+- Brand-specific incentives
+- Tender-based discounts (e.g., "10% off when paying with store card")
+
+Imperative systems typically model this using a combination of a "type" field, a big enum, an inheritance hierarchy, configuration flags, and long branching structures:
+
+```java
+public Money applyDiscount(PromotionRule rule, LineItem item) {
+    if (rule.getType().equals("PERCENT")) {
+        return item.getPrice().multiply(rule.getPercent());
+    }
+    else if (rule.getType().equals("AMOUNT")) {
+        return rule.getAmount();
+    }
+    else if (rule.getType().equals("BOGO")) {
+        if (item.getQuantity() >= rule.getBuyQty()) {
+            return item.getPrice().multiply(0.5);
+        } else {
+            return Money.zero();
+        }
+    }
+    else if (rule.getType().equals("FREE_SHIP_OVER")) {
+        if (cart.getTotal().greaterThan(rule.getThreshold())) {
+            return Money.zero();
+        } else {
+            return Money.zero();
+        }
+    }
+    // And so on…
+    throw new IllegalArgumentException("Unknown rule type");
+}
+```
+
+This is normal Java. It is also fundamentally brittle. Every time a new rule type is added, the branching logic grows, the chance of forgetting a case increases, and the compiler cannot enforce exhaustiveness. By the time a business has 20–30 promotion types — which is common — the code becomes a wall of conditionals.
+
+## Modeling Promotions as Algebraic Data Types
+
+Instead of encoding variety through enums, flags, or base classes, Scala models domain variation explicitly:
+
+```scala
+sealed trait PromotionRule
+case class PercentageOff(percent: BigDecimal) extends PromotionRule
+case class AmountOff(amount: Money)           extends PromotionRule
+case class BuyXGetY(buyQty: Int, freeQty: Int) extends PromotionRule
+case class FreeShippingOver(threshold: Money) extends PromotionRule
+```
+
+A few things happen immediately:
+
+1. The structure of the domain is expressed in the type system.
+2. Illegal states become unrepresentable — a percentage rule *must* have a percent.
+3. The compiler knows every possible promotion rule.
+4. The business logic can now be written as *pattern matching* over these shapes.
+
+## Pattern Matching: Expressing the Business Rule Directly
+
+Here's the same promotion evaluation rewritten in Scala:
+
+```scala
+def applyDiscount(rule: PromotionRule, item: LineItem): Money =
+  rule match {
+    case PercentageOff(p) =>
+      item.price * p
+    case AmountOff(a) =>
+      a
+    case BuyXGetY(buyQty, freeQty) =>
+      if (item.quantity >= buyQty) item.price * freeQty else Money.zero
+    case FreeShippingOver(threshold) =>
+      Money.zero
+  }
+```
+
+There are no strings to compare. No `instanceof`. No unreachable states. No forgotten cases. In fact, if you *add* a new promotion type and forget to update this match expression, Scala will **refuse to compile** until you handle it. That is what correctness by construction looks like.
+
+## Why This Matters in Real Systems
+
+Pattern matching does more than reorganize the code. It fundamentally changes how we think about domain modeling:
+
+1. **Illegal states become impossible** — You cannot construct a `PercentageOff` without a percentage. The type system enforces integrity.
+
+2. **Domain variation becomes explicit** — Instead of documenting in a wiki that "a rule may be this or that," the compiler knows and enforces all possible shapes.
+
+3. **Exhaustiveness eliminates missing logic** — If you forget a case, Scala tells you before your customers do. It is the difference between correctly applying incentives and silently eroding margin for weeks.
+
+4. **Refactoring becomes safe** — When the domain changes, the compiler guides all dependent code to adapt. This is the opposite of Java's dynamic branching, where new types often break behavior silently.
+
+5. **Pattern matching prepares the mind for `Option`, `Either`, and for-comprehensions** — Once a developer sees branching as *matching on shape*, they are ready to understand `Option` as "a value or no value," `Either` as "success or failure," for-comprehensions as "a sequence of dependent matches."
+
+**A gentle warning for Java developers**: Scala technically allows `instanceof` checks, but that's the wrong instinct. It drags imperative habits forward into functional contexts and undermines the entire point of ADTs: to encode variation in types, not in runtime checks. Pattern matching isn't just prettier — it is *structural*.
+
+## Pattern Matching in Commerce: A Natural Fit
+
+Digital commerce problems often depend on **what something is**, not just what its values are:
+
+- Is this a simple SKU or a kit?
+- Is this shipment split, consolidated, partial, drop-shipped, or in-store pickup?
+- Is this return a refund, exchange, or store credit?
+- Is this tender card-based, gift-card, COD, or split?
+
+Imperative systems bury these distinctions in flags, enumerated types, inheritance, and deeply nested conditionals. Pattern matching makes the domain readable. You see the shape, the rule, and the logic in one place — and nothing is hidden behind machinery.

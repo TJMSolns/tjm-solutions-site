@@ -1,0 +1,138 @@
+---
+title: "Folding in Traceability"
+description: "How immutable event journals combined with pure fold functions create accountability by design in commerce systems."
+date: 2026-03-01
+authors: [tony]
+tags: [functional-programming, architecture]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 9
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/folding-in-traceability-001afc7d19de" />
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 9*
+
+In enterprise commerce, totals don't drift because someone forgot algebra. They drift because reality changes: promos expire, eligibility changes when an address arrives, catalog data updates, substitutions happen, and returns unwind prior discounts. When someone asks "why did the total change?" you need more than narration. You need evidence — a trail of facts you can replay and a pure computation that deterministically produces the same result.
+
+That responsibility falls to `foldLeft`.
+
+<!-- truncate -->
+
+In Scala collections, `foldLeft` processes left-to-right and serves as the safest default because it avoids recursion and behaves predictably with large datasets. `foldRight` works right-to-left and can be less efficient or cause stack overflow depending on the collection type. Plain `fold` exists when the operation is associative; in real business code, direction typically matters, so `foldLeft` is used deliberately.
+
+This pattern isn't an argument for event sourcing specifically. Rather, it represents a practical approach: record the decisions your system makes as immutable facts, then compute the answer from those facts with pure functions. When implemented this way, investigating "what happened?" becomes reproducible computation over documented evidence.
+
+## Modeling a Shopping Cart
+
+Consider a cart where the system makes sequential decisions: items are added or removed, promotions are accepted or rejected with explanations, and shipping restrictions may emerge. At checkout, you need current totals and the justification story.
+
+**Type Definitions:**
+
+```scala
+import java.time.Instant
+final case class SkuId(value: String)
+
+final case class Money(value: BigDecimal):
+  def +(m: Money) = Money(value + m.value)
+  def -(m: Money) = Money(value - m.value)
+
+object Money:
+  val zero = Money(0)
+
+final case class CartLine(sku: SkuId, qty: Int, unitPrice: Money)
+
+sealed trait CartEvent:
+  def at: Instant
+
+object CartEvent:
+  final case class ItemAdded(at: Instant, line: CartLine) extends CartEvent
+  final case class ItemRemoved(at: Instant, sku: SkuId) extends CartEvent
+  final case class PromoApplied(at: Instant, promoId: String, discount: Money) extends CartEvent
+  final case class PromoRejected(at: Instant, promoId: String, reason: String) extends CartEvent
+  final case class ShippingRestricted(at: Instant, sku: SkuId, reason: String) extends CartEvent
+```
+
+The `sealed trait` closes the event type hierarchy, allowing the compiler to warn about unhandled cases during pattern matching.
+
+**Defining the Result:**
+
+```scala
+final case class CartView(
+  lines: Map[SkuId, CartLine],
+  appliedDiscounts: List[(String, Money)],
+  rejections: List[(String, String)],
+  restrictions: List[(SkuId, String)]
+):
+  def subtotal: Money =
+    lines.values.foldLeft(Money.zero) { (acc, line) =>
+      acc + Money(line.unitPrice.value * BigDecimal(line.qty))
+    }
+
+  def discountTotal: Money =
+    appliedDiscounts.foldLeft(Money.zero) { case (acc, (_, d)) => acc + d }
+
+  def total: Money =
+    subtotal - discountTotal
+
+object CartView:
+  val empty = CartView(Map.empty, Nil, Nil, Nil)
+```
+
+The discipline is strict: the view is a derived result, not a mutable record you "keep up to date" and hope remains consistent.
+
+**Processing Events:**
+
+```scala
+def applyEvent(view: CartView, e: CartEvent): CartView =
+  e match
+    case CartEvent.ItemAdded(_, line) =>
+      view.copy(lines = view.lines.updated(line.sku, line))
+
+    case CartEvent.ItemRemoved(_, sku) =>
+      view.copy(lines = view.lines - sku)
+
+    case CartEvent.PromoApplied(_, promoId, discount) =>
+      view.copy(appliedDiscounts = (promoId -> discount) :: view.appliedDiscounts)
+
+    case CartEvent.PromoRejected(_, promoId, reason) =>
+      view.copy(rejections = (promoId -> reason) :: view.rejections)
+
+    case CartEvent.ShippingRestricted(_, sku, reason) =>
+      view.copy(restrictions = (sku -> reason) :: view.restrictions)
+```
+
+Each update constructs a new instance; no mutation occurs.
+
+**Computing from Journal:**
+
+```scala
+def computeView(events: List[CartEvent]): CartView =
+  events.foldLeft(CartView.empty)(applyEvent)
+```
+
+## Three Business Benefits
+
+**Reproducibility** — Disputing customers or audits become straightforward: reconstruct the answer from the same historical records. This provides genuine proof rather than speculation.
+
+**Testability** — Pure functions need no mocks or test harnesses:
+
+```scala
+val t0 = Instant.parse("2026-02-01T00:00:00Z")
+val events = List(
+  CartEvent.ItemAdded(t0, CartLine(SkuId("sku-1"), 2, Money(50))),
+  CartEvent.PromoApplied(t0, "promo-10off", Money(10)),
+  CartEvent.ShippingRestricted(t0, SkuId("sku-1"), "cannot ship to CA")
+)
+val view = computeView(events)
+assert(view.total == Money(90))
+assert(view.restrictions.nonEmpty)
+```
+
+**Evolution Without Rewriting History** — New event types and extended rules can be added while preserving old journals. Systems remain internally consistent.
+
+## Conclusion
+
+The most expensive failures aren't always the ones that crash. They're the ones that change outcomes and leave you unable to explain why. An immutable journal combined with deterministic folds creates accountability by design — not just in what systems compute, but in what they can later defend.

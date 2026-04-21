@@ -62,6 +62,9 @@ export default function About(): ReactNode {
                   <p><strong>Phone:</strong> <a href="tel:+16037382122">+1 603.738.2122</a></p>
                   <p><strong>Location:</strong> Manchester, New Hampshire, USA</p>
                 </div>
+                <a href="https://calendly.com/tjm-solns/" target="_blank" rel="noopener noreferrer" className={styles.ctaButton}>
+                  Schedule a Consultation
+                </a>
               </div>
             </div>
           </section>

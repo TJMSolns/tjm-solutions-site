@@ -71,11 +71,11 @@ export default function Rates(): ReactNode {
           <section className={styles.ctaSection}>
             <h2>Let's Discuss Your Project</h2>
             <p>
-              Ready to explore engagement options? Get in touch to discuss your specific needs and 
+              Ready to explore engagement options? Schedule a call to discuss your specific needs and
               find the right engagement model for your organization.
             </p>
-            <a href="/about#get-in-touch" className={styles.ctaButton}>
-              Contact Us
+            <a href="https://calendly.com/tjm-solns/" target="_blank" rel="noopener noreferrer" className={styles.ctaButton}>
+              Schedule a Call
             </a>
           </section>
         </main>

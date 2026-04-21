@@ -1,0 +1,167 @@
+---
+title: "Not All Errors are Exceptional"
+description: "Why modeling business outcomes with Either instead of exceptions preserves meaning, enables auditing, and makes systems easier to trust."
+date: 2026-02-22
+authors: [tony]
+tags: [functional-programming, architecture]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 8
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/not-all-errors-are-exceptional-c1aa78214298" />
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 8*
+
+Not every "error" in a system represents a defect. Many outcomes that matter to a business are perfectly legitimate: a promotion does not apply, a configuration is incomplete, a shipment cannot be routed to a destination, a request is valid but cannot yet be satisfied. Treating these outcomes as exceptions often obscures their meaning. Exceptions are excellent for broken invariants and infrastructure failures; they are much less effective for representing business decisions that the system should be able to explain, persist, and reason about later.
+
+In Scala, one of the tools commonly used to model these outcomes is `Either`. There is no shortage of articles explaining how to use `Either` for error handling, and many of them are worth reading. What those articles sometimes struggle to convey is *why* this representation changes how systems behave, especially for developers coming from imperative backgrounds. `Either` can feel abstract until it is attached to a boundary where the distinction between two outcomes actually carries meaning.
+
+<!-- truncate -->
+
+## A Simple Shape: Ambiguity Versus Concreteness
+
+In commerce, a product often represents a family of variants. A shirt may come in three colors and three sizes, yielding nine SKUs. The product is useful for browsing and merchandising, but it is ambiguous — you can't add it to a cart. Suppose a product page allows a shopper to optionally select color and size. At some point the system must either:
+
+- resolve those selections into a concrete SKU, or
+- explain why it cannot yet do so.
+
+Nothing has failed here. The system simply does not yet have enough information to move from something ambiguous to something concrete.
+
+Returning the raw `Product` on the left side doesn't help the caller move forward. It hides what is missing, what combinations are valid, and what the user must supply next. The ambiguity becomes implicit again, encoded in conventions and downstream logic instead of in the type system.
+
+So the left side becomes more useful when it represents the ambiguity explicitly:
+
+```scala
+final case class Product(id: String, variants: Set[Sku])
+final case class Sku(id: String, color: Color, size: Size, available: Boolean)
+enum Color:
+  case Black, Blue, Silver
+enum Size:
+  case S, M, L
+```
+
+First define what it means for resolution to be incomplete or invalid:
+
+```scala
+sealed trait ResolveSkuFailure
+object ResolveSkuFailure:
+  final case class NeedsSelection(
+    missing: Set[String],
+    availableColors: Set[Color],
+    availableSizes: Set[Size]
+  ) extends ResolveSkuFailure
+
+  final case class InvalidCombination(color: Color, size: Size) extends ResolveSkuFailure
+  final case class Unavailable(color: Color, size: Size) extends ResolveSkuFailure
+```
+
+Now the resolver makes its contract explicit:
+
+```scala
+def resolveSku(
+  product: Product,
+  color: Option[Color],
+  size: Option[Size]
+): Either[ResolveSkuFailure, Sku] =
+  (color, size) match
+    case (Some(c), Some(s)) =>
+      product.variants.find(v => v.color == c && v.size == s) match
+        case None =>
+          Left(ResolveSkuFailure.InvalidCombination(c, s))
+        case Some(v) if !v.available =>
+          Left(ResolveSkuFailure.Unavailable(c, s))
+        case Some(v) =>
+          Right(v)
+
+    case _ =>
+      val colors = product.variants.map(_.color)
+      val sizes  = product.variants.map(_.size)
+      val missing =
+        Set(
+          if color.isEmpty then Some("color") else None,
+          if size.isEmpty then Some("size") else None
+        ).flatten
+
+      Left(ResolveSkuFailure.NeedsSelection(missing, colors, sizes))
+```
+
+Usage forces the caller to acknowledge both outcomes:
+
+```scala
+resolveSku(product, selectedColor, selectedSize) match
+  case Right(sku) =>
+    cart.addLine(sku.id, qty = 1)
+
+  case Left(reason) =>
+    ui.handleResolutionFailure(reason)
+```
+
+This example is intentionally simple. Its purpose is not to model a full product catalog, but to illustrate the shape of `Either`: a value that represents one of two meaningful, mutually exclusive outcomes. Both outcomes are part of normal business flow. Neither is exceptional.
+
+## Restricted Items and Shipping
+
+Until an address is known, the system cannot fully validate whether items can legally or operationally ship to the destination. Some items may be restricted by region. Some may be hazmat. Some may require special handling or carriers. Anonymous shoppers typically build a cart before providing shipping information. This is not a failure — it's simply incomplete information. The system must decide whether the cart can be fulfilled and if not, explain why, once the address is provided.
+
+```scala
+final case class Cart(lines: List[CartLine])
+final case class CartLine(sku: SkuId, qty: Int)
+final case class Address(country: String, region: String, postalCode: String)
+final case class ShippingPlan(groups: List[ShippingGroup])
+final case class ShippingGroup(lines: List[CartLine], carrier: String)
+```
+
+Define the restriction model:
+
+```scala
+sealed trait ShippingRestriction
+object ShippingRestriction:
+  final case class EmbargoedRegion(sku: SkuId, region: String) extends ShippingRestriction
+  final case class HazmatNotAllowed(sku: SkuId, country: String) extends ShippingRestriction
+  final case class OversizeCarrierLimit(sku: SkuId, carrier: String) extends ShippingRestriction
+
+final case class CannotShip(reasons: List[ShippingRestriction])
+```
+
+Now the decision boundary becomes explicit:
+
+```scala
+def buildShippingPlan(
+  cart: Cart,
+  shipTo: Address
+): Either[CannotShip, ShippingPlan] =
+  val violations =
+    cart.lines.flatMap { line =>
+      restrictions.forSku(line.sku, shipTo)
+    }
+
+  if violations.nonEmpty then
+    Left(CannotShip(violations))
+  else
+    Right(planner.plan(cart, shipTo))
+```
+
+Usage remains honest and transparent:
+
+```scala
+buildShippingPlan(cart, shipTo) match
+  case Right(plan) =>
+    proceedToRatesAndTaxes(plan)
+
+  case Left(CannotShip(reasons)) =>
+    ui.showRestrictions(reasons)
+```
+
+Here the failure is not exceptional. It is business reality expressed directly in the model. The system preserves not just the fact that checkout cannot proceed, but the precise reasons why.
+
+That enables clearer user messaging, better analytics, simpler auditing, and more predictable evolution of policy. The system becomes capable of explaining its own decisions instead of forcing humans to reconstruct them from logs and heuristics.
+
+## Why This Matters
+
+Once systems preserve meaning instead of discarding it, they become easier to reason about, easier to govern, and easier to trust as they grow in complexity. `Either` is often introduced as a tool for error handling — and that accounts for the bulk of its usage — but its deeper value lies in modeling alternative truths explicitly.
+
+Sometimes the alternative is ambiguity versus concreteness. Sometimes it is eligibility versus restriction. In both cases, the important shift is that meaning lives in the type system rather than being smuggled through conventions or control flow.
+
+Where do you want your mission-critical logic being conducted — in the light of day amongst validated representation, or in shadowy alleyways without supervision?

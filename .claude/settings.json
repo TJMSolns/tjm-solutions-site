@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run start)",
+      "Bash(npm run build)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run serve)",
+      "Bash(npm run stop)",
+      "Bash(npm run wcag:check)",
+      "Bash(npm run clear)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // \"\"' | { read -r f; echo \"$f\" | grep -qE '\\.(ts|tsx)$' && npm run typecheck; } 2>/dev/null || true",
+            "timeout": 60,
+            "statusMessage": "Type-checking..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"Remember to run: npm run wcag (before deploying)\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}

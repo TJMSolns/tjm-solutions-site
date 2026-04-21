@@ -1,5 +1,7 @@
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
   title: 'TJM Solutions',
@@ -23,6 +25,7 @@ const config: Config = {
 
   // === Markdown Configuration ===
   markdown: {
+    mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: 'warn',
     },
@@ -40,7 +43,24 @@ const config: Config = {
       'classic',
       {
         docs: false,
-        blog: false,
+        blog: {
+          path: 'blog',
+          routeBasePath: 'articles',
+          blogTitle: 'Articles & Insights',
+          blogDescription: 'Thoughts on Digital Commerce, Architecture, and Technology Strategy',
+          blogSidebarCount: 0,
+          postsPerPage: 'ALL',
+          blogListComponent: '@site/src/components/ArticlesList/index',
+          showReadingTime: true,
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
+          feedOptions: {
+            type: ['rss', 'atom'],
+            title: 'TJM Solutions Articles',
+            description: 'Thoughts on Digital Commerce, Architecture, and Technology Strategy',
+            copyright: `Copyright © ${new Date().getFullYear()} TJM Solutions LLC`,
+          },
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -126,6 +146,14 @@ const config: Config = {
               href: 'mailto:tony@tjm.solutions',
             },
             {
+              label: 'LinkedIn',
+              href: 'https://linkedin.com/in/tony-moores/',
+            },
+            {
+              label: 'Schedule a Call',
+              href: 'https://calendly.com/tjm-solns/',
+            },
+            {
               label: 'GitHub',
               href: 'https://github.com/TJMSolns',
             },
@@ -143,6 +171,19 @@ const config: Config = {
 
   // === Plugins ===
   plugins: [],
+
+  // === Additional Themes ===
+  themes: ['@docusaurus/theme-mermaid'],
+
+  // === Stylesheets ===
+  stylesheets: [
+    {
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+      type: 'text/css',
+      integrity: 'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+      crossorigin: 'anonymous',
+    },
+  ],
 };
 
 export default config;

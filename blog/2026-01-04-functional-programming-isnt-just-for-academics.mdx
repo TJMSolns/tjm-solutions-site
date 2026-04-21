@@ -1,0 +1,78 @@
+---
+title: "Functional Programming Isn't Just for Academics: Why It Matters for the Systems We Build Now"
+description: "An exploration of why functional programming principles address modern software development challenges, including distributed systems, concurrency, and state management — moving beyond purely academic applications."
+date: 2026-01-04
+authors: [tony]
+tags: [functional-programming, architecture, strategy]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 1
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/functional-programming-isnt-just-for-academics-why-it-matters-for-the-systems-we-build-now-cbbac51b2730" />
+</head>
+
+In 1983 I asked my parents for an Atari for Christmas, instead I got a Commodore 64… Needless to say, I was very disappointed until I discovered how much cooler Wizard of Wor was than Combat. To their credit, my parents thought a computer was a better investment than a video game. I used that C64 through my sophomore year of college until I replaced it with a 486; my first real investment. So, like many in my generation, I cut my teeth on programming languages like BASIC and LOGO without really picking them for any reason. It was just kind of cool, as a kid, to be able to tell a computer what to do and watch it do it. I quickly understood that animating ASCII stick figures was a BASIC problem and digital Spirograph was a job for the LOGO turtle. In college I was using FORTran for math and science and C for everything else knowing that, depending on the task, one was more natural than the other.
+
+<!-- truncate -->
+
+It wasn't till many years later, while taking a survey class in programming languages, that I ever seriously thought about why languages were different and why I should care. I disregarded Pascal, our token Procedural language, as just a more rigorous version of Basic or C for people who like to type. I didn't love Smalltalk, but it improved my C++ by teaching me to THINK object-oriented. Prolog (Logic) was an eye-opener, it was fun but outside of being very useful for proofs of formal logic, I filed it away as an option just in case I was unfortunate enough to have to do that in real life. Scheme blew my mind. Other than making it easier to read and write cLISP (I am a retired emacs weenie), I never used it professionally but this functional language changed the way I programmed in every language I have used since, to my benefit. Truly, thought and language impact each other immensely and limiting oneself to a single language severely limits the boundaries of one's comprehension and creativity. I believe that is as true for natural languages as it is for computer languages and can be extended to the arts and any other form of expression. But that is philosophy.
+
+So I learned Java like everyone else and have been using that primarily for the last 30 years.
+
+There are lots of reasons for Java's wide adoption and that is the subject of many discussions, new and old, that I have no interest in reviewing. Without diminishing its value, or the brilliance of its creators and most talented users, to me it felt like a compromise. I have written many things in it, but I never really expressed myself in Java or felt it helped me do something I couldn't do better in another language. I can't remember the first time I heard of Scala, but I recalled it being brought to my attention as an alternative to Java. Naturally, knowing a few other languages, given my investments and goals at the time I dismissed it. Why bother learning a new thing to do the same old stuff a new way. Between then and 2020 it rarely came up except in certain circles where, career-wise, I was on the fringes. I looked a bit more closely, decided that it had some really interesting features, but being difficult for me to read and having no career-driven reason to take it any further, really didn't. Frankly, with the LLM buzz buzzing as it was then, my budget for self-exploration was spent there.
+
+A friend and colleague, who jumped on the Scala wagon that changed my perspective and made me look at Scala as a vehicle of functional programming, and at functional programming as an often overlooked way addressing many of the issues we still struggle against in the modern and varied aspects of SDLC. This occurred when my mind was occupied with bridging gaps between natural and computer languages applied to processes utilizing LLMs. This wasn't a conversation as much as a recurring set of themes that evolved and blurred in the presence of whiskey and cigar smoke at our weekly meet-ups. Here goes nothing…
+
+## Why Functional Programming Matters for Today's Software Problems
+
+The thing that struck me hardest when I finally revisited functional programming — years after Scheme had first rewired my thinking — was how directly it speaks to the kinds of problems we spend most of our careers fighting:
+
+- unpredictable state
+- hidden side effects
+- concurrency bugs
+- accidental complexity
+- data races
+- distributed inconsistency
+- systems that drift into chaos the moment they succeed at scale
+
+None of these are "Java problems" or "Python problems" or "legacy problems." They are the natural consequence of an industry that still treats mutability and side effects as the default. However, FP treats those same things as hazards to be isolated, minimized, or reasoned about explicitly.
+
+## Immutability Isn't Academic. It's Defensive Architecture.
+
+If you've ever spent days trying to reproduce a race condition that only manifests in production, under load, across multiple nodes, you know exactly why immutability matters. Immutable values behave like facts — even in distributed systems where shared mutable state is the slowest-moving catastrophe in the stack. Most of the bugs we call "hard" are really just "mutable."
+
+## Pure Functions Are the Beginning of Reliability
+
+Pure functions aren't about elegance. They're about accountability. A pure function is honest because it has no hidden agenda:
+
+- no reaching into global state
+- no tapping a logging side effect
+- no mutating something you'll regret
+- no concurrency traps
+- no need for a mocking circus just to test it
+
+When you scale a system built from pure functions, you aren't scaling the surface area for nondeterminism. You're scaling predictability.
+
+## Expressions Instead of Instructions
+
+When your code shifts from "do this, then this, then maybe this" to "this expression is the logic," an entire class of defects disappears. Not because you solved them, but because the style of thinking makes those defects unrepresentable. This is why FP crept quietly into domains that demand rigor: finance, concurrency-heavy platforms, distributed data systems, regulated products. I just didn't realize it, being focused on the details of the issues instead of the root causes that unified them.
+
+Functional programming gives you constraints that happen to align with correctness.
+
+## So, Why Write This Now?
+
+Scala is not new, nor is SDLC, and FP certainly predates me. I'm not an expert in these things and have not made any new or insightful contributions to any of those domains. I just know, any noteworthy insights I have made in my lifetime came from reexamining things I thought I understood in the context of a seemingly new intersection of issues or domains.
+
+Because modern SDLC pressures are converging:
+
+- LLMs making code easier to write but not easier to reason about.
+- Systems becoming more concurrent, more distributed, more event-driven.
+- Organizations needing architectures that reduce risk rather than heroically react to it.
+
+Functional programming — practiced pragmatically, not religiously — offers tools we desperately need to confront this complexity without becoming its custodians.
+
+It's not about programming in a new style. It's about thinking in a new style. And thinking scales better than tooling.
+
+So, I decided to dedicate the bulk of my Sundays in 2026 to elaborate on those philosophical themes in a blog instead of church, football, and other things I loathe. I intend to explore functional programming (while learning a bit more about Scala, Kotlin and Rust) through the lens of my experience with the software development life cycle and the ongoing impact of LLMs and other aspects of practical machine learning on SDLC.

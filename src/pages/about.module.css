@@ -93,6 +93,27 @@
   text-decoration: underline;
 }
 
+.ctaButton {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 14px 32px;
+  background-color: #c00000;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 1em;
+}
+
+.ctaButton:hover {
+  background-color: #a50000;
+  box-shadow: 0 4px 12px rgba(192, 0, 0, 0.3);
+  transform: translateY(-2px);
+  color: white;
+  text-decoration: none;
+}
+
 @media (max-width: 768px) {
   .hero {
     padding: 60px 20px;

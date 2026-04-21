@@ -1,0 +1,93 @@
+---
+title: "When MVPs Grow Teeth"
+description: "How pragmatic domain models accumulate impossible states over time, and why algebraic data types prevent them by design."
+date: 2026-03-08
+authors: [tony]
+tags: [functional-programming, architecture]
+image: /img/experience-engineering.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 10
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/when-mvps-grow-teeth-98aab65aa342" />
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 10*
+
+Bad models are rarely designed by teams on purpose. Most of the time it's the model you get by being pragmatic: shipping an MVP, and then doing the next reasonable thing… repeatedly… for two years.
+
+You start with a product structure that fits a world where you can store something on a shelf, put it in a box, and ship it to a customer. When the business decides to stock other stuff, you add more attributes to accommodate. When the business wants customization — engraving, embroidery, monogramming — and now "the product" has options that change price and lead time, you start sub-typing. When subscriptions, warranties, DRM, and other non-physical entitlements become strategic, you do more of the same. Nothing here is exotic. It's just what happens when the business grows and adapts.
+
+<!-- truncate -->
+
+The first few steps are innocent. You add fields. You add a boolean or two. You add an enum. You add an interface because you don't want a giant `if` statement. "Digital products implement Entitled." "Shippable products implement Shippable." "Customizable products implement Customizable." It reads well in code review because it mirrors English: a customizable product is a product; a shippable product can be shipped. But you may be unintentionally building a trap.
+
+The trap is that these abstractions don't emerge from a grand design. They arrive release by release, each one locally reasonable, but over time they add up to a web of derived classes and interfaces and a crash course in GoF patterns. Half the products are shippable but only some are returnable, and "returnable" depends on whether it is customized… unless it's a subscription box… unless it's a digital license… unless it's a bundle where some lines are returnable and some aren't.
+
+At some point the pain shows up in a place that matters: not in elegant coding structures, but in dealing with a state you accidentally permit but did not anticipate. A product that is "digital" but still reserves inventory. A subscription with no billing schedule. A customized item where the customization is present but doesn't affect lead time, because that rule lives somewhere else. These are the bugs that create escalations — urgent work that is unbudgeted, unplanned, non-standard, and/or high-touch.
+
+Preventing the next escalation usually means correcting the model so it no longer supports that particular "impossible" condition. There's a simpler framing: if you start with a model that cannot represent impossible states, those states cannot arise internally.
+
+Put another way, if you identify the states that must not exist and refuse to represent them, they can't sneak up on you because the compiler will reject any code that attempts to manufacture them. This doesn't mean you'll never receive bad input. It means that wherever you get bad input — from a UI, from an integration, from an import — it can only be represented as explicit errors handled at the boundaries, instead of passing along a lie and hoping the rest of the system compensates. Functional programmers manage this with Algebraic Data Types: data structures defined as a closed set of constructors.
+
+Now consider an order as the set of all possible shapes of data, instead of the arbitrary state of a record with a status field. A draft order may exist without payment, but a paid order cannot. A shippable order must have an address. A shipped order must have tracking. Later, if you need to accommodate a new truth, you add a new constructor — and the compiler ensures that no other shapes may exist.
+
+In Scala, traits can feel like "interfaces with benefits." They encourage capability-oriented decomposition, and you can stack them elegantly. They're also instrumental in ADT support: a `sealed trait` restricts the set of valid cases to those defined alongside it, like so:
+
+```scala
+// "Order" is not a record with a status;
+// it's one of a finite set of valid shapes
+sealed trait Order derives CanEqual
+object Order:
+  final case class Draft(
+    id: OrderId,
+    items: List[LineItem]
+  ) extends Order
+
+  final case class Priced(
+    id: OrderId,
+    items: List[LineItem],
+    totals: Totals
+  ) extends Order
+
+  final case class Paid(
+    id: OrderId,
+    items: List[LineItem],
+    totals: Totals,
+    payment: PaymentAuthorization
+  ) extends Order
+
+  final case class Shippable(
+    id: OrderId,
+    items: List[LineItem],
+    totals: Totals,
+    payment: PaymentAuthorization,
+    shipTo: Address
+  ) extends Order
+
+  final case class Shipped(
+    id: OrderId,
+    items: List[LineItem],
+    totals: Totals,
+    payment: PaymentAuthorization,
+    shipTo: Address,
+    tracking: TrackingNumber
+  ) extends Order
+
+  final case class Cancelled(
+    id: OrderId,
+    items: List[LineItem],
+    reason: String
+  ) extends Order
+```
+
+Even if you never write a line of "functional programming" beyond this, the payoff is immediate. A paid order contains payment authorization by construction. A shippable order contains an address by construction. A shipped order contains tracking by construction. There is no value that means "shipped but missing address." It simply can't be constructed, so there is no code path that can accidentally manufacture it and let it leak downstream.
+
+System evolution is natural, and there is almost never a fiscally-justifiable opportunity to revamp systems for the sake of elegance (or even accuracy). But we can shift our approach from building ever-growing objects that try to mean everything, to a small set of honest shapes that can't lie about what's true. If this sounds idealistic, it is. The goal isn't perfection; it's managed complexity.
+
+Don't take my word for it. Take your current "God Object" (the one with 50 nullable fields) and the ADT model described here, and pressure-test them with three common commerce nightmares:
+
+- **Partial Shipment:** One order, two warehouses. Warehouse A ships today; Warehouse B is on backorder. How does your model represent the "half-shipped" truth without turning `isShipped` into folklore?
+- **The Price Dispute:** A customer has a paid order, but tax was calculated incorrectly. You need to issue a partial refund without cancelling the shipment. Which model makes it harder to accidentally refund the whole amount?
+- **The Digital/Physical Hybrid:** An order contains a T-shirt and a PDF download. The PDF is "delivered" instantly; the T-shirt needs tracking. How many `if` statements does your current service need to prevent the system from waiting on a tracking number for a PDF?

@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunktjm_solutions_site=globalThis.webpackChunktjm_solutions_site||[]).push([[7472],{5513(s){s.exports=JSON.parse('{"title":"Recent posts","items":[]}')}}]);

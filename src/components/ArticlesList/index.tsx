@@ -3,6 +3,7 @@ import Layout from '@theme/Layout';
 import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
 import { useLocation } from '@docusaurus/router';
+import styles from './styles.module.css';
 
 type BlogTag = { label: string; permalink: string };
 
@@ -38,7 +39,8 @@ type SortOrder = 'newest' | 'oldest' | 'title-az' | 'title-za';
 
 function buildUrl(params: { tag?: string; sort?: string }) {
   const p = new URLSearchParams();
-  if (params.tag) p.set('tag', params.tag);
+  // 'blog' is the default view — omit from URL to keep it clean
+  if (params.tag && params.tag !== 'blog') p.set('tag', params.tag);
   if (params.sort && params.sort !== 'newest') p.set('sort', params.sort);
   const qs = p.toString();
   return `/articles${qs ? `?${qs}` : ''}`;
@@ -92,8 +94,10 @@ const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
 export default function ArticlesList({ items, metadata }: Props) {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const activeTag = params.get('tag') ?? '';
+  // Default to 'blog' view; 'all' is a sentinel meaning show everything
+  const activeTag = params.get('tag') ?? 'blog';
   const activeSort = (params.get('sort') ?? 'newest') as SortOrder;
+  const effectiveTag = activeTag === 'all' ? '' : activeTag;
 
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -106,9 +110,9 @@ export default function ArticlesList({ items, metadata }: Props) {
   }, [items]);
 
   const sortedFilteredItems = useMemo(() => {
-    let result = activeTag
+    let result = effectiveTag
       ? items.filter(({ content }) =>
-          content.metadata.tags.some(t => t.label === activeTag)
+          content.metadata.tags.some(t => t.label === effectiveTag)
         )
       : [...items];
 
@@ -132,10 +136,10 @@ export default function ArticlesList({ items, metadata }: Props) {
         break;
     }
     return result;
-  }, [items, activeTag, activeSort]);
+  }, [items, effectiveTag, activeSort]);
 
-  // Only show featured/rest split for date-based sorts with no tag filter
-  const useFeaturedSplit = !activeTag && (activeSort === 'newest' || activeSort === 'oldest');
+  // Show featured/rest split only on the default blog view with date-based sort
+  const useFeaturedSplit = activeTag === 'blog' && (activeSort === 'newest' || activeSort === 'oldest');
   const featured = useFeaturedSplit ? sortedFilteredItems.slice(0, 5) : sortedFilteredItems;
   const rest = useFeaturedSplit ? sortedFilteredItems.slice(5) : [];
 
@@ -145,12 +149,16 @@ export default function ArticlesList({ items, metadata }: Props) {
         <title>{metadata.blogTitle}</title>
         <meta name="description" content={metadata.blogDescription} />
       </Head>
+      <div className={styles.hero}>
+        <h1>Articles</h1>
+        <p>Essays on software architecture, digital commerce, and the systems we build now.</p>
+      </div>
       <div className="container margin-vert--lg">
         <div className="articles-controls">
           <div className="tag-filters">
             <Link
-              to={buildUrl({ sort: activeSort !== 'newest' ? activeSort : undefined })}
-              className={`tag-filter-btn${!activeTag ? ' active' : ''}`}
+              to={buildUrl({ tag: 'all', sort: activeSort !== 'newest' ? activeSort : undefined })}
+              className={`tag-filter-btn${activeTag === 'all' ? ' active' : ''}`}
             >
               All
             </Link>

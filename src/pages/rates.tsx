@@ -1,6 +1,30 @@
 import type { ReactNode } from 'react';
+import Head from '@docusaurus/Head';
 import Layout from '@theme/Layout';
 import styles from './rates.module.css';
+
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'TJM Solutions',
+  url: 'https://www.tjm.solutions',
+  priceRange: '$$$',
+  areaServed: 'Worldwide',
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Advisory Engagements',
+    itemListElement: [
+      { '@type': 'Offer', name: 'Consulting', priceSpecification: { '@type': 'UnitPriceSpecification', price: '300', priceCurrency: 'USD', unitText: 'HOUR' } },
+      { '@type': 'Offer', name: 'Strategy', priceSpecification: { '@type': 'UnitPriceSpecification', price: '400', priceCurrency: 'USD', unitText: 'HOUR' } },
+      { '@type': 'Offer', name: 'Workshop', priceSpecification: { '@type': 'UnitPriceSpecification', price: '6000', priceCurrency: 'USD', unitText: 'DAY' } },
+      { '@type': 'Offer', name: 'Retainer', priceSpecification: { '@type': 'UnitPriceSpecification', price: '6000', priceCurrency: 'USD', unitText: 'MON' } },
+    ],
+  },
+};
+
+const TITLE = 'Advisory Rates | TJM Solutions';
+const DESCRIPTION =
+  'Technology advisory and consulting rates for digital commerce, platform strategy, and enterprise architecture engagements. Hourly, strategy, workshop, and retainer options.';
 
 interface EngagementModel {
   title: string;
@@ -38,7 +62,14 @@ const engagements: EngagementModel[] = [
 
 export default function Rates(): ReactNode {
   return (
-    <Layout>
+    <Layout title={TITLE} description={DESCRIPTION}>
+      <Head>
+        <meta property="og:title" content={TITLE} />
+        <meta property="og:description" content={DESCRIPTION} />
+        <meta property="og:url" content="https://www.tjm.solutions/rates" />
+        <meta property="og:image" content="https://www.tjm.solutions/img/banner.jpg" />
+        <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
+      </Head>
       <div className={styles.ratesContainer}>
         <section className={styles.hero}>
           <div className="container">

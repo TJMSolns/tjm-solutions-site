@@ -61,6 +61,11 @@ const config: Config = {
             copyright: `Copyright © ${new Date().getFullYear()} TJM Solutions LLC`,
           },
         },
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/articles/tags/**', '/articles/archive'],
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -70,7 +75,13 @@ const config: Config = {
 
   // === Theme configuration ===
   themeConfig: {
-    image: 'img/social-card.png',
+    image: 'img/banner.jpg',
+    metadata: [
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:locale', content: 'en_US' },
+      { property: 'og:site_name', content: 'TJM Solutions' },
+    ],
     colorMode: {
       defaultMode: 'dark',
       disableSwitch: false,

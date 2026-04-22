@@ -1,0 +1,412 @@
+---
+title: "A Protocol Stack for Agent-Native Commerce: MCP, Domain Profiles, and Open Interoperability"
+description: "A layered protocol stack perspective on agent-commerce interoperability: MCP as a general capability mechanism, commerce-domain profiles as shared vocabulary, and capability registries as discovery infrastructure."
+date: 2026-04-21
+authors: [tony]
+tags: [architecture, ai, digital-commerce, paper, agent-commerce, mcp]
+image: /img/digital-transformation.jpg
+---
+
+## Abstract
+
+The growth of autonomous software agents as commercial actors — buyers that discover suppliers, evaluate constraints, and execute transactions without human involvement — creates a practical interoperability problem: how should agents and merchants communicate when they have no prior relationship and no bespoke integration? This article presents a protocol stack perspective on the emerging answer: a layered architecture combining the Model Context Protocol (MCP) as a general capability mechanism, commerce-domain profiles as shared vocabularies, and capability registries as discovery infrastructure. We examine the stack's current state, its gaps, and the open engineering problems that the community must resolve to support agent-commerce at production scale.
+
+<!-- truncate -->
+
+## 1. The Interoperability Problem
+
+Consider a software agent deployed by an engineering firm to automate B2B procurement. The agent receives an instruction: source 200 units of a specific industrial component, ISO 9001 certified, delivered in eight days, budget $42,000. The agent must:
+
+1. Discover which suppliers carry the component and are capable of meeting the constraints.
+2. Query each supplier for structured availability, pricing, and lead time data.
+3. Evaluate candidates against policy constraints.
+4. Execute a transaction with the selected supplier.
+5. Coordinate with a logistics provider for fulfillment.
+6. Return a structured confirmation to a human principal.
+
+Steps 1 through 6 require the agent to interact with multiple independent organizations — the manufacturer, potentially several competing suppliers, and a logistics provider — none of whom have a pre-existing integration with the agent or with each other.
+
+The current state of the art for this problem is bespoke integration: the agent is engineered to interact with each supplier's specific API, with custom connectors per merchant, custom parsers per schema, and custom error handling per system. This approach scales poorly. As the number of agents (A) and merchants (M) grows, the number of required connectors grows as O(A × M). Maintenance burden compounds with each API update.
+
+The interoperability problem — how to reduce this to O(A + M) without sacrificing expressiveness — is the central engineering challenge this article addresses.
+
+---
+
+## 2. Protocol Stack Overview
+
+The emerging solution is a layered protocol stack with three primary layers and supporting infrastructure:
+
+```
+┌─────────────────────────────────────────────┐
+│           Domain Profile Layer              │
+│    (commerce vocabulary, operation schemas) │
+├─────────────────────────────────────────────┤
+│         General Capability Layer            │
+│    (MCP: discovery, invocation, errors)     │
+├─────────────────────────────────────────────┤
+│           Transport Layer                   │
+│    (HTTP, SSE, WebSocket)                   │
+├─────────────────────────────────────────────┤
+│         Supporting Infrastructure           │
+│    (registries, auth, audit)                │
+└─────────────────────────────────────────────┘
+```
+
+Each layer has a distinct responsibility. Transport handles connection and serialization. The general capability layer handles tool discovery, invocation semantics, and error propagation. The domain profile layer provides shared vocabulary — the standardized operation names, input schemas, and output schemas that allow agents to interact with any merchant supporting the profile without per-merchant customization.
+
+Supporting infrastructure (registries for discovery, authentication/delegation frameworks, audit pipelines) is not a protocol layer in the strict sense but is essential for the stack to function at production scale.
+
+---
+
+## 3. Layer 1: Transport
+
+The transport layer handles connection establishment, message serialization, and session management. MCP supports multiple transport options:
+
+**HTTP with Server-Sent Events (SSE)**: The primary transport for web-based deployments. The agent initiates an HTTP connection; the server can stream responses using SSE for long-running operations. This is the most widely deployed transport in current MCP implementations.
+
+**WebSocket**: Bidirectional persistent connections, suitable for high-frequency invocations or scenarios requiring server-initiated messages.
+
+**stdio**: For local process communication, used primarily in developer tooling (IDE integrations, local agent execution).
+
+Transport layer concerns — TLS, authentication at the connection level, connection pooling, retry behavior — are addressed at this layer independently of capability semantics. This separation allows capability surface implementations to be transport-agnostic; the same capability schema is valid over HTTP+SSE, WebSocket, or future transport options.
+
+**Current state**: Stable and production-deployed. HTTP+SSE is the de facto standard for agent-to-merchant communication. No significant interoperability problems exist at this layer.
+
+---
+
+## 4. Layer 2: General Capability Mechanism (MCP)
+
+The Model Context Protocol defines the general mechanism for exposing capabilities to agents. Its primary specifications are:
+
+### 4.1 Tool Definitions
+
+An MCP server exposes tools — named, callable operations — through a structured definition format:
+
+```json
+{
+  "name": "search_products",
+  "description": "Search the product catalog with structured filtering",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "part_number": {"type": "string"},
+      "tolerance_class": {"type": "string", "enum": ["1A", "2B", "3C"]},
+      "certifications_required": {
+        "type": "array",
+        "items": {"type": "string"}
+      },
+      "quantity": {"type": "integer", "minimum": 1}
+    },
+    "required": ["part_number", "quantity"]
+  }
+}
+```
+
+Tool definitions are JSON Schema-typed, versioned through server metadata, and describe the operation semantics in human-readable and machine-parseable form.
+
+### 4.2 Discovery
+
+MCP defines a `tools/list` endpoint that returns all available tools. An agent connecting to an MCP server can enumerate the full capability surface without external documentation. This satisfies the discoverability requirement for the O(A + M) integration model: an agent needs only to know an MCP server's endpoint to discover everything it can do.
+
+### 4.3 Invocation Semantics
+
+Tool invocations use a `tools/call` request with the tool name and a JSON payload matching the input schema. Responses are structured and typed. Errors are propagated through a defined error format with error codes and human-readable messages.
+
+```json
+// Request
+{
+  "method": "tools/call",
+  "params": {
+    "name": "search_products",
+    "arguments": {
+      "part_number": "HX-440",
+      "tolerance_class": "2B",
+      "certifications_required": ["ISO_9001"],
+      "quantity": 200
+    }
+  }
+}
+
+// Response (success)
+{
+  "content": [{
+    "type": "text",
+    "text": "{\"available\": true, \"unit_price_usd\": 178.00, ...}"
+  }]
+}
+```
+
+### 4.4 Current MCP Gaps for Commerce
+
+MCP's general-purpose design leaves several commerce-specific concerns unaddressed:
+
+**Idempotency**: MCP has no native idempotency mechanism. Commerce operations that create state (orders, reservations, shipments) require idempotency guarantees to handle network failures and retry scenarios safely. Implementations must layer idempotency keys through tool input schemas and server-side idempotency key handling — a convention, not a specification.
+
+**Versioning**: MCP servers expose a version number, but there is no specification for how breaking changes should be signaled, how deprecation should be communicated, or how clients should handle version negotiation. This is a significant gap for long-running agent deployments that must detect when a capability surface has changed in ways that invalidate agent behavior.
+
+**Semantic error typing**: MCP error propagation distinguishes protocol errors from tool execution errors but does not specify how business logic errors (insufficient inventory, authorization failure, policy violation) should be typed and structured. Commerce applications require fine-grained error discrimination that is not standardized.
+
+**Streaming and pagination**: MCP supports streaming responses through SSE, but pagination for large result sets (hundreds of product matches, large catalog queries) is not standardized. Commerce agents querying large catalogs need predictable pagination semantics.
+
+These gaps are addressable through conventions layered above the base protocol. The commerce domain profile layer (Section 5) is the appropriate place for most of them.
+
+---
+
+## 5. Layer 3: Domain Profiles
+
+The general capability layer enables agent-to-server communication. Domain profiles provide the shared vocabulary that allows an agent built for commerce to interact with any commerce merchant supporting the profile, without merchant-specific customization.
+
+A domain profile is, in the simplest terms, a standardized set of tool definitions — agreed names, agreed input schemas, agreed output schemas, agreed error codes — for a specific domain. An agent that implements the commerce domain profile can interact with any merchant implementing the same profile as if it had been built specifically for that merchant.
+
+### 5.1 Universal Commerce Protocol (UCP)
+
+The Universal Commerce Protocol is an early-stage domain profile for commerce. It defines standard operations across the commerce lifecycle:
+
+**Discovery operations:**
+- `search_products`: Filter by attribute, certification, specification, and availability
+- `get_product_detail`: Full structured product data including specifications, certifications, and documentation references
+- `check_availability`: Real-time availability for specified quantities
+
+**Evaluation operations:**
+- `get_pricing`: Volume and contract tier pricing for specified quantities
+- `get_fulfillment_options`: Available logistics partners with estimated lead times and rates
+- `get_compliance_documents`: Structured access to certification and compliance documentation
+
+**Transaction operations:**
+- `create_cart`: Initiate a transaction session
+- `create_order`: Place an order with idempotency key; returns structured order confirmation
+- `create_shipment`: Initiate fulfillment through a specified logistics partner
+
+**Post-transaction operations:**
+- `track_shipment`: Real-time shipment status with structured location and ETA data
+- `initiate_return`: Structured return request with reason coding
+- `get_warranty_status`: Warranty coverage lookup by product and order
+
+Each operation has a standardized schema. The `create_order` input schema specifies required fields (product identifiers, quantities, delivery address, idempotency key, delegated credentials) and the response schema specifies the confirmation structure (order ID, estimated ship date, tracking reference, total cost breakdown).
+
+### 5.2 UCP Design Principles
+
+The UCP working group has articulated several design principles worth examining from an engineering perspective:
+
+**Schema-first design**: Operation schemas are the primary specification artifact. Server implementations must conform to the schema; documentation is derived from, not authoritative over, the schema.
+
+**Explicit nullability**: No implicit optional fields. Every field in an operation schema is either required or explicitly nullable with documented semantics for the null case. This eliminates the common API design problem of fields that are sometimes present, sometimes absent, with behavior that varies by context.
+
+**Structured availability signals**: Availability is never a string ("in stock", "usually ships in 2 weeks"). It is a typed union: `{available: boolean, available_quantity: integer, reservation_valid_until: timestamp}`. An agent can make a deterministic procurement decision from this; it cannot from a free-text string.
+
+**Idempotency by default for state-mutating operations**: All operations that create or modify state require an idempotency key. Servers must honor idempotency keys and return the original response for duplicate requests within a specified window.
+
+### 5.3 UCP Maturity Assessment
+
+UCP is directionally sound but not yet a settled standard. Implementation considerations for organizations evaluating adoption:
+
+**Do**: Design capability surfaces as pluggable modules where the UCP-defined schema is an adapter, not a structural assumption. This allows UCP adoption to be incremental and allows evolution to a successor standard without architectural surgery.
+
+**Do**: Contribute to UCP specification development if you have domain expertise. The standard's quality depends on participation from practitioners who understand commerce operation semantics.
+
+**Don't**: Treat UCP as a fait accompli. Build for the principle (shared commerce vocabulary in a general mechanism) rather than committing hard dependencies on UCP's specific current schema definitions.
+
+**Don't**: Wait for UCP to stabilize before implementing capability surfaces. The general mechanism (MCP with well-designed tool schemas) provides immediate value independent of domain profile standardization.
+
+---
+
+## 6. Supporting Infrastructure
+
+### 6.1 Capability Registries
+
+A capability registry is a directory service that indexes MCP servers (capability surfaces) and their tool definitions, allowing agents to discover merchants by capability, domain profile compatibility, certification, or geographic coverage without prior knowledge of specific server endpoints.
+
+A registry query for "merchants supporting `search_products` with ISO 9001 filtering, capable of delivery to Denver within 10 days" returns a list of qualified merchants with their capability surface endpoints. The agent can then invoke discovery on each to enumerate full capability detail.
+
+**Registry architecture options:**
+
+*Centralized*: A single authoritative registry. High discoverability, single governance model, but a single point of failure and centralization risk.
+
+*Federated*: Multiple registries that can exchange records through a federation protocol. Resilient, allows domain-specific registries (industrial components, pharmaceuticals, food products), but requires inter-registry reconciliation and trust models.
+
+*Decentralized*: Registry records published via DHT or blockchain-based mechanisms. Highly resilient, no centralization, but discovery performance and consistency are challenging.
+
+The appropriate architecture depends on market structure and governance preferences. B2B industrial markets may prefer domain-specific federated registries operated by industry associations. Consumer markets may favor centralized registries operated by major platforms.
+
+**Open problem — certification**: How does a registry certify that a listed merchant's capability surface actually satisfies required properties (determinism, schema completeness, idempotency)? Self-attestation creates misleading registry entries. Automated conformance testing — a test suite that invokes each capability with known inputs and verifies responses against schema and behavioral properties — is a partial solution. The conformance test suite must be maintained alongside the domain profile specification.
+
+### 6.2 Authentication and Delegation
+
+Commerce transactions require authentication (verifying agent identity) and delegation (establishing that an agent is authorized to act on behalf of a principal within specified policy bounds).
+
+**Agent identity**: Who is this agent? OAuth 2.0 client credentials flow provides a baseline mechanism. An agent is registered as a client application with credentials; it authenticates using those credentials. However, in commerce contexts, agents are not just applications — they are autonomous actors that must be held accountable for the transactions they execute. Agent identity infrastructure must support auditability: who authorized this agent, what policies bound its actions, and what transactions did it execute?
+
+**Delegation**: A procurement agent acting on behalf of an engineering firm must demonstrate that it is authorized to commit the firm's purchasing budget, apply the firm's approved supplier list, and operate within the firm's approval workflow rules. OAuth 2.0 delegation (RFC 8693) provides a token exchange mechanism, but commerce-specific delegation semantics (purchasing entitlements, approval thresholds, supplier whitelist enforcement) require extensions.
+
+**Credential scoping**: Delegated credentials should be scoped to specific capability operations and policy constraints. A credential that authorizes order creation for up to $50,000 per transaction should not also authorize order creation above that threshold. Current OAuth 2.0 scope mechanisms are flexible enough to express this, but commerce-specific scope vocabularies are not standardized.
+
+**Open problem**: A standardized agent delegation credential format for commerce — analogous to how JWT standardized identity tokens — does not yet exist. This is an important gap for cross-organizational agent transactions.
+
+### 6.3 Audit Pipelines
+
+Every capability invocation in a commerce context must be auditable: which agent invoked which capability, with what parameters, on behalf of which principal, with what result, at what time. This requirement is not optional for enterprise commerce — it is a compliance requirement in most regulated industries and a practical requirement for dispute resolution.
+
+Audit pipeline requirements:
+- **Immutability**: Audit records must not be modifiable after creation
+- **Completeness**: Every invocation, including failed ones, must be recorded
+- **Attribution**: Each record must identify the agent, the principal, and the capability server
+- **Access control**: Principals should be able to access their own transaction audit trail; capability servers should be able to access their own invocation records
+
+Building this infrastructure at the capability surface layer — logging every invocation before and after execution — is more reliable than building it at the agent layer, since the agent may be operated by a different organization than the merchant.
+
+---
+
+## 7. Illustrative Protocol Interaction
+
+The following illustrates a complete agent-merchant interaction using the described protocol stack. Three organizations participate: a manufacturer (MCP server with commerce domain profile), a procurement agent, and a logistics provider (separate MCP server).
+
+### 7.1 Discovery Phase
+
+The procurement agent queries a capability registry:
+
+```
+GET /registry/search
+  ?capability=search_products
+  &certification=ISO_9001
+  &delivery_region=US-CO
+  &domain_profile=UCP-1.0
+```
+
+Registry returns a list of qualified merchants with their MCP server endpoints and capability metadata.
+
+### 7.2 Evaluation Phase
+
+The agent connects to the manufacturer's MCP server and calls `tools/list` to enumerate capabilities. It invokes `search_products`:
+
+```json
+{
+  "method": "tools/call",
+  "params": {
+    "name": "search_products",
+    "arguments": {
+      "part_number": "HX-440",
+      "tolerance_class": "2B",
+      "certifications_required": ["ISO_9001"],
+      "quantity": 200,
+      "delivery_region": "US-CO",
+      "delivery_deadline": "2024-12-22"
+    }
+  }
+}
+```
+
+The manufacturer's capability surface validates the input, queries internal inventory and pricing services, and returns a structured response conforming to the UCP search output schema. The agent evaluates the response against procurement policy constraints.
+
+### 7.3 Logistics Coordination
+
+The agent invokes `get_fulfillment_options` on the manufacturer. The response includes the logistics provider as a registered fulfillment partner. The agent connects to the logistics provider's MCP server and invokes `rate_quote`.
+
+### 7.4 Transaction Execution
+
+The agent invokes `create_order` with a client-generated idempotency key:
+
+```json
+{
+  "method": "tools/call",
+  "params": {
+    "name": "create_order",
+    "arguments": {
+      "idempotency_key": "session-uuid-v4-here",
+      "line_items": [{"part_number": "HX-440", "quantity": 200}],
+      "delivery_address": {"city": "Denver", "state": "CO", "country": "US"},
+      "fulfillment_partner_id": "fleetmove-001",
+      "delegated_credentials": "eyJhbGci..."
+    }
+  }
+}
+```
+
+The manufacturer's capability surface validates the delegated credentials, reserves inventory, coordinates with the logistics provider's `create_shipment` capability, records both invocations in the audit pipeline, and returns a structured order confirmation.
+
+### 7.5 Idempotency Scenario
+
+If the network fails after the manufacturer processes the order but before the agent receives the response, the agent will retry the request with the same idempotency key. The manufacturer's capability surface recognizes the idempotency key, returns the original confirmation without creating a duplicate order, and logs the duplicate invocation as a retry event.
+
+---
+
+## 8. Open Engineering Problems
+
+### 8.1 Capability Contract Governance
+
+Publishing a capability surface schema creates a backward compatibility contract. Every agent that depends on a published capability schema expects that schema to remain stable. Breaking changes — removing fields, renaming operations, changing type semantics — require coordinated migration across all dependent agents.
+
+Engineering problems:
+- Automated detection of breaking vs. non-breaking schema changes
+- Deprecation notification mechanisms (how does an agent learn that a capability version is deprecated?)
+- Migration tooling that helps agent implementors adapt to new capability versions
+- Governance processes for collaborative vocabulary development (UCP working group procedures, RFC-style review)
+
+### 8.2 Schema Evolution Without Breaking Changes
+
+REST API versioning is well-understood (URL versioning, header versioning, content negotiation). For domain profiles expressed in MCP, versioning across a distributed ecosystem of agents and merchants presents new challenges:
+
+- When a UCP operation schema adds a new optional field, existing agents that do not send that field must still receive valid responses
+- When a UCP operation schema adds a new required output field, existing merchants that do not return it are non-conformant
+- Coordinating schema evolution across a federated ecosystem without a central authority requires governance mechanisms that do not exist for MCP/UCP today
+
+### 8.3 Conformance Testing Infrastructure
+
+For domain profiles to provide their promised interoperability value, conformance testing must be available: a test suite that any merchant can run against their capability surface implementation to verify conformance with the domain profile specification.
+
+Conformance testing for stateful operations (order creation, reservation management) requires test isolation mechanisms — the test suite must not create real orders during conformance verification. This requires either sandbox environments with explicit test mode behavior or replay-based testing against recorded interaction traces.
+
+### 8.4 Cross-Registry Discovery Consistency
+
+In a federated registry model, a merchant's capability surface registration must be consistent across multiple registries. If a merchant updates their MCP server endpoint, deprecates a capability version, or changes their domain profile conformance status, all registries must reflect the update. Consistency semantics (eventual vs. strong) and conflict resolution are open problems.
+
+### 8.5 Agent Accountability at Scale
+
+As agent-executed transactions scale to significant volume, questions of accountability become practically important: when an agent executes a transaction that turns out to be wrong (wrong product, wrong quantity, wrong price tier), how is accountability attributed? To the agent? The principal who authorized the agent? The merchant whose capability surface provided the data?
+
+The legal and technical frameworks for agent accountability in commerce do not yet exist at the specification level. The audit infrastructure described in Section 6.3 is a precondition for accountability — you cannot attribute accountability without records — but the accountability model itself requires further development.
+
+---
+
+## 9. Implementation Guidance for Practitioners
+
+For engineering teams considering capability surface implementation, we offer pragmatic guidance based on the architecture analysis:
+
+**Start with MCP, not UCP.** MCP is production-ready and provides immediate value for agent integration. UCP conformance can be added incrementally. Design your tool schemas carefully — the naming and structure you choose will become a backward compatibility obligation.
+
+**Design for idempotency from day one.** Adding idempotency to a capability surface implementation after the fact requires schema changes and server-side state management that is costly to retrofit. Require idempotency keys for all state-mutating operations in the initial implementation.
+
+**Version everything from day one.** Include version metadata in your MCP server manifest. Use semantic versioning for your tool schemas. Plan your breaking-change deprecation process before you publish your first external capability.
+
+**Instrument aggressively.** Every capability invocation should generate a log record with: invocation timestamp, agent identity, capability name, input summary (hashed, not raw — inputs may contain sensitive data), output status, latency, and error code if applicable. This infrastructure is hard to add retroactively.
+
+**Test with real agent implementations.** The failure modes described in Section 2 — ambiguous error semantics, schema inconsistency, undiscoverable operations — are best discovered by running actual agent implementations against your capability surface in a test environment. Synthetic testing against schema validators is insufficient.
+
+---
+
+## 10. Conclusion
+
+The interoperability problem in agent-native commerce is solvable with available technology. The Model Context Protocol provides a production-ready general capability mechanism. Domain profiles like UCP are in early development but directionally sound. Capability registries are emerging. Authentication and delegation frameworks exist in partially applicable form and need commerce-specific extensions.
+
+The open problems — contract governance, conformance testing, registry consistency, agent accountability — are real engineering challenges but not fundamental blockers. They are problems that the community is equipped to solve once the importance of solving them is clearly understood.
+
+The key engineering insight is this: the capability surface layer is not an API wrapper. It is a semantic contract with formal properties (determinism, schema completeness, versioned stability, discoverability, explicit error contracts, idempotency declaration). Building capability surfaces with these properties is harder than building REST APIs — but it is the precondition for agent-mediated commerce to work without bespoke integrations.
+
+Organizations that build to these standards earn compatibility with the entire ecosystem. Organizations that do not are excluded from agent evaluation, regardless of their product quality.
+
+---
+
+## Author Notes
+
+*This article is intended for technical readers familiar with API design, distributed systems, and protocol standards. Readers seeking more depth on the economic implications of agent-mediated commerce may find the companion article [The Economics of Agent-Mediated Commerce](/articles/2026/04/21/economics-of-agent-mediated-commerce) useful.*
+
+---
+
+## References
+
+
+- Anthropic. (2024). Model Context Protocol Specification. Retrieved from modelcontextprotocol.io
+- Commerce Alliance Working Group. (2024). Universal Commerce Protocol: Draft Specification.
+- Fielding, R. T. (2000). Architectural Styles and the Design of Network-based Software Architectures. *UC Irvine Doctoral Dissertation*.
+- IETF RFC 8693. (2020). OAuth 2.0 Token Exchange.
+- Hohpe, G., & Woolf, B. (2003). *Enterprise Integration Patterns: Designing, Building, and Deploying Messaging Solutions*. Addison-Wesley.
+- Richardson, L., & Ruby, S. (2007). *RESTful Web Services*. O'Reilly Media.

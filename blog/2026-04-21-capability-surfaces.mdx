@@ -1,0 +1,339 @@
+---
+title: "Capability Surfaces: A Mediating Architecture for Agent-Native Commerce"
+description: "How a mediating architectural pattern called capability surfaces reduces agent-merchant integration complexity from O(A×M) to O(A+M), enabling any compliant agent to transact with any compliant merchant without bespoke integration."
+date: 2026-04-21
+authors: [tony]
+tags: [architecture, ai, digital-commerce, paper, agent-commerce, mcp]
+image: /img/digital-transformation.jpg
+---
+
+## Abstract
+
+The emergence of autonomous software agents as primary actors in commercial transactions creates a structural integration problem: agents need to interact with thousands of independent merchants, each exposing heterogeneous APIs with incompatible schemas, inconsistent semantics, and varying reliability guarantees. Existing integration patterns — direct REST consumption, EDI, or bespoke connector libraries — scale as O(A × M) where A is the number of agents and M is the number of merchants. We identify this as the **agent-merchant integration problem** and propose **capability surfaces** as a mediating architectural pattern that reduces integration complexity to O(A + M).
+
+A capability surface is a semantic contract layer that sits between a merchant's internal microservices and external agents. It exposes deterministic, versioned, discoverable operations with explicit input/output schemas and error semantics, enabling any compliant agent to transact with any compliant merchant without bespoke integration. We formalize the pattern, specify its required properties, and ground the analysis in a concrete three-party scenario (manufacturer, procurement agent, logistics provider) interacting across an open market without pre-built integrations.
+
+We examine the Model Context Protocol (MCP) as a production-validated mechanism for expressing capability surfaces, and the Universal Commerce Protocol (UCP) as an early domain-specific vocabulary layer. We discuss open problems in contract governance, registry trust, and agent identity that the architecture does not yet resolve.
+
+<!-- truncate -->
+
+## 1. Introduction
+
+Digital commerce infrastructure has undergone three distinct architectural shifts in the past thirty years. The first — from telephone and paper to web storefronts — moved transaction initiation online while keeping humans at every decision point. The second — from storefronts to API-first platforms — exposed machine interfaces but still assumed human-initiated sessions. The third shift, now underway, transfers decision-making authority from humans to software agents operating autonomously on behalf of principals.
+
+This shift is not speculative. Autonomous agents are already operating in B2B procurement automation, cloud infrastructure purchasing, programmatic advertising markets, and logistics optimization. In these domains, agents discover suppliers, evaluate constraints, negotiate prices within policy bounds, and execute transactions without human involvement at each step. Human intervention becomes an exception path rather than the default.
+
+The scale of this transition creates a fundamental integration problem. Today's agent deployments address it through bespoke connectors: a procurement agent is engineered specifically to interact with Supplier A's API, then re-engineered for Supplier B's different schema, then patched for Supplier C's divergent error semantics. This is the N×N problem that plagued enterprise application integration before the emergence of middleware and message-oriented architectures in the 1990s, now recurring at the agent-merchant boundary.
+
+We make the following contributions:
+
+1. We name and formalize the **capability surface** as a distinct architectural layer between merchant microservices and external agents.
+2. We specify the required formal properties of a capability surface: determinism, schema completeness, versioned stability, discoverability, and explicit error contracts.
+3. We demonstrate through scenario analysis how capability surfaces reduce the agent-merchant integration problem from O(A × M) to O(A + M).
+4. We map MCP as a capability surface mechanism and UCP as a domain vocabulary layer, positioning them in a layered protocol stack.
+5. We identify open research problems in capability contract governance, registry certification, and agent identity that remain unsolved.
+
+---
+
+## 2. Background and Related Work
+
+### 2.1 The N×N Integration Problem in Enterprise Software
+
+The problem of integrating heterogeneous software systems has a long history in enterprise computing. In the 1990s, enterprise application integration (EAI) addressed the combinatorial complexity of point-to-point system connections through middleware: message brokers, enterprise service buses, and common data models [Hohpe and Woolf 2003]. These approaches reduced integration complexity from O(N²) to O(N) by introducing a shared integration backbone.
+
+The agent-merchant problem is structurally identical but occurs at a different boundary. Rather than integrating backend systems within an organization, the integration challenge spans organizational boundaries and heterogeneous merchant-side implementations. The solutions developed for EAI — shared schemas, versioned contracts, broker-mediated discovery — apply by analogy.
+
+### 2.2 Service-Oriented Architecture and API Design
+
+Service-oriented architecture (SOA) established the principle that functionality should be exposed as discrete, interoperable services with standardized interfaces [Papazoglou 2003]. RESTful API design [Fielding 2000] and later OpenAPI specifications advanced interface standardization. GraphQL [Facebook 2015] further generalized query semantics across heterogeneous data sources.
+
+These frameworks address machine-to-machine integration but were designed with human-initiated, session-bounded interactions in mind. They do not specify discovery semantics, capability enumeration, or the error contract properties required for autonomous agent operation at scale.
+
+### 2.3 LLM Tool Use and Function Calling
+
+The emergence of large language models with tool-use capabilities — OpenAI function calling [OpenAI 2023], Anthropic's tool use API [Anthropic 2024], and similar mechanisms — introduced structured action interfaces for AI agents. These mechanisms allow agents to invoke external functions with typed inputs and outputs, grounding language model reasoning in executable operations.
+
+The Model Context Protocol [Anthropic 2024] extends this concept into a general-purpose capability exposure standard, allowing any service to expose tools to any compliant agent through a common protocol. MCP is in production use across developer tooling, automation pipelines, and agent frameworks, and represents the current state of the art for general-purpose capability surface expression.
+
+### 2.4 Commerce Protocol Standards
+
+EDI (Electronic Data Interchange) addressed machine-to-machine commerce integration in B2B contexts but required bilateral partner agreements and bespoke translation layers. OCI (Open Catalog Interface) and cXML addressed specific procurement use cases but achieved limited generality. More recently, the Universal Commerce Protocol [Commerce Alliance 2024] has been proposed as a shared semantic vocabulary for agent-commerce interaction, covering product discovery, cart management, checkout, and post-purchase operations.
+
+---
+
+## 3. The Agent-Merchant Integration Problem
+
+### 3.1 Problem Formalization
+
+Let `A = {a₁, a₂, ..., aₙ}` be a set of software agents operating as commercial buyers, and `M = {m₁, m₂, ..., mₖ}` be a set of merchants. Each merchant mᵢ exposes an interface Iᵢ consisting of a set of operations, each with its own invocation semantics, input schema, output schema, and error behavior.
+
+In the bespoke integration model, each agent aⱼ that wishes to transact with merchant mᵢ requires a connector cᵢⱼ that translates between aⱼ's internal operation model and Iᵢ's specific interface. The total number of connectors required is |A| × |M|, which grows combinatorially as both sets expand.
+
+Beyond raw count, bespoke connectors accumulate semantic debt. When merchant mᵢ updates its API — changes a schema, adds a required field, modifies error codes — every connector cᵢⱼ across all agents requires updates. The maintenance burden scales with A × M, not with M alone.
+
+### 3.2 Failure Modes at the Agent Boundary
+
+The integration problem manifests in specific, observable failure modes when agents attempt to interact with heterogeneous merchant APIs:
+
+**Schema inconsistency.** An API endpoint returns availability as a free-text string ("usually ships in 1-2 weeks") rather than a structured value. The agent cannot parse this into the binary in-stock/out-of-stock determination required for procurement decision-making.
+
+**Implicit error semantics.** An API returns HTTP 200 with an error embedded in the response body, or uses HTTP 4xx codes for business logic rejections (insufficient stock) that the agent must distinguish from protocol errors. Without explicit error contracts, agents must infer error semantics from examples.
+
+**Missing capability enumeration.** An API does not expose what operations it supports, their constraints, or their versioning. An agent must probe the API or rely on external documentation that may be stale.
+
+**Idempotency ambiguity.** An order creation endpoint does not specify whether duplicate invocations create duplicate orders. Agents operating in retry-on-failure patterns will create unintended duplicates unless the idempotency contract is explicit.
+
+**Undiscoverable operations.** An API supports shipment tracking delegation but does not expose this capability in any machine-readable discovery format. The agent never learns the capability exists.
+
+Each failure mode requires a bespoke handling strategy per merchant. The accumulation of these strategies is what makes the O(A × M) integration model unsustainable at scale.
+
+---
+
+## 4. Capability Surfaces: Architecture and Properties
+
+### 4.1 Definition
+
+A **capability surface** is an architectural layer that exposes a merchant's operational capabilities to external agents through deterministic, versioned, discoverable contracts. It sits between the merchant's internal service implementation (invariant engines) and external consuming agents.
+
+Formally, a capability surface CS for merchant m is defined as:
+
+```
+CS(m) = {cap₁, cap₂, ..., capₙ}
+```
+
+where each capability capᵢ is a tuple:
+
+```
+capᵢ = (name, version, schema_in, schema_out, error_contracts, idempotency_class, discovery_metadata)
+```
+
+### 4.2 Required Properties
+
+For a capability surface to support the O(A + M) integration model, it must satisfy the following properties:
+
+**P1 — Determinism.** Given identical inputs, a capability invocation must produce identical outputs or return an error from the explicit error contract. Non-determinism arising from timing, concurrent state, or external factors must be reflected in the schema (e.g., availability represented as a probability distribution or a time-bounded reservation, not a point-in-time count).
+
+**P2 — Schema completeness.** All inputs and outputs must be fully typed with no implicit fields, optional fields that affect behavior without documentation, or type coercions that change meaning across contexts.
+
+**P3 — Versioned stability.** Capability schemas are versioned. Published versions may not be modified in breaking ways without explicit deprecation cycles. Additive changes (new optional fields, new error codes) are non-breaking. Removal of fields, renaming, or semantic reinterpretation are breaking changes requiring version increments.
+
+**P4 — Explicit error contracts.** Every error state a capability may return is enumerated in the capability definition. Error codes are typed and carry structured payloads. HTTP transport errors (5xx) are distinguished from business logic errors (insufficient inventory, policy violation) in the schema.
+
+**P5 — Discovery.** The capability surface is enumerable. An agent can query the capability surface to discover what operations are available, their current versions, their schemas, and their constraints — without external documentation.
+
+**P6 — Idempotency declaration.** Each capability declares its idempotency class: safe (read-only, no state change), idempotent (repeated invocation with the same inputs produces the same state), or non-idempotent (each invocation may produce distinct state changes). Idempotent operations must accept a client-provided idempotency key.
+
+### 4.3 Three-Layer Architecture
+
+The capability surface pattern instantiates a three-layer architecture:
+
+**Layer 1 — Invariant Engines.** Internal microservices that enforce domain correctness. An inventory service enforces stock level invariants. A pricing service enforces contract tier logic. A fulfillment service enforces booking rules. These services do not expose themselves directly to external agents; they are bounded contexts with internal invariants.
+
+**Layer 2 — Capability Surfaces.** The semantic contract layer. Capability surfaces aggregate and normalize calls to Layer 1 services, apply schema normalization, enforce idempotency guarantees, record invocations in an audit pipeline, and expose capabilities through a discovery interface. Capability surfaces are the integration boundary.
+
+**Layer 3 — Agents.** External orchestrators that interpret principal intent, discover available capabilities through registries, compose multi-step workflows by chaining capability invocations, enforce policy constraints, and produce auditable decision records.
+
+The critical architectural principle is that Layers 1 and 3 must not interact directly. An agent that calls an internal inventory service API directly accumulates the full complexity of that service's internal topology, failure modes, and implicit assumptions. An agent that calls a capability surface receives a stable, versioned contract that abstracts the internal topology.
+
+### 4.4 Why Capability Surfaces Are Not API Gateways
+
+API gateways address routing, authentication, rate limiting, and protocol translation. They operate at the transport and request level, not the semantic level. A capability surface is semantically richer: it enforces schema completeness, declares idempotency classes, exposes discovery interfaces, and publishes versioned contracts. An API gateway may be part of the capability surface infrastructure, but it is not sufficient to constitute one.
+
+Similarly, GraphQL and similar query languages provide flexible data retrieval but do not address capability discovery, error contract specification, or idempotency declaration. They are complementary mechanisms, not substitutes.
+
+---
+
+## 5. Protocol Stack: MCP and Domain Vocabularies
+
+### 5.1 MCP as a Capability Surface Mechanism
+
+The Model Context Protocol defines a standard for exposing capabilities to AI agents through structured tool descriptions. An MCP server exposes:
+
+- **Tool definitions**: named operations with typed input schemas, output schemas, and descriptions
+- **Discovery**: enumeration of available tools through a standard listing interface
+- **Invocation semantics**: structured request/response with error propagation
+
+MCP satisfies properties P1 (through schema enforcement), P2 (typed schemas), P4 (structured error propagation), and P5 (tool listing). It does not natively specify versioning (P3) or idempotency classes (P6) — these must be layered by the capability surface implementor, typically through metadata conventions in tool descriptions and client-provided idempotency keys in tool inputs.
+
+MCP is production-deployed across developer tooling, code assistants, automation frameworks, and agent infrastructure. Its adoption velocity in 2024-2025 suggests it is on a trajectory to become a de facto standard for general-purpose capability exposure.
+
+### 5.2 UCP as a Commerce Domain Profile
+
+General-purpose capability mechanisms like MCP are domain-agnostic. A commerce agent interacting with multiple merchants benefits from shared semantic vocabulary: a `search_products` capability on Merchant A should accept the same parameters and return the same schema as `search_products` on Merchant B, even if the underlying implementations differ.
+
+The Universal Commerce Protocol defines such a vocabulary for commerce operations:
+
+- **Discovery**: product search with structured attribute filtering, availability queries
+- **Evaluation**: pricing, lead time, certification status
+- **Transaction**: cart management, order creation, idempotency contracts
+- **Post-transaction**: fulfillment tracking, return initiation, warranty claims
+
+UCP is best understood as a domain profile: a standardized set of capability definitions expressed in a general mechanism (MCP). The layering is:
+
+```
+Domain Profile (UCP): commerce operation vocabulary
+General Mechanism (MCP): capability discovery, invocation, error propagation
+Transport (HTTP/SSE/etc.): connection and serialization
+```
+
+UCP's current status is early-stage. It should not be treated as a settled standard. The appropriate implementation posture is to architect for compatibility (a UCP adapter is a well-defined module, not a structural assumption) so that adoption can be incremental as the standard matures.
+
+The more durable principle: whether the specific standard is UCP or a successor, the underlying requirement for shared commerce vocabulary is real and present. Architectures that treat the vocabulary layer as pluggable will accommodate standard evolution without structural surgery.
+
+### 5.3 Capability Registries
+
+For the O(A + M) integration model to hold, agents must discover merchants without prior knowledge of their specific API endpoints. A **capability registry** is a directory service that indexes merchants by their capability surfaces, allowing agents to query for merchants supporting specific operations, capability versions, or domain profiles.
+
+Registry design involves unresolved tradeoffs:
+
+- **Centralized vs. federated**: A centralized registry is discoverable but creates a single point of trust and control. A federated registry is resilient but requires inter-registry reconciliation.
+- **Trust and certification**: How does a registry certify that a merchant's claimed capability surface satisfies the formal properties? Self-attestation is insufficient; third-party certification is costly.
+- **Versioning across registries**: If a merchant updates a capability version, registry entries must be updated consistently across federated instances.
+
+We identify capability registry design as an open problem requiring further research.
+
+---
+
+## 6. Scenario Analysis: Three-Party Interaction Without Pre-Built Integration
+
+We ground the architectural analysis in a concrete scenario. Three independent organizations with no prior relationships interact through an open market:
+
+**Organization A (Manufacturer):** A precision components manufacturer exposing a capability surface with the following capabilities: `search_products` (filtered by specification, certification, and availability), `get_pricing` (volume and contract tier based), `get_fulfillment_options` (available logistics partners), `create_order` (idempotent, with delegated credential validation), and `track_shipment` (delegated to logistics partner).
+
+**Organization B (Procurement Agent):** An autonomous enterprise procurement agent deployed by a construction firm. The agent interprets procurement intent from a human principal, queries a capability registry for qualified merchants, evaluates candidates against constraints, and executes transactions within delegated policy bounds.
+
+**Organization C (Logistics Provider):** A 3PL provider exposing a capability surface: `rate_quote`, `create_shipment` (idempotent), `track_shipment`, and `confirm_delivery`.
+
+### 6.1 Interaction Trace
+
+The procurement agent receives intent: source 200 units of component HX-440, tolerance class 2B, ISO 9001 certified, delivered in 8 days, budget $42,000.
+
+**Step 1 — Discovery.** The agent queries the capability registry for merchants supporting `search_products` with ISO certification filtering. Three candidates are returned: Organization A (full capability surface, MCP-compatible), Supplier B (legacy REST with inconsistent schemas), Supplier C (web-only interface).
+
+**Step 2 — Evaluation.** The agent invokes Organization A's `search_products` capability:
+
+```json
+{
+  "part_number": "HX-440",
+  "tolerance_class": "2B",
+  "certifications_required": ["ISO_9001"],
+  "quantity": 200
+}
+```
+
+Response:
+```json
+{
+  "available": true,
+  "available_quantity": 240,
+  "unit_price_usd": 178.00,
+  "certifications": ["ISO_9001", "RoHS"],
+  "lead_time_days": 2,
+  "price_valid_until": "2024-12-15T23:59:00Z"
+}
+```
+
+The agent attempts Supplier B's REST endpoint. The availability field returns "usually ships in 1-2 weeks" — a string where a structured value is required. Property P2 (schema completeness) is violated. The agent assigns low confidence and excludes Supplier B. Supplier C has no capability surface; it is excluded without evaluation.
+
+**Step 3 — Logistics.** The agent invokes Organization A's `get_fulfillment_options`. Organization C is returned as a certified logistics partner. The agent invokes Organization C's `rate_quote`:
+
+```json
+{
+  "origin": "facility_id_A",
+  "destination": {"city": "Denver", "state": "CO"},
+  "weight_kg": 180,
+  "delivery_deadline": "2024-12-22"
+}
+```
+
+Response: $2,400, 5-day delivery. Total: $35,600 + $2,400 = $38,000. Within budget.
+
+**Step 4 — Execution.** The agent invokes `create_order` on Organization A with an idempotency key derived from the procurement session ID. Organization A validates the delegated credentials (scoped to the construction firm's purchasing entitlements), reserves inventory, and invokes `create_shipment` on Organization C. Both invocations are recorded in an immutable audit pipeline.
+
+**Step 5 — Confirmation.** Structured confirmation is returned to the human principal: purchase order reference, certification documents, tracking identifiers, and total cost. No human touched a UI.
+
+### 6.2 Integration Complexity Analysis
+
+In this scenario, Organization B (the procurement agent) required no bespoke integration with Organization A or C. The agents and merchants share a common capability mechanism (MCP) and domain vocabulary (commerce operations). The integration cost was:
+
+- Organization A: implement capability surface (O(M) cost, paid once, serves all agents)
+- Organization C: implement capability surface (O(M) cost, paid once)
+- Organization B: implement capability registry querying and MCP invocation (O(A) cost, paid once, serves all merchants)
+
+In the bespoke model, Organization B would require separate connectors for each merchant, and each connector update would require engineering work on the agent side. The capability surface model shifts the integration cost to the merchant (implementation) and to the ecosystem (registry infrastructure), eliminating per-pair connector maintenance.
+
+### 6.3 Competitive Selection Mechanics
+
+The scenario reveals that Organization A won the business not through marketing but through interface quality. Organization B had comparable products but was excluded due to schema incompleteness — a violation of property P2. In agent-mediated markets, competitive selection operates algorithmically on interface properties rather than through human evaluation of marketing surfaces.
+
+This has a direct implication for merchant investment priorities: data quality, schema completeness, and interface reliability become first-order competitive differentiators, not infrastructure hygiene.
+
+---
+
+## 7. Open Problems
+
+### 7.1 Capability Contract Governance
+
+Publishing capability contracts creates backward compatibility obligations. A breaking change to a published contract breaks every agent that depends on it without advance notice. Capability contract governance — the processes and tooling for versioning, deprecation, and migration — is underdeveloped relative to its importance.
+
+Open problems include: automated breaking-change detection, deprecation policy enforcement, migration tooling for agents across capability versions, and governance frameworks for collaborative capability vocabulary development.
+
+### 7.2 Registry Trust and Certification
+
+A capability registry claiming that merchant X supports capability Y with property Z must provide trust guarantees. Self-attestation is insufficient. Automated conformance testing (a test suite that verifies a claimed capability surface satisfies formal properties) is a partial solution, but it requires the test suite to be maintained alongside the capability vocabulary.
+
+Third-party certification — an independent entity verifying capability surface implementations — is a viable trust model but introduces coordination costs and creates potential centralization risks.
+
+### 7.3 Agent Identity and Delegation
+
+The scenario assumes a credential delegation model: the procurement agent acts with credentials scoped to the construction firm's purchasing entitlements. The mechanics of agent identity — how agents are authenticated, how delegation is bounded, how delegated credentials are revoked — are not standardized and represent an active area of development.
+
+OAuth 2.0 delegation patterns provide a partial framework, but agent-specific concerns (long-running sessions, policy-bounded automation, cross-organizational credential passing) require extensions not present in current standards.
+
+### 7.4 Auditability and Attribution
+
+In a capability surface architecture, every invocation is attributable to a specific agent acting on behalf of a specific principal. Building auditable invocation logs that satisfy enterprise compliance requirements — immutability, access control, retention — is a platform-level concern not addressed by capability surface specifications.
+
+---
+
+## 8. Discussion
+
+### 8.1 Relationship to Existing Middleware Patterns
+
+The capability surface pattern is not novel in isolation — it is an application of well-understood middleware principles to the agent-merchant boundary. The contribution is the identification of this boundary as a site requiring the pattern, the formalization of required properties in the agent-interaction context, and the mapping to currently available protocol infrastructure.
+
+Organizations that have already invested in strong API design — versioned schemas, explicit error contracts, OpenAPI specifications — are closer to capability surface readiness than those with informal REST endpoints. The gap is primarily in discoverability (P5) and idempotency declaration (P6), both of which require deliberate addition rather than inference from existing APIs.
+
+### 8.2 Implications for Legacy Commerce Platforms
+
+Many commerce platforms were designed around assumptions that agents violate: human sessions drive transactions, UI flows are the primary integration boundary, data inconsistencies can be corrected manually. Agents expose these weaknesses at scale. Schema inconsistencies that human buyers tolerate cause systematic agent failures. Manual exception handling does not scale when automation executes continuously.
+
+The implication is not platform replacement but platform evolution: introducing capability surfaces above existing systems, improving data quality to satisfy schema completeness properties, and adding deterministic execution guarantees. This is urgent rather than optional for organizations expecting agent-mediated purchasing to grow in their markets.
+
+### 8.3 Limitations of This Analysis
+
+The scenario analysis is illustrative, not empirical. We have not measured integration cost reduction in deployed systems or quantified competitive selection effects. The formal properties we specify are necessary conditions derived from failure mode analysis; we have not proven they are sufficient.
+
+The UCP analysis is necessarily provisional — the standard is early-stage, and its evolution may change the protocol stack analysis materially.
+
+---
+
+## 9. Conclusion
+
+We have identified the agent-merchant integration problem as the principal barrier to the O(A + M) agent-commerce ecosystem and proposed capability surfaces as the mediating architectural pattern that addresses it. The pattern is grounded in formal properties derived from agent interaction failure modes, mapped to current protocol infrastructure (MCP, UCP), and illustrated through scenario analysis of a three-party transaction.
+
+The key finding is that capability surfaces shift integration cost from per-pair connectors (O(A × M)) to per-participant implementation (O(A + M)), enabling an open ecosystem where any compliant agent can interact with any compliant merchant. This is the structural precondition for agent-mediated commerce to scale beyond hand-crafted integrations.
+
+Open problems in contract governance, registry certification, agent identity, and auditability represent a research agenda for the community. The architectural pattern is tractable; the governance and trust infrastructure around it is not yet mature.
+
+---
+
+## References
+
+
+- Anthropic. (2024). Model Context Protocol Specification. *Anthropic Technical Documentation*.
+- Commerce Alliance. (2024). Universal Commerce Protocol: Draft Specification. *Commerce Alliance Working Group*.
+- Fielding, R. T. (2000). Architectural Styles and the Design of Network-based Software Architectures. *Doctoral dissertation, UC Irvine*.
+- Hohpe, G., & Woolf, B. (2003). *Enterprise Integration Patterns*. Addison-Wesley.
+- OpenAI. (2023). Function Calling in the Chat Completions API. *OpenAI Documentation*.
+- Papazoglou, M. P. (2003). Service-Oriented Computing: Concepts, Characteristics and Directions. *Proceedings of the 4th International Conference on Web Information Systems Engineering*.

@@ -352,6 +352,13 @@ a:hover {
   color: var(--color-gray-300);
 }
 
+[data-theme='dark'] .tag-filter-btn.active,
+[data-theme='dark'] .tag-filter-btn:hover {
+  background: #aa0000;
+  border-color: #aa0000;
+  color: white;
+}
+
 /* Sort buttons */
 .sort-controls {
   display: flex;
@@ -385,6 +392,13 @@ a:hover {
   color: var(--color-gray-300);
 }
 
+[data-theme='dark'] .sort-btn.active,
+[data-theme='dark'] .sort-btn:hover {
+  background: #aa0000;
+  border-color: #aa0000;
+  color: white;
+}
+
 @media (max-width: 768px) {
   .articles-controls {
     flex-direction: column;
@@ -404,6 +418,10 @@ a:hover {
   vertical-align: middle;
 }
 
+[data-theme='dark'] .series-badge {
+  background: #aa0000;
+}
+
 /* Article card meta row */
 .article-card-meta {
   display: flex;
@@ -413,6 +431,10 @@ a:hover {
   margin-top: 12px;
   font-size: 0.85em;
   color: var(--color-gray-500);
+}
+
+[data-theme='dark'] .article-card-meta {
+  color: var(--color-gray-300);
 }
 
 /* Inline tag chips inside article cards */

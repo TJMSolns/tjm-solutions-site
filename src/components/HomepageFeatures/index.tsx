@@ -13,7 +13,7 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/commerce-strategy.jpg',
     description: (
       <>
-        Need based evaluation of platforms, tools, processes and systems related to commerce for new installs, migrations, upgrades and enhancements. Opportunistic enhancement via adoption of new search, marketplace and intelligent systems.
+        Need based evaluation of platforms, tools, processes and systems related to commerce for new installs, migrations, upgrades and enhancements. Opportunistic enhancement via adoption of new search, marketplace and intelligent systems. Transition to agentic commerce.
       </>
     ),
   },
@@ -22,7 +22,7 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/digital-transformation.jpg',
     description: (
       <>
-        Align technical road map to business objectives. Deploy microservices to modernize while reducing technical debt. Optimize resources according to fit & function. Adoption of headless/api-first & content driven strategies.
+        Align technical road map to business objectives. Deploy microservices to modernize while reducing technical debt. Optimize resources according to fit & function. Adoption of headless/API-first & content driven strategies. Incorporation of GenAI, RAG, and Knowledge Bases into current processes.
       </>
     ),
   },
@@ -40,7 +40,7 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/workshop-management.jpg',
     description: (
       <>
-        Organize and drive sessions with stakeholders to manage requirement discovery & elaboration, system mapping, gap/overlap analysis. Analyze organizational agility & readiness. Explore benefits and practical approaches to msa adoption.
+        Organize and drive sessions with stakeholders to manage requirement discovery & elaboration, system mapping, gap/overlap analysis. Analyze organizational agility & readiness. Explore benefits and practical approaches to MSA, ML/AI Agentic frameworks.
       </>
     ),
   },

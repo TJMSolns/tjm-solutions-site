@@ -57,6 +57,14 @@
   border-color: #374151;
 }
 
+[data-theme='dark'] .engagementCard h3 {
+  color: #ff4d4d;
+}
+
+[data-theme='dark'] .amount {
+  color: #ff4d4d;
+}
+
 .engagementCard:hover {
   border-color: #c00000;
   box-shadow: 0 8px 24px rgba(192, 0, 0, 0.15);

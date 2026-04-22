@@ -1,0 +1,287 @@
+---
+title: "Delegating the Deal: Human Authority, Accountability, and Oversight in Agent-Mediated Commerce"
+description: "An examination of what changes when humans delegate purchasing authority to autonomous software agents, and the accountability, oversight, and trust infrastructure required for agent-mediated commerce to function within organizational contexts."
+date: 2026-04-21
+authors: [tony]
+tags: [ai, strategy, architecture, paper, agent-commerce]
+image: /img/experience-engineering.jpg
+---
+
+## Abstract
+
+Autonomous software agents are increasingly executing commercial transactions on behalf of human principals — discovering suppliers, evaluating offers, and placing orders without human involvement at each decision point. This paper examines the human factors dimension of this transition: what changes when humans delegate purchasing authority to agents, how the cooperative structure of commerce changes when one or more parties to a transaction is a software system, and what oversight, accountability, and trust mechanisms are required for agent-mediated commerce to function within organizational contexts.
+
+We analyze a three-party transaction scenario (human principal, procurement agent, manufacturer) to identify the moments of delegation, the accountability gaps that delegation creates, and the design requirements for capability surfaces — the architectural interface layer through which agents interact with merchants — that support rather than undermine human oversight. We argue that the technical architecture of agent-commerce systems encodes assumptions about human authority that deserve explicit examination, and that CSCW research has important contributions to make in designing systems where automation is a tool of human delegation rather than a replacement for human judgment.
+
+<!-- truncate -->
+
+## 1. Introduction
+
+In 1994, a novel form of delegation entered commercial practice: web browsers. For the first time, consumers could initiate commercial transactions from their homes without speaking to a salesperson. The nature of what was delegated — to the browser, and through it to the merchant's website — was narrow: displaying information, submitting a form, processing a payment. Humans retained full decision authority.
+
+Over the following decades, automation expanded into recommendation algorithms (which products to show), pricing systems (what price to offer), and logistics routing (how to ship). Each expansion delegated a narrower, more operational decision to software, while humans retained the final "buy" decision.
+
+The current transition is qualitatively different. Autonomous procurement agents are delegated not narrow operational decisions but the full procurement act: intent interpretation, supplier discovery, comparative evaluation, and transaction execution. The human is upstream (setting the intent) and downstream (receiving the confirmation), but not involved in the middle — which is where most of the decisions are made.
+
+This is, in the truest sense, a delegation of commercial authority. The agent acts on the principal's behalf, binding the principal to contracts. The commercial and legal implications are non-trivial, and the social and organizational implications are significant and underexplored.
+
+This paper contributes:
+
+1. A characterization of what is delegated in agent-mediated commerce and what is retained by human principals.
+2. An analysis of the accountability gaps that this delegation creates, and the organizational contexts in which those gaps are most consequential.
+3. Design recommendations for capability surfaces — the technical interface through which agents interact with merchants — that support human oversight and organizational accountability.
+4. An agenda for CSCW research on human-agent cooperation in commercial contexts.
+
+---
+
+## 2. Background
+
+### 2.1 Delegation and Agency in Organizations
+
+Organizational theory has long studied delegation: the process by which principals transfer authority to agents to act on their behalf [Jensen and Meckling 1976]. Principal-agent theory identifies the central problem of delegation as information asymmetry: the agent has information that the principal does not, which the agent may use opportunistically. Organizational design creates monitoring, incentive, and accountability structures to align agent behavior with principal interests.
+
+These frameworks were developed for human-to-human delegation relationships. Delegating authority to software introduces a different asymmetry: the agent does not have opportunistic self-interest, but it may misinterpret principal intent, apply constraints incorrectly, or respond to edge cases in ways the principal would not endorse. The accountability problem is not moral hazard but specification error — and specification error in automated systems can produce harms at scale before being detected.
+
+### 2.2 Human-Computer Interaction in Commerce
+
+HCI research has examined human decision-making in online commerce extensively: how recommendation systems influence choice [Rashid et al. 2002], how interface design affects purchase behavior [Gefen et al. 2003], and how trust develops between humans and commercial platforms [Pavlou 2003]. This body of work assumes human decision-making as the primary object of study.
+
+Research on human-automation interaction [Parasuraman and Riley 1997; Sheridan 2002] examines how humans share control with automated systems in safety-critical domains: aviation, process control, medical devices. Key findings include automation bias (overreliance on automated decisions), mode confusion (uncertainty about what the system is doing), and complacency (reduced vigilance when automation is present). These findings transfer to commercial agent contexts with important modifications: commercial stakes are different from safety stakes, organizational contexts vary widely, and the commercial domain has regulatory structures that safety-critical domains do not.
+
+### 2.3 AI Agents and Delegation
+
+Research on AI agents in organizational contexts is growing but relatively recent. Studies of RPA (Robotic Process Automation) deployments document organizational changes that result from automating previously human tasks [van der Aalst et al. 2018]. Research on conversational AI assistants examines trust calibration and appropriate reliance [Cai et al. 2019]. Work on AI decision support examines how humans integrate algorithmic recommendations into their own decision-making [Dietvorst et al. 2015].
+
+Less examined is the full delegation case: agents that act autonomously without a human in the loop at each decision point. This is the design question that agent-mediated commerce raises, and it is the focus of this paper.
+
+---
+
+## 3. Anatomy of Delegation in Agent-Mediated Commerce
+
+### 3.1 A Concrete Delegation Structure
+
+Consider a plausible deployment scenario: an engineering firm deploys a procurement agent to automate the sourcing of standard industrial components. The firm's procurement manager configures the agent with:
+
+- **Intent specification**: What to buy (product specifications, certification requirements)
+- **Policy constraints**: Constraints on how to buy (approved supplier list, budget thresholds per transaction, required approval above threshold)
+- **Authority bounds**: How much authority is delegated (automatic execution below $50,000; request human approval above)
+- **Reporting requirements**: What the human principal receives (confirmation with structured data; exceptions requiring human attention)
+
+The procurement manager is the principal. The procurement agent is the delegate. The transaction with the manufacturer is the commercial act.
+
+Within this structure, several distinct decisions are delegated:
+
+| Decision | Delegated to Agent? | Human Role |
+|---|---|---|
+| What to buy (specification) | No — set by principal | Initiating authority |
+| Which suppliers to consider | Partially — agent queries registry | May set approved supplier list |
+| How to evaluate suppliers | Yes — algorithmic evaluation | Policy bounds only |
+| Which supplier to select | Yes — agent selects based on evaluation | Exception review only |
+| What price to accept | Partially — within policy bounds | Sets the bounds |
+| When to execute vs. escalate | Partially — threshold-based | Sets thresholds |
+| Post-purchase management | Yes — agent coordinates tracking | Receives confirmation |
+
+The delegation is partial and bounded. The human retains setting authority (what policies govern the agent) and exception authority (what the agent escalates). The agent has execution authority within those bounds.
+
+### 3.2 What Is Actually Delegated
+
+The critical insight is that what appears to be a simple instruction ("buy 200 units of HX-440") actually delegates an enormous amount of evaluation work:
+
+- **Supplier discovery**: Which suppliers exist, which are discoverable through the agent's registry, which meet the stated criteria
+- **Comparative evaluation**: What makes one supplier better than another within the constraint set
+- **Timing**: Whether to execute now or wait (price signals, availability forecasts)
+- **Risk assessment**: How much trust to place in a new vs. established supplier, how to weight delivery reliability vs. price
+- **Exception handling**: What to do when no supplier meets all constraints (relax a constraint? Escalate? Defer?)
+
+None of these decisions are fully specified in the original instruction. The agent resolves them through its evaluation function — an implementation that encodes choices about weighting, thresholds, and fallback behavior. The human principal typically does not audit these choices at transaction time; they are encoded in the agent's design.
+
+### 3.3 The Accountability Gap
+
+When a human purchasing agent makes a procurement decision, accountability is legible: the person is identifiable, their reasoning can be examined, and organizational processes (approval workflows, audit trails) can review the decision. When a software agent makes the same decision, accountability is distributed across:
+
+- The principal who set the intent
+- The team that implemented the evaluation function
+- The organization that configured the policy constraints
+- The data providers whose information the agent used
+
+If a procurement decision turns out to be wrong — the product was out of specification, the supplier was unreliable, the price was above market — attributing accountability to the right party requires visibility into the agent's decision process that may not exist.
+
+This accountability gap is not purely technical. It is a design gap: accountability infrastructure must be built into agent-commerce systems explicitly, or it will be absent. The technical mechanism for this — the audit pipeline at the capability surface layer — is necessary but not sufficient; organizational processes must also be designed to make use of audit records.
+
+---
+
+## 4. Capability Surfaces as a Human-Oversight Interface
+
+### 4.1 The Technical Architecture
+
+A capability surface is the interface through which agents interact with merchants: a set of named, typed, versioned operations that agents invoke to search products, check availability, get pricing, and execute transactions. The capability surface is the boundary at which automation meets commercial activity.
+
+From a human oversight perspective, capability surfaces are significant because they are the site at which:
+
+- **Authorization is enforced**: Delegated credentials constrain which operations the agent can perform and on whose behalf
+- **Audit records are created**: Every invocation is recorded, timestamped, and attributed to an agent and principal
+- **Policy is applied**: Transaction constraints (budget thresholds, approved suppliers) can be checked at invocation time
+- **Escalation can be triggered**: An invocation that exceeds configured thresholds can be held for human approval before execution
+
+This makes capability surface design a human-computer interaction design problem as much as an API design problem. The choices made in capability surface design encode assumptions about the human oversight relationship.
+
+### 4.2 Design Dimensions for Human Oversight Support
+
+**Dimension 1: Authorization granularity.** What is the minimum unit of authority that can be delegated and constrained? A coarse authorization model (the agent can do anything within the merchant's capability surface) provides maximum automation but minimum oversight. A fine-grained model (the agent is authorized for search and evaluation, but order creation requires re-authorization) provides maximum oversight but may be impractical for high-frequency automation.
+
+The right granularity depends on organizational context: a $42,000 automated industrial purchase is categorically different from a $42,000 consumer purchase in terms of organizational risk tolerance, approval requirements, and accountability expectations.
+
+**Dimension 2: Explainability of evaluation.** When an agent selects Supplier A over Supplier B, can the human principal understand why? This requires the agent to produce structured evaluation records: which suppliers were considered, what signals were used in evaluation, what the comparative scores were, what constraints were binding.
+
+Capability surfaces can support this by returning structured evaluation metadata alongside operational responses — not just "here is the price" but "here is the price, the availability signal, the lead time commitment, and the confidence score derived from historical reliability."
+
+**Dimension 3: Exception surface design.** When should the agent escalate to human judgment rather than executing autonomously? Current practice uses simple thresholds (transaction value, supplier novelty). But the space of exceptions is richer: a supplier who meets all formal constraints but is new to the approved list, a delivery timeline that is technically within bounds but unusually tight for the situation, a price that is within budget but significantly higher than recent comparable transactions.
+
+Designing the exception surface requires understanding the decision types that human principals want to retain, even within formally bounded automation. This is an empirical HCI question that should be studied in organizational contexts, not assumed.
+
+**Dimension 4: Confirmation and legibility.** The human principal receives a confirmation when an agent-executed transaction completes. What information must that confirmation contain to be actionable for oversight purposes? Not just "order placed" but: which supplier was selected and why, what alternatives were considered, what the full cost breakdown is, what the key commitments are (lead time, certification, price lock), and what exceptions or anomalies (if any) occurred during evaluation.
+
+Confirmation legibility is a design challenge because agents operate faster than humans can review. If an agent executes 50 transactions per day, a confirmation format that requires five minutes to review per transaction is not practical. Tiered confirmations — brief for routine, detailed for exceptions or high-value — are a design pattern worth examining.
+
+### 4.3 The Audit Pipeline as Oversight Infrastructure
+
+The audit pipeline at the capability surface layer — logging every invocation with agent identity, parameters, results, and timing — is the technical precondition for human oversight after the fact. But audit records are not oversight; they are the raw material for oversight. Designing oversight processes that make use of audit records is an organizational design problem.
+
+Key design questions for audit-based oversight:
+
+- **What does anomaly detection look like in this context?** Not security anomalies (unusual login patterns) but procurement anomalies: an agent that consistently selects the highest-price supplier meeting constraints, or one that consistently selects new suppliers over established ones, or one whose selections deviate systematically from human purchasing patterns.
+
+- **Who reviews the audit trail, and under what conditions?** Routine reviews are resource-intensive if required for all transactions. Risk-stratified review — higher scrutiny for novel suppliers, high-value transactions, or unusual patterns — is more practical but requires defining what "unusual" means in organizational context.
+
+- **What is the temporal horizon of review?** An agent that makes individually defensible decisions that collectively produce a problematic outcome (systematically overpaying, concentrating risk in a single supplier) may not be detectable through per-transaction review. Portfolio-level audit is required.
+
+---
+
+## 5. Cooperative Structure Changes
+
+### 5.1 Commerce as a Cooperative Activity
+
+CSCW research has examined commerce as a cooperative activity — the ways that buyers and sellers negotiate, communicate, and establish relationships [Olson et al. 2002]. Even in digital commerce, human-to-human interaction shapes commercial relationships: a procurement manager who has a good experience with a supplier's sales team will favor that supplier in future evaluations; a seller who understands a customer's operational constraints will tailor their offering accordingly.
+
+Agent-mediated commerce changes this cooperative structure. The agent does not have a relationship with the supplier's sales team. It does not understand organizational context beyond what is encoded in its evaluation function. It does not communicate preferences informally or negotiate around rigid policy constraints. The interaction is transactional, not relational.
+
+### 5.2 Relationship Initialization Without Human Interaction
+
+In the scenario analyzed in this paper, a manufacturer and a buyer's organization transact without any prior relationship, without human negotiation, and without the human-to-human interaction that typically initializes a commercial relationship. The transaction is successful — the product is sourced, the delivery is arranged, the audit trail is complete — but the relationship remains thin.
+
+This has practical implications:
+
+- **Exception handling**: When the buyer's agent has an unusual requirement that falls outside the capability surface's standard operations, there is no relationship through which to resolve it. Escalation paths (what happens when the agent cannot handle the situation?) must be designed into the system.
+
+- **Dispute resolution**: If a transaction goes wrong (wrong product delivered, shipment delayed), dispute resolution typically involves human negotiation. Agent-mediated commerce needs defined escalation paths that route disputes to human parties.
+
+- **Relationship development**: Repeat transactions build commercial relationships in human-to-human commerce. What is the equivalent in agent-mediated commerce? Reputation scores, fulfillment track records, and certification histories are agent-legible relationship signals, but they are thin substitutes for the trust that develops through human interaction.
+
+### 5.3 Human Roles That Persist
+
+Not all commercial work is automated in an agent-mediated model. Human roles that persist include:
+
+**Strategic supplier relationships**: High-value, long-term supplier relationships that involve custom terms, joint development, or strategic dependencies require human relationship management. Agents are not well-suited to multi-year supplier partnership development.
+
+**Novel or exceptional requirements**: Requirements that fall outside the capability surface's standard operations — custom product specifications, unusual delivery constraints, exception approvals — require human involvement. Designing clear escalation paths to human procurement staff is essential.
+
+**Exception resolution and dispute management**: When something goes wrong, human judgment and negotiation are typically required. The agent can detect the problem and escalate; resolving it usually requires human interaction.
+
+**Governance and configuration**: Someone must define the policies that govern agent behavior, maintain the approved supplier list, set budget thresholds, and review agent performance. This is a human role that expands as agent use scales — governance work grows with automation.
+
+---
+
+## 6. Trust, Accountability, and the Social Contract of Delegation
+
+### 6.1 Trust in Agent Judgment
+
+Research on trust in automated systems identifies several determinants of appropriate reliance: perceived competence (does the system make accurate decisions?), transparency (can I understand why it made a decision?), and controllability (can I override or correct it?) [Lee and See 2004].
+
+For procurement agents, trust calibration is complicated by the fact that competence is hard to observe before deploying the agent at scale. An agent that performs well on routine procurement may fail on edge cases that occur rarely but matter significantly. Organizations that deploy procurement agents without adequate mechanisms for detecting miscalibrated trust are vulnerable to systematic errors that accumulate before they become visible.
+
+### 6.2 Accountability Without Blameworthiness
+
+The conventional accountability structure in organizations assigns blame to identifiable humans for bad outcomes. When a human purchasing agent makes a bad decision, accountability is legible. When a software agent makes a bad decision, the question "who is accountable?" has no simple answer. The implementers? The configurers? The principal who delegated authority?
+
+This accountability diffusion is not merely a practical problem — it is a problem for organizational learning. Organizations learn from bad decisions by tracing what went wrong, who made which judgment, and what should change. When decisions are made by software, the audit trail records what happened but not why (in a sense that organization members can examine and learn from). Building explanatory infrastructure into capability surfaces — not just logging what happened but recording the evaluation logic that produced each decision — is a design requirement for organizational learning.
+
+### 6.3 The Social Contract of Agent Authorization
+
+When an organization deploys a procurement agent, it is making a social claim to its counterparties: "This agent acts on our behalf; our organization stands behind its actions." This is a significant commitment. The manufacturer in our scenario receives an order from an autonomous agent; it ships the product based on the delegated authority represented in the agent's credentials.
+
+This social contract requires:
+
+- **Verifiable delegation**: The merchant must be able to verify that the agent is authorized to act for the principal, and to what extent. This is a technical requirement (delegation credentials) with a social dimension (the principal must actually stand behind the authority the credential represents).
+
+- **Principal accountability**: If the agent executes a transaction outside its delegated authority — placing an order above the configured budget limit due to a policy enforcement error — the principal cannot disclaim accountability. The merchant acted in good faith on a credential the principal issued.
+
+- **Revocation mechanisms**: Organizations must be able to revoke agent authority when agents are misconfigured, compromised, or when the deployment is terminated. This is a technical requirement that maps to a social obligation: an organization that cannot revoke agent authority is not in control of its agents.
+
+---
+
+## 7. Research Agenda
+
+The analysis above generates a CSCW research agenda for human-agent commerce:
+
+**RQ1 — Delegation boundary design.** What delegation boundaries do human principals in organizational contexts actually want? Where do they want to retain decision authority, and where are they comfortable with full automation? This is an empirical question that requires studies in real organizational procurement contexts, across industries with different risk profiles.
+
+**RQ2 — Exception surface calibration.** How should exception surfaces (the conditions that trigger escalation to human review) be designed? What is the consequence of calibrating too conservatively (too many escalations, reducing automation value) vs. too liberally (too few escalations, enabling errors)?
+
+**RQ3 — Confirmation legibility.** What information in a transaction confirmation is required for effective human oversight? How should confirmations be designed to support oversight without creating information overload? What tiering strategies work for high-frequency vs. low-frequency, high-value transactions?
+
+**RQ4 — Organizational learning from agent decisions.** How do organizations learn from patterns in agent decisions? What audit infrastructure and review processes enable the detection of systematic errors that are invisible at the per-transaction level?
+
+**RQ5 — Trust calibration over time.** How do human principals calibrate trust in procurement agents over time? What signals of agent competence or failure lead to recalibration? How do organizations avoid automation complacency (overreliance on agents whose performance has drifted)?
+
+**RQ6 — Dispute resolution in agent-mediated commerce.** When an agent-executed transaction goes wrong, how do the involved organizations resolve the dispute? What human-to-human interaction is required, and how is it structured given that the "negotiation" was automated?
+
+**RQ7 — Social and labor implications.** What happens to human procurement work as agent automation expands? Where does work disappear and where does it transform (into governance, exception management, relationship management)? What skills are required of human procurement staff in an agent-augmented function?
+
+---
+
+## 8. Design Recommendations
+
+Based on the analysis, we offer design recommendations for capability surface developers, agent system designers, and organizational deployers:
+
+**For capability surface designers:**
+- Build audit records that capture evaluation rationale, not just invocation parameters and results
+- Design authorization models at the granularity of human oversight requirements, not API convenience
+- Provide structured exception signals that give escalation triggers legible context for human reviewers
+- Include confirmation schemas that satisfy organizational oversight requirements by default
+
+**For agent system designers:**
+- Treat explainability as a first-class requirement: the agent's evaluation record should be legible to the human principals who need to review it
+- Design escalation paths as carefully as the happy path: what happens when the agent cannot resolve a situation should be well-specified, not an afterthought
+- Provide organizational visibility tools: dashboards that surface aggregate patterns in agent decisions, not just individual transaction confirmations
+
+**For organizational deployers:**
+- Define delegation boundaries before deployment, not during incident response
+- Design governance processes (periodic review, anomaly detection, audit sampling) before scaling automation
+- Maintain human procurement expertise in exception resolution and supplier relationship management; do not assume these competencies will persist without deliberate retention
+
+---
+
+## 9. Conclusion
+
+Agent-mediated commerce is a significant change in how commercial authority is delegated within and between organizations. The transition is not merely technical — it changes the cooperative structure of commercial interaction, the accountability relationships within organizations, and the social contracts between commercial counterparties.
+
+CSCW research is well-positioned to examine these changes empirically and to inform the design of systems that support human oversight, organizational learning, and appropriate trust calibration in agent-commerce deployments. The technical architecture of capability surfaces — the interface layer through which agents interact with merchants — encodes assumptions about human authority that deserve explicit examination and are amenable to design interventions.
+
+The central design principle we advance is this: automation in commerce should be a tool of human delegation, not a displacement of human authority. The difference is accountability infrastructure — audit records, explainability mechanisms, escalation paths, and governance processes — built into the system from the start. Without this infrastructure, agent-mediated commerce creates accountability gaps that become visible only when something goes wrong, and visible at a scale proportional to the automation's reach.
+
+---
+
+## References
+
+
+- Cai, C. J., Winter, S., Steiner, D., Wilcox, L., & Terry, M. (2019). "Hello AI": Uncovering the Onboarding Needs of Medical Clinicians for Human-AI Collaborative Decision-Making. *CSCW*.
+- Dietvorst, B. J., Logg, J. M., & Logg, J. M. (2015). Algorithm Aversion: People Erroneously Avoid Algorithms After Seeing Them Err. *Journal of Experimental Psychology: General*, 144(1).
+- Gefen, D., Karahanna, E., & Straub, D. W. (2003). Trust and TAM in Online Shopping. *MIS Quarterly*, 27(1).
+- Jensen, M. C., & Meckling, W. H. (1976). Theory of the Firm: Managerial Behavior, Agency Costs and Ownership Structure. *Journal of Financial Economics*, 3(4).
+- Lee, J. D., & See, K. A. (2004). Trust in Automation: Designing for Appropriate Reliance. *Human Factors*, 46(1).
+- Olson, G. M., Malone, T. W., & Smith, J. B. (Eds.). (2001). *Coordination Theory and Collaboration Technology*. Lawrence Erlbaum.
+- Parasuraman, R., & Riley, V. (1997). Humans and Automation: Use, Misuse, Disuse, Abuse. *Human Factors*, 39(2).
+- Pavlou, P. A. (2003). Consumer Acceptance of Electronic Commerce. *MIS Quarterly*, 27(1).
+- Rashid, A. M., Albert, I., Cosley, D., Lam, S. K., McNee, S. M., Konstan, J. A., & Riedl, J. (2002). Getting to Know You: Learning New User Preferences in Recommender Systems. *IUI 2002*.
+- Sheridan, T. B. (2002). *Humans and Automation: System Design and Research Issues*. HFES.
+- van der Aalst, W. M. P., Bichler, M., & Heinzl, A. (2018). Robotic Process Automation. *Business & Information Systems Engineering*, 60(4).

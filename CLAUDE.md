@@ -1,6 +1,27 @@
-# CLAUDE.md
+# tjm-solutions-site
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+TJM Solutions LLC corporate website — Docusaurus 3, deployed at https://www.tjm.solutions.
+
+## Session Orientation
+
+Read before working:
+1. `docs/agents/CONTEXT-KERNEL.md` — current phase and non-negotiables
+2. `docs/agents/WORK-QUEUE.md` — active work items
+
+## Available Skills
+
+| Skill | Purpose |
+|-------|---------|
+| `/next` | Pick next unblocked WORK-QUEUE item and drive to completion |
+| `/status` | One-screen project status digest |
+| `/handoff` | End-of-session: write HANDOFF-LEDGER, update WORK-QUEUE |
+| `/decide adr\|pol\|pdr <title>` | Record a durable decision |
+| `/groom` | Review and reorder WORK-QUEUE |
+| `/health` | Audit methodology infrastructure |
+| `/retro` | Structured retrospective → LESSONS-LEARNED / POLs |
+| `/audit <path>` | Ad-hoc governance review of any artifact |
+
+---
 
 ## Commands
 

@@ -1,5 +1,9 @@
 # tjm-solutions-site — Context Kernel
 
+## Charter
+
+**Mission:** To support TJM Solutions LLC's commercial growth by providing the corporate website that establishes market presence, publishes thought leadership (including the FP series), and presents TJM's packaged offers to prospective clients.
+
 ## What This Is
 
 TJM Solutions LLC corporate website. Built on Docusaurus 3, deployed to GitHub Pages at

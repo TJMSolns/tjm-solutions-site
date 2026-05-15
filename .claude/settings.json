@@ -1,13 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run start)",
-      "Bash(npm run build)",
-      "Bash(npm run typecheck)",
-      "Bash(npm run serve)",
-      "Bash(npm run stop)",
-      "Bash(npm run wcag:check)",
-      "Bash(npm run clear)"
+      "Bash(*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Edit",
+      "Write"
     ]
   },
   "hooks": {

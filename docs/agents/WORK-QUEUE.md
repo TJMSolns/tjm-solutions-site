@@ -8,7 +8,6 @@
 |----|------|-------|--------|-----------|
 | WQ-016 | Create DT-2 offer detail page at `/services/kcs-knowledge-base` — React/MDX page in `src/pages/`; content from DT-2 offer doc (problem statement, value prop, deliverables table, duration, pricing-deferred note); link to case study blog post when published | Claude | Queued | PO-007 (case study draft) |
 | WQ-017 | Add "Learn more → KCS Knowledge Base" link to Digital Transformation services card on homepage; points to WQ-016 page; does NOT require ≥3 offers; does NOT close WQ-006 | Claude | Queued | WQ-016 |
-| WQ-014 | SEO Group 3: article og:type + BlogPosting JSON-LD via BlogPostPage swizzle [PROPOSED] | Claude | Proposed | — | Add `og:type: article`, `article:published_time`, `article:author` per blog post; add BlogPosting JSON-LD. Requires swizzling `BlogPostPage` theme component — creates maintenance burden, so do intentionally. |
 | WQ-002 | Complete remaining parts of FP series | Tony | Queued | — |
 | WQ-005 | Enhance Commerce Strategy card: list ≥3 battle-tested CS offers with links | Claude | Blocked | ≥3 CS offers battle-tested — PDR-001 (packaged-offers org) |
 | WQ-006 | Enhance Digital Transformation card: list ≥3 battle-tested DT offers with links | Claude | Blocked | ≥3 DT offers battle-tested — PDR-001 (packaged-offers org) |
@@ -29,6 +28,7 @@
 | WQ-001 | Fill in 4 stub pre-2026 articles (content fetched from Medium, truncate markers added) | `blog/2021-03-14-*.mdx`, `2021-07-07-*.mdx`, `2022-12-16-*.mdx`, `2022-12-20-*.mdx` — 2026-05-16 |
 | WQ-010 | Testimonials / social-proof section | Dropped — no testimonials available |
 | WQ-013 | Update rates page to match rate card + add Strategy tier | `src/pages/rates.tsx`, `rates.module.css` — commit 70f51be — 2026-05-16 |
+| WQ-014 | SEO Group 3: og:type + BlogPosting JSON-LD on all 21 articles (no swizzle) | All `blog/*.mdx` — commit 8289b95 — 2026-05-16 |
 | WQ-011 | Set up automated link-check CI | `.github/workflows/ci.yml` — commit 2d4b72b — 2026-05-16 |
 | WQ-008 | Install GitHub App on repo | Consolidated to WQ-P4-023 (org WQ) — 2026-05-15 |
 

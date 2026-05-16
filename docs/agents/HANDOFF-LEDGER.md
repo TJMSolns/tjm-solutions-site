@@ -4,6 +4,30 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-004 — 2026-05-16 — Article SEO: og:type + BlogPosting JSON-LD
+
+**Session:** Tony + Claude (/next autonomous run, continued)
+
+**What happened:**
+- All 21 `blog/*.mdx` updated — `og:type: article`, `article:published_time`, `article:author`, and `BlogPosting` JSON-LD injected via each article's `<head>` block. No swizzle used: JSON-LD delivered as a JSX template-literal script child `{``...``}` inside the existing `<head>` element. The 17 Medium-canonical articles retain their Medium canonical; the 4 original April 2026 papers gained a self-canonical in the same pass.
+- CONTEXT-KERNEL non-negotiable ("No Docusaurus swizzle") fully honored — resolved by using per-article `<head>` blocks rather than theme component override.
+- Python script applied the change uniformly across all 21 files in one pass.
+- Deployed to www.tjm.solutions — commit 8289b95.
+
+**Decisions made:** none formally recorded; the swizzle-free approach is now the established pattern for per-article head injection.
+
+**Harvest candidates:** per-article `<head>` block pattern for JSON-LD + og meta — reusable for any Docusaurus blog without swizzle, applicable to belsouri or other Docusaurus sites.
+
+**Open items carried forward:**
+- WQ-016: DT-2 offer detail page — blocked on PO-007 (case study draft)
+- WQ-017: DT card "Learn more" link — blocked on WQ-016
+- WQ-002: FP series (Tony's writing)
+- WQ-005/006/007/003/009: Blocked on PDR-001
+
+**Next owner:** Tony — queue is exhausted for Claude. PO-007 (case study draft) unblocks WQ-016/017.
+
+---
+
 ## HL-003 — 2026-05-16 — Rates update + link-check CI
 
 **Session:** Tony + Claude (/next autonomous run)

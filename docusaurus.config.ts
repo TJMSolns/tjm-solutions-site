@@ -128,6 +128,11 @@ const config: Config = {
           position: 'left',
         },
         {
+          to: '/mdslides',
+          label: 'MD-Slides',
+          position: 'left',
+        },
+        {
           href: 'https://github.com/TJMSolns',
           label: 'GitHub',
           position: 'right',
@@ -196,7 +201,17 @@ const config: Config = {
   },
 
   // === Plugins ===
-  plugins: [],
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'mdslides',
+        path: 'mdslides-docs',
+        routeBasePath: 'mdslides/docs',
+        sidebarPath: undefined,
+      },
+    ],
+  ],
 
   // === Additional Themes ===
   themes: ['@docusaurus/theme-mermaid'],

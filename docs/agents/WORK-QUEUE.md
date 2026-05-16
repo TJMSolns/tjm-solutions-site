@@ -16,7 +16,6 @@
 | WQ-009 | Create individual offer detail pages (one per offer at Level 1+) [PROPOSED] | Claude | Proposed | WQ-005 / WQ-006 / WQ-007 — offer pages needed before card links can be wired. Rationale: card enhancements link to detail pages; pages must exist before cards go live. |
 | WQ-010 | Add testimonials / social-proof section to homepage [PROPOSED] | Tony + Claude | Proposed | — | Rationale: trust signal gap identified; independent of offer readiness. |
 | WQ-011 | Set up automated link-check CI (verify internal + offer links don't 404) [PROPOSED] | Claude | Proposed | — | Rationale: offer detail pages and card links will multiply; catching regressions early is low-cost. |
-| WQ-012 | Add mdslides product section: marketing page + multi-instance docs plugin [PROPOSED] | Claude | Proposed | mdslides release — blocked until mdslides ships. Implementation: (1) add second `@docusaurus/plugin-content-docs` instance named `mdslides` in `docusaurus.config.ts`, rooted at `mdslides-docs/`; (2) create `src/pages/mdslides.tsx` marketing page at `/mdslides`; (3) scaffold `mdslides-docs/` with user docs + contributing sections; (4) wire navbar entry. |
 | WQ-013 | Update rates page to match rate card + add Strategy tier [PROPOSED] | Claude | Proposed | — | Restructure `rates.tsx` to align with actual rate card: Remote Consulting $250/hr · On-Site $300/hr+expenses; Remote Daily $1,800 (≤8hr) · On-Site $2,200+expenses; Strategy Remote $350/hr · On-Site $400/hr; Monthly Retainer $3,000 (≤16hr); Quarterly $8,000 (≤48hr); Annual $25,000 (≤192hr). All addl hours at tier hourly rate. Update JSON-LD serviceSchema to match. Also add remote/on-site distinction throughout. |
 
 ---
@@ -28,6 +27,7 @@
 | WQ-000 | Apply org rails (skills, hooks, docs/agents/, settings.json) | `tjm-solutions-site/.claude/` — HL-001 |
 | WQ-004 | SEO Groups 1+2: sitemap priorities, canonical tags, OG image dimensions/alt, title separator | `docusaurus.config.ts`, `src/pages/index.tsx`, `about.tsx`, `rates.tsx` — 2026-05-16 |
 | WQ-015 | SEO Group 4: tag taxonomy sweep — dropped blog/paper/mcp, absorbed headless-commerce+concurrency, renamed agent-commerce→agentic-commerce | All 21 `blog/*.mdx` files + `CLAUDE.md` — 2026-05-16 |
+| WQ-012 | MD-Slides site section: marketing page, multi-instance docs plugin, 8 scaffolded doc pages, navbar entry | `src/pages/mdslides.tsx`, `mdslides-docs/`, `docusaurus.config.ts` — 2026-05-16 |
 | WQ-008 | Install GitHub App on repo | Consolidated to WQ-P4-023 (org WQ) — 2026-05-15 |
 
 ---

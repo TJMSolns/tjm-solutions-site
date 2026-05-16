@@ -119,6 +119,80 @@
   color: #d1d5db;
 }
 
+.rateRows {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.rateRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rateRow:first-child {
+  border-top: none;
+}
+
+[data-theme='dark'] .rateRow {
+  border-color: #374151;
+}
+
+.rateLabel {
+  font-size: 0.8em;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+[data-theme='dark'] .rateLabel {
+  color: #9ca3af;
+}
+
+.rateValue {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.rowAmount {
+  font-size: 1.6em;
+  color: #c00000;
+  font-weight: 800;
+}
+
+[data-theme='dark'] .rowAmount {
+  color: #ff4d4d;
+}
+
+.rateNote {
+  font-size: 0.75em;
+  color: #6b7280;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+[data-theme='dark'] .rateNote {
+  color: #9ca3af;
+}
+
+.overageNote {
+  font-size: 0.8em;
+  color: #6b7280;
+  text-align: right;
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+[data-theme='dark'] .overageNote {
+  color: #9ca3af;
+}
+
 .disclaimer {
   text-align: center;
   background: #ffe6e6;

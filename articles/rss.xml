@@ -43,7 +43,7 @@
 <p>The emergence of large language models with tool-use capabilities — OpenAI function calling [OpenAI 2023], Anthropic's tool use API [Anthropic 2024], and similar mechanisms — introduced structured action interfaces for AI agents. These mechanisms allow agents to invoke external functions with typed inputs and outputs, grounding language model reasoning in executable operations.</p>
 <p>The Model Context Protocol [Anthropic 2024] extends this concept into a general-purpose capability exposure standard, allowing any service to expose tools to any compliant agent through a common protocol. MCP is in production use across developer tooling, automation pipelines, and agent frameworks, and represents the current state of the art for general-purpose capability surface expression.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="24-commerce-protocol-standards">2.4 Commerce Protocol Standards<a href="https://www.tjm.solutions/articles/2026/04/21/capability-surfaces#24-commerce-protocol-standards" class="hash-link" aria-label="Direct link to 2.4 Commerce Protocol Standards" title="Direct link to 2.4 Commerce Protocol Standards" translate="no">​</a></h3>
-<p>EDI (Electronic Data Interchange) addressed machine-to-machine commerce integration in B2B contexts but required bilateral partner agreements and bespoke translation layers. OCI (Open Catalog Interface) and cXML addressed specific procurement use cases but achieved limited generality. More recently, the Universal Commerce Protocol [Commerce Alliance 2024] has been proposed as a shared semantic vocabulary for agent-commerce interaction, covering product discovery, cart management, checkout, and post-purchase operations.</p>
+<p>EDI (Electronic Data Interchange) addressed machine-to-machine commerce integration in B2B contexts but required bilateral partner agreements and bespoke translation layers. OCI (Open Catalog Interface) and cXML addressed specific procurement use cases but achieved limited generality. More recently, the Universal Commerce Protocol [Commerce Alliance 2024] has been proposed as a shared semantic vocabulary for agentic-commerce interaction, covering product discovery, cart management, checkout, and post-purchase operations.</p>
 <hr>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="3-the-agent-merchant-integration-problem">3. The Agent-Merchant Integration Problem<a href="https://www.tjm.solutions/articles/2026/04/21/capability-surfaces#3-the-agent-merchant-integration-problem" class="hash-link" aria-label="Direct link to 3. The Agent-Merchant Integration Problem" title="Direct link to 3. The Agent-Merchant Integration Problem" translate="no">​</a></h2>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="31-problem-formalization">3.1 Problem Formalization<a href="https://www.tjm.solutions/articles/2026/04/21/capability-surfaces#31-problem-formalization" class="hash-link" aria-label="Direct link to 3.1 Problem Formalization" title="Direct link to 3.1 Problem Formalization" translate="no">​</a></h3>
@@ -172,7 +172,7 @@
 <p>The UCP analysis is necessarily provisional — the standard is early-stage, and its evolution may change the protocol stack analysis materially.</p>
 <hr>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="9-conclusion">9. Conclusion<a href="https://www.tjm.solutions/articles/2026/04/21/capability-surfaces#9-conclusion" class="hash-link" aria-label="Direct link to 9. Conclusion" title="Direct link to 9. Conclusion" translate="no">​</a></h2>
-<p>We have identified the agent-merchant integration problem as the principal barrier to the O(A + M) agent-commerce ecosystem and proposed capability surfaces as the mediating architectural pattern that addresses it. The pattern is grounded in formal properties derived from agent interaction failure modes, mapped to current protocol infrastructure (MCP, UCP), and illustrated through scenario analysis of a three-party transaction.</p>
+<p>We have identified the agent-merchant integration problem as the principal barrier to the O(A + M) agentic-commerce ecosystem and proposed capability surfaces as the mediating architectural pattern that addresses it. The pattern is grounded in formal properties derived from agent interaction failure modes, mapped to current protocol infrastructure (MCP, UCP), and illustrated through scenario analysis of a three-party transaction.</p>
 <p>The key finding is that capability surfaces shift integration cost from per-pair connectors (O(A × M)) to per-participant implementation (O(A + M)), enabling an open ecosystem where any compliant agent can interact with any compliant merchant. This is the structural precondition for agent-mediated commerce to scale beyond hand-crafted integrations.</p>
 <p>Open problems in contract governance, registry certification, agent identity, and auditability represent a research agenda for the community. The architectural pattern is tractable; the governance and trust infrastructure around it is not yet mature.</p>
 <hr>
@@ -188,9 +188,7 @@
             <category>architecture</category>
             <category>ai</category>
             <category>digital-commerce</category>
-            <category>paper</category>
-            <category>agent-commerce</category>
-            <category>mcp</category>
+            <category>agentic-commerce</category>
         </item>
         <item>
             <title><![CDATA[Delegating the Deal: Human Authority, Accountability, and Oversight in Agent-Mediated Commerce]]></title>
@@ -200,7 +198,7 @@
             <description><![CDATA[An examination of what changes when humans delegate purchasing authority to autonomous software agents, and the accountability, oversight, and trust infrastructure required for agent-mediated commerce to function within organizational contexts.]]></description>
             <content:encoded><![CDATA[<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="abstract">Abstract<a href="https://www.tjm.solutions/articles/2026/04/21/delegating-the-deal#abstract" class="hash-link" aria-label="Direct link to Abstract" title="Direct link to Abstract" translate="no">​</a></h2>
 <p>Autonomous software agents are increasingly executing commercial transactions on behalf of human principals — discovering suppliers, evaluating offers, and placing orders without human involvement at each decision point. This paper examines the human factors dimension of this transition: what changes when humans delegate purchasing authority to agents, how the cooperative structure of commerce changes when one or more parties to a transaction is a software system, and what oversight, accountability, and trust mechanisms are required for agent-mediated commerce to function within organizational contexts.</p>
-<p>We analyze a three-party transaction scenario (human principal, procurement agent, manufacturer) to identify the moments of delegation, the accountability gaps that delegation creates, and the design requirements for capability surfaces — the architectural interface layer through which agents interact with merchants — that support rather than undermine human oversight. We argue that the technical architecture of agent-commerce systems encodes assumptions about human authority that deserve explicit examination, and that CSCW research has important contributions to make in designing systems where automation is a tool of human delegation rather than a replacement for human judgment.</p>
+<p>We analyze a three-party transaction scenario (human principal, procurement agent, manufacturer) to identify the moments of delegation, the accountability gaps that delegation creates, and the design requirements for capability surfaces — the architectural interface layer through which agents interact with merchants — that support rather than undermine human oversight. We argue that the technical architecture of agentic-commerce systems encodes assumptions about human authority that deserve explicit examination, and that CSCW research has important contributions to make in designing systems where automation is a tool of human delegation rather than a replacement for human judgment.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-introduction">1. Introduction<a href="https://www.tjm.solutions/articles/2026/04/21/delegating-the-deal#1-introduction" class="hash-link" aria-label="Direct link to 1. Introduction" title="Direct link to 1. Introduction" translate="no">​</a></h2>
 <p>In 1994, a novel form of delegation entered commercial practice: web browsers. For the first time, consumers could initiate commercial transactions from their homes without speaking to a salesperson. The nature of what was delegated — to the browser, and through it to the merchant's website — was narrow: displaying information, submitting a form, processing a payment. Humans retained full decision authority.</p>
 <p>Over the following decades, automation expanded into recommendation algorithms (which products to show), pricing systems (what price to offer), and logistics routing (how to ship). Each expansion delegated a narrower, more operational decision to software, while humans retained the final "buy" decision.</p>
@@ -257,7 +255,7 @@
 <li class="">The data providers whose information the agent used</li>
 </ul>
 <p>If a procurement decision turns out to be wrong — the product was out of specification, the supplier was unreliable, the price was above market — attributing accountability to the right party requires visibility into the agent's decision process that may not exist.</p>
-<p>This accountability gap is not purely technical. It is a design gap: accountability infrastructure must be built into agent-commerce systems explicitly, or it will be absent. The technical mechanism for this — the audit pipeline at the capability surface layer — is necessary but not sufficient; organizational processes must also be designed to make use of audit records.</p>
+<p>This accountability gap is not purely technical. It is a design gap: accountability infrastructure must be built into agentic-commerce systems explicitly, or it will be absent. The technical mechanism for this — the audit pipeline at the capability surface layer — is necessary but not sufficient; organizational processes must also be designed to make use of audit records.</p>
 <hr>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="4-capability-surfaces-as-a-human-oversight-interface">4. Capability Surfaces as a Human-Oversight Interface<a href="https://www.tjm.solutions/articles/2026/04/21/delegating-the-deal#4-capability-surfaces-as-a-human-oversight-interface" class="hash-link" aria-label="Direct link to 4. Capability Surfaces as a Human-Oversight Interface" title="Direct link to 4. Capability Surfaces as a Human-Oversight Interface" translate="no">​</a></h2>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="41-the-technical-architecture">4.1 The Technical Architecture<a href="https://www.tjm.solutions/articles/2026/04/21/delegating-the-deal#41-the-technical-architecture" class="hash-link" aria-label="Direct link to 4.1 The Technical Architecture" title="Direct link to 4.1 The Technical Architecture" translate="no">​</a></h3>
@@ -375,7 +373,7 @@
 <hr>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="9-conclusion">9. Conclusion<a href="https://www.tjm.solutions/articles/2026/04/21/delegating-the-deal#9-conclusion" class="hash-link" aria-label="Direct link to 9. Conclusion" title="Direct link to 9. Conclusion" translate="no">​</a></h2>
 <p>Agent-mediated commerce is a significant change in how commercial authority is delegated within and between organizations. The transition is not merely technical — it changes the cooperative structure of commercial interaction, the accountability relationships within organizations, and the social contracts between commercial counterparties.</p>
-<p>CSCW research is well-positioned to examine these changes empirically and to inform the design of systems that support human oversight, organizational learning, and appropriate trust calibration in agent-commerce deployments. The technical architecture of capability surfaces — the interface layer through which agents interact with merchants — encodes assumptions about human authority that deserve explicit examination and are amenable to design interventions.</p>
+<p>CSCW research is well-positioned to examine these changes empirically and to inform the design of systems that support human oversight, organizational learning, and appropriate trust calibration in agentic-commerce deployments. The technical architecture of capability surfaces — the interface layer through which agents interact with merchants — encodes assumptions about human authority that deserve explicit examination and are amenable to design interventions.</p>
 <p>The central design principle we advance is this: automation in commerce should be a tool of human delegation, not a displacement of human authority. The difference is accountability infrastructure — audit records, explainability mechanisms, escalation paths, and governance processes — built into the system from the start. Without this infrastructure, agent-mediated commerce creates accountability gaps that become visible only when something goes wrong, and visible at a scale proportional to the automation's reach.</p>
 <hr>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="references">References<a href="https://www.tjm.solutions/articles/2026/04/21/delegating-the-deal#references" class="hash-link" aria-label="Direct link to References" title="Direct link to References" translate="no">​</a></h2>
@@ -395,8 +393,7 @@
             <category>ai</category>
             <category>strategy</category>
             <category>architecture</category>
-            <category>paper</category>
-            <category>agent-commerce</category>
+            <category>agentic-commerce</category>
         </item>
         <item>
             <title><![CDATA[The Economics of Agent-Mediated Commerce: Competitive Restructuring in B2B Markets]]></title>
@@ -547,17 +544,16 @@
             <category>digital-commerce</category>
             <category>strategy</category>
             <category>ai</category>
-            <category>paper</category>
-            <category>agent-commerce</category>
+            <category>agentic-commerce</category>
         </item>
         <item>
             <title><![CDATA[A Protocol Stack for Agent-Native Commerce: MCP, Domain Profiles, and Open Interoperability]]></title>
             <link>https://www.tjm.solutions/articles/2026/04/21/protocol-stack-agent-native-commerce</link>
             <guid>https://www.tjm.solutions/articles/2026/04/21/protocol-stack-agent-native-commerce</guid>
             <pubDate>Tue, 21 Apr 2026 00:00:00 GMT</pubDate>
-            <description><![CDATA[A layered protocol stack perspective on agent-commerce interoperability: MCP as a general capability mechanism, commerce-domain profiles as shared vocabulary, and capability registries as discovery infrastructure.]]></description>
+            <description><![CDATA[A layered protocol stack perspective on agentic-commerce interoperability: MCP as a general capability mechanism, commerce-domain profiles as shared vocabulary, and capability registries as discovery infrastructure.]]></description>
             <content:encoded><![CDATA[<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="abstract">Abstract<a href="https://www.tjm.solutions/articles/2026/04/21/protocol-stack-agent-native-commerce#abstract" class="hash-link" aria-label="Direct link to Abstract" title="Direct link to Abstract" translate="no">​</a></h2>
-<p>The growth of autonomous software agents as commercial actors — buyers that discover suppliers, evaluate constraints, and execute transactions without human involvement — creates a practical interoperability problem: how should agents and merchants communicate when they have no prior relationship and no bespoke integration? This article presents a protocol stack perspective on the emerging answer: a layered architecture combining the Model Context Protocol (MCP) as a general capability mechanism, commerce-domain profiles as shared vocabularies, and capability registries as discovery infrastructure. We examine the stack's current state, its gaps, and the open engineering problems that the community must resolve to support agent-commerce at production scale.</p>
+<p>The growth of autonomous software agents as commercial actors — buyers that discover suppliers, evaluate constraints, and execute transactions without human involvement — creates a practical interoperability problem: how should agents and merchants communicate when they have no prior relationship and no bespoke integration? This article presents a protocol stack perspective on the emerging answer: a layered architecture combining the Model Context Protocol (MCP) as a general capability mechanism, commerce-domain profiles as shared vocabularies, and capability registries as discovery infrastructure. We examine the stack's current state, its gaps, and the open engineering problems that the community must resolve to support agentic-commerce at production scale.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-the-interoperability-problem">1. The Interoperability Problem<a href="https://www.tjm.solutions/articles/2026/04/21/protocol-stack-agent-native-commerce#1-the-interoperability-problem" class="hash-link" aria-label="Direct link to 1. The Interoperability Problem" title="Direct link to 1. The Interoperability Problem" translate="no">​</a></h2>
 <p>Consider a software agent deployed by an engineering firm to automate B2B procurement. The agent receives an instruction: source 200 units of a specific industrial component, ISO 9001 certified, delivered in eight days, budget $42,000. The agent must:</p>
 <ol>
@@ -749,9 +745,7 @@
             <category>architecture</category>
             <category>ai</category>
             <category>digital-commerce</category>
-            <category>paper</category>
-            <category>agent-commerce</category>
-            <category>mcp</category>
+            <category>agentic-commerce</category>
         </item>
         <item>
             <title><![CDATA[The Invisible Buyer Has Arrived]]></title>
@@ -833,8 +827,7 @@
             <category>digital-commerce</category>
             <category>ai</category>
             <category>strategy</category>
-            <category>blog</category>
-            <category>agent-commerce</category>
+            <category>agentic-commerce</category>
         </item>
         <item>
             <title><![CDATA[Is the FP Juice worth the Squeeze?]]></title>
@@ -881,7 +874,6 @@
             <category>functional-programming</category>
             <category>architecture</category>
             <category>strategy</category>
-            <category>blog</category>
         </item>
         <item>
             <title><![CDATA[When MVPs Grow Teeth]]></title>
@@ -911,7 +903,6 @@
 </ul>]]></content:encoded>
             <category>functional-programming</category>
             <category>architecture</category>
-            <category>blog</category>
         </item>
         <item>
             <title><![CDATA[Folding in Traceability]]></title>
@@ -947,8 +938,6 @@
 <p>The most expensive failures aren't always the ones that crash. They're the ones that change outcomes and leave you unable to explain why. An immutable journal combined with deterministic folds creates accountability by design — not just in what systems compute, but in what they can later defend.</p>]]></content:encoded>
             <category>functional-programming</category>
             <category>architecture</category>
-            <category>blog</category>
-            <category>concurrency</category>
         </item>
         <item>
             <title><![CDATA[Not All Errors are Exceptional]]></title>
@@ -994,7 +983,6 @@
 <p>Where do you want your mission-critical logic being conducted — in the light of day amongst validated representation, or in shadowy alleyways without supervision?</p>]]></content:encoded>
             <category>functional-programming</category>
             <category>architecture</category>
-            <category>blog</category>
         </item>
         <item>
             <title><![CDATA[Modeling Absence without Ambiguity]]></title>
@@ -1036,7 +1024,6 @@
 <p>Absence represents only one form of uncertainty. Enterprise systems must handle failure too: misconfigurations, invalid data, conflicting rules, and breaking integrations. That's a different problem requiring a different tool — which is where <code>Either</code> comes in.</p>]]></content:encoded>
             <category>functional-programming</category>
             <category>architecture</category>
-            <category>blog</category>
         </item>
         <item>
             <title><![CDATA[Why Pattern Matching Matters]]></title>
@@ -1119,7 +1106,6 @@
 <p>Imperative systems bury these distinctions in flags, enumerated types, inheritance, and deeply nested conditionals. Pattern matching makes the domain readable. You see the shape, the rule, and the logic in one place — and nothing is hidden behind machinery.</p>]]></content:encoded>
             <category>functional-programming</category>
             <category>architecture</category>
-            <category>blog</category>
         </item>
         <item>
             <title><![CDATA[Beyond the For-Loop: Mastering map, filter, and flatMap]]></title>
@@ -1171,7 +1157,6 @@
 <p>This reduces bug surface area by removing structures that invite mistakes. Small, pure transformations combine into larger flows that remain legible, testable, and predictable. By eliminating ceremony, business truth becomes more readable.</p>]]></content:encoded>
             <category>functional-programming</category>
             <category>architecture</category>
-            <category>blog</category>
         </item>
         <item>
             <title><![CDATA[Unpacking Agentic Commerce]]></title>
@@ -1208,8 +1193,7 @@
             <category>digital-commerce</category>
             <category>ai</category>
             <category>strategy</category>
-            <category>blog</category>
-            <category>agent-commerce</category>
+            <category>agentic-commerce</category>
         </item>
         <item>
             <title><![CDATA[Thinking in Expressions, Not Statements]]></title>
@@ -1259,7 +1243,6 @@
 <p>This shift emphasizes structural clarity that persists as systems scale — beyond merely producing shorter code. When you stop describing <em>how</em> to compute a thing and start describing <em>what</em> the thing is, you eliminate a whole layer of mechanical overhead that obscures the business logic underneath it.</p>]]></content:encoded>
             <category>functional-programming</category>
             <category>architecture</category>
-            <category>blog</category>
         </item>
         <item>
             <title><![CDATA[Pure Functions: Your First Step Toward Bug-Free Concurrency]]></title>
@@ -1305,7 +1288,7 @@
 <p>Java developers can write pure functions, but the language and its surrounding ecosystem do not encourage it. Frameworks default to global configuration, dependency injection boundaries blur the distinction between construction and execution, and most libraries assume mutability. The language does not prevent accidental side effects or hidden dependencies; it leaves the burden of discipline on developers and reviewers.</p>
 <p>In small teams, that discipline holds. In organizations with dozens of contributors, it frays. Concurrency and testing magnify the cost of those fractures.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-scala-makes-purity-natural">Why Scala Makes Purity Natural<a href="https://www.tjm.solutions/articles/2026/01/18/pure-functions#why-scala-makes-purity-natural" class="hash-link" aria-label="Direct link to Why Scala Makes Purity Natural" title="Direct link to Why Scala Makes Purity Natural" translate="no">​</a></h2>
-<p>Scala makes pure functions the intuitive choice. Immutable data structures are the default; methods tend to be referentially transparent unless you explicitly introduce side effects; function composition is expressive; and domain models are concise enough that purity does not require elaborate scaffolding. The language exposes, rather than conceals, a function's dependencies. And because of that, concurrency comes almost for free.</p>
+<p>Scala makes pure functions the intuitive choice. Immutable data structures are the default; methods tend to be referentially transparent unless you explicitly introduce side effects; function composition is expressive; and domain models are concise enough that purity does not require elaborate scaffolding. The language exposes, rather than conceals, a function's dependencies. And because of that comes almost for free.</p>
 <p>The distinction is not that Scala prevents impurity. It is that Scala makes purity the simplest way to express your domain's logic. The cleaner the logic, the cleaner the concurrency story around it.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-architectural-insight">The Architectural Insight<a href="https://www.tjm.solutions/articles/2026/01/18/pure-functions#the-architectural-insight" class="hash-link" aria-label="Direct link to The Architectural Insight" title="Direct link to The Architectural Insight" translate="no">​</a></h2>
 <p>Pure functions do not solve every problem. But they solve the class of problems that make pricing, promotions, and eligibility logic unpredictable under load. They enable caching strategies that are rational rather than heuristic. They make concurrency manageable without locks. They remove whole categories of bugs rather than patching them reactively. And when combined with immutable data, they create systems whose behavior is a function of their inputs — not an artifact of their circumstances.</p>
@@ -1313,8 +1296,6 @@
 <p>This is the foundation for the next part of the series, where we will look more closely at how shifting from statement-based to expression-based thinking eliminates hidden state and cognitive overhead in system design.</p>]]></content:encoded>
             <category>functional-programming</category>
             <category>architecture</category>
-            <category>blog</category>
-            <category>concurrency</category>
         </item>
         <item>
             <title><![CDATA[Immutability by Default: The Foundation of Reliable Systems]]></title>
@@ -1410,15 +1391,13 @@
 <p>Immutability stabilizes truth. Functional programming stabilizes reasoning. Scala stabilizes the implementation of both.</p>]]></content:encoded>
             <category>functional-programming</category>
             <category>architecture</category>
-            <category>blog</category>
-            <category>concurrency</category>
         </item>
         <item>
             <title><![CDATA[Functional Programming Isn't Just for Academics: Why It Matters for the Systems We Build Now]]></title>
             <link>https://www.tjm.solutions/articles/2026/01/04/functional-programming-isnt-just-for-academics</link>
             <guid>https://www.tjm.solutions/articles/2026/01/04/functional-programming-isnt-just-for-academics</guid>
             <pubDate>Sun, 04 Jan 2026 00:00:00 GMT</pubDate>
-            <description><![CDATA[An exploration of why functional programming principles address modern software development challenges, including distributed systems, concurrency, and state management — moving beyond purely academic applications.]]></description>
+            <description><![CDATA[An exploration of why functional programming principles address modern software development challenges, including distributed systems, and state management — moving beyond purely academic applications.]]></description>
             <content:encoded><![CDATA[
 <p>In 1983 I asked my parents for an Atari for Christmas, instead I got a Commodore 64… Needless to say, I was very disappointed until I discovered how much cooler Wizard of Wor was than Combat. To their credit, my parents thought a computer was a better investment than a video game. I used that C64 through my sophomore year of college until I replaced it with a 486; my first real investment. So, like many in my generation, I cut my teeth on programming languages like BASIC and LOGO without really picking them for any reason. It was just kind of cool, as a kid, to be able to tell a computer what to do and watch it do it. I quickly understood that animating ASCII stick figures was a BASIC problem and digital Spirograph was a job for the LOGO turtle. In college I was using FORTran for math and science and C for everything else knowing that, depending on the task, one was more natural than the other.</p>
 <p>It wasn't till many years later, while taking a survey class in programming languages, that I ever seriously thought about why languages were different and why I should care. I disregarded Pascal, our token Procedural language, as just a more rigorous version of Basic or C for people who like to type. I didn't love Smalltalk, but it improved my C++ by teaching me to THINK object-oriented. Prolog (Logic) was an eye-opener, it was fun but outside of being very useful for proofs of formal logic, I filed it away as an option just in case I was unfortunate enough to have to do that in real life. Scheme blew my mind. Other than making it easier to read and write cLISP (I am a retired emacs weenie), I never used it professionally but this functional language changed the way I programmed in every language I have used since, to my benefit. Truly, thought and language impact each other immensely and limiting oneself to a single language severely limits the boundaries of one's comprehension and creativity. I believe that is as true for natural languages as it is for computer languages and can be extended to the arts and any other form of expression. But that is philosophy.</p>
@@ -1450,7 +1429,7 @@
 </ul>
 <p>When you scale a system built from pure functions, you aren't scaling the surface area for nondeterminism. You're scaling predictability.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="expressions-instead-of-instructions">Expressions Instead of Instructions<a href="https://www.tjm.solutions/articles/2026/01/04/functional-programming-isnt-just-for-academics#expressions-instead-of-instructions" class="hash-link" aria-label="Direct link to Expressions Instead of Instructions" title="Direct link to Expressions Instead of Instructions" translate="no">​</a></h2>
-<p>When your code shifts from "do this, then this, then maybe this" to "this expression is the logic," an entire class of defects disappears. Not because you solved them, but because the style of thinking makes those defects unrepresentable. This is why FP crept quietly into domains that demand rigor: finance, concurrency-heavy platforms, distributed data systems, regulated products. I just didn't realize it, being focused on the details of the issues instead of the root causes that unified them.</p>
+<p>When your code shifts from "do this, then this, then maybe this" to "this expression is the logic," an entire class of defects disappears. Not because you solved them, but because the style of thinking makes those defects unrepresentable. This is why FP crept quietly into domains that demand rigor: finance-heavy platforms, distributed data systems, regulated products. I just didn't realize it, being focused on the details of the issues instead of the root causes that unified them.</p>
 <p>Functional programming gives you constraints that happen to align with correctness.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="so-why-write-this-now">So, Why Write This Now?<a href="https://www.tjm.solutions/articles/2026/01/04/functional-programming-isnt-just-for-academics#so-why-write-this-now" class="hash-link" aria-label="Direct link to So, Why Write This Now?" title="Direct link to So, Why Write This Now?" translate="no">​</a></h2>
 <p>Scala is not new, nor is SDLC, and FP certainly predates me. I'm not an expert in these things and have not made any new or insightful contributions to any of those domains. I just know, any noteworthy insights I have made in my lifetime came from reexamining things I thought I understood in the context of a seemingly new intersection of issues or domains.</p>
@@ -1466,7 +1445,6 @@
             <category>functional-programming</category>
             <category>architecture</category>
             <category>strategy</category>
-            <category>blog</category>
         </item>
         <item>
             <title><![CDATA[An Introduction to Reactive Commerce]]></title>
@@ -1477,7 +1455,6 @@
             <category>digital-commerce</category>
             <category>architecture</category>
             <category>microservices</category>
-            <category>blog</category>
         </item>
         <item>
             <title><![CDATA[Headless Commerce: Advice for Goal Hangers]]></title>
@@ -1488,8 +1465,6 @@
             <category>digital-commerce</category>
             <category>architecture</category>
             <category>strategy</category>
-            <category>blog</category>
-            <category>headless-commerce</category>
         </item>
         <item>
             <title><![CDATA[Agility and the Headless Commerce Debate]]></title>
@@ -1500,8 +1475,6 @@
             <category>digital-commerce</category>
             <category>strategy</category>
             <category>architecture</category>
-            <category>blog</category>
-            <category>headless-commerce</category>
         </item>
     </channel>
 </rss>

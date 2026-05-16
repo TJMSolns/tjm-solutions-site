@@ -14,34 +14,44 @@ MD-Slides converts structured Markdown files into self-contained HTML presentati
 **Requirements:** Java 11 or higher.
 
 ```bash
-# 1. Download the latest release JAR
+# Download the JAR and the feature tour (a 45-slide demo of every feature)
 curl -L https://github.com/TJMSolns/MD-Slides/releases/latest/download/md-slides.jar -o md-slides.jar
+curl -L https://github.com/TJMSolns/MD-Slides/releases/latest/download/feature-tour.md -o feature-tour.md
 
-# 2. Render a presentation
-java -jar md-slides.jar render my-talk --theme light
-
-# 3. Open in your browser
-open my-talk/index.html          # macOS
-xdg-open my-talk/index.html     # Linux
-start my-talk/index.html         # Windows
+# Render and open
+java -jar md-slides.jar render feature-tour --theme dark
+open feature-tour/index.html          # macOS
+xdg-open feature-tour/index.html     # Linux
+start feature-tour/index.html         # Windows
 ```
 
-`my-talk.md` is your Markdown source; `my-talk/` is the generated output directory containing `index.html` and all copied assets.
+Press **S** to open speaker view — every slide in the feature tour has speaker notes. The tour exercises all six templates, every content type, images, tables, two-column layouts, themes, and the full validation ruleset. It's the fastest way to see what MD-Slides can do.
 
-## What makes MD-Slides different
+### Writing your own slides
 
-- **Structured** — templates enforce slide layout; density constraints mean your audience can actually read the slides.
-- **Validated** — all errors reported together in one pass, not one at a time.
-- **Speaker-ready** — synchronized speaker view with notes, next-slide preview, and elapsed timer.
-- **Zero friction** — one JAR, Java 11+. No account, no cloud, no build step for users.
-- **Themeable** — built-in light and dark themes, plus a JSON schema for custom themes.
+```bash
+java -jar md-slides.jar render my-talk --theme light
+```
+
+`my-talk/` is a self-contained output directory — `index.html`, `speaker.html`, and all copied assets. See [Writing Slides](./writing-slides) for the full format.
+
+## What MD-Slides does
+
+- **Six templates** — `title`, `content`, `section-title`, `two-column`, `diagram`, `closing` — each with enforced layout and density constraints
+- **Validated** — all structure, density, and accessibility errors collected and reported together in one pass
+- **Speaker-ready** — synchronized speaker view with notes, next-slide preview, and elapsed timer
+- **Full keyboard navigation** — arrows, break mode, goto, history, timer controls
+- **Session analytics** — `display` logs every navigation event; `report` shows per-slide timing and path
+- **Themeable** — built-in light and dark themes; custom themes via JSON with per-template configuration
+- **Self-contained output** — one directory, works without a server; share by zip, deploy to GitHub Pages, or print to PDF
+- **Zero friction** — one JAR, Java 11+. No account, no cloud, no build step for users
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
 | `render DECK_NAME [options]` | Convert Markdown to HTML |
-| `display DECK_NAME` | Open presentation in browser |
+| `display DECK_NAME` | Render with session logging |
 | `report DECK_NAME` | Show session analytics |
 | `config` | Show active configuration |
-| `DECK_NAME` | Smart default: report → render → display |
+| `DECK_NAME` | Smart default: render or display based on context |

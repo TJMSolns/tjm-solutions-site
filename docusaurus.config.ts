@@ -128,8 +128,8 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: '/mdslides',
-          label: 'MD-Slides',
+          to: '/projects',
+          label: 'Projects',
           position: 'left',
         },
         {

@@ -39,8 +39,8 @@ type SortOrder = 'newest' | 'oldest' | 'title-az' | 'title-za';
 
 function buildUrl(params: { tag?: string; sort?: string }) {
   const p = new URLSearchParams();
-  // 'blog' is the default view — omit from URL to keep it clean
-  if (params.tag && params.tag !== 'blog') p.set('tag', params.tag);
+  // 'all' is the default view — omit from URL to keep it clean
+  if (params.tag && params.tag !== 'all') p.set('tag', params.tag);
   if (params.sort && params.sort !== 'newest') p.set('sort', params.sort);
   const qs = p.toString();
   return `/articles${qs ? `?${qs}` : ''}`;
@@ -94,8 +94,7 @@ const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
 export default function ArticlesList({ items, metadata }: Props) {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  // Default to 'blog' view; 'all' is a sentinel meaning show everything
-  const activeTag = params.get('tag') ?? 'blog';
+  const activeTag = params.get('tag') ?? 'all';
   const activeSort = (params.get('sort') ?? 'newest') as SortOrder;
   const effectiveTag = activeTag === 'all' ? '' : activeTag;
 
@@ -139,7 +138,7 @@ export default function ArticlesList({ items, metadata }: Props) {
   }, [items, effectiveTag, activeSort]);
 
   // Show featured/rest split only on the default blog view with date-based sort
-  const useFeaturedSplit = activeTag === 'blog' && (activeSort === 'newest' || activeSort === 'oldest');
+  const useFeaturedSplit = activeTag === 'all' && (activeSort === 'newest' || activeSort === 'oldest');
   const featured = useFeaturedSplit ? sortedFilteredItems.slice(0, 5) : sortedFilteredItems;
   const rest = useFeaturedSplit ? sortedFilteredItems.slice(5) : [];
 

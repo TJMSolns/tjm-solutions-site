@@ -3,7 +3,7 @@ title: "Pure Functions: Your First Step Toward Bug-Free Concurrency"
 description: "How pure functions — same inputs, same outputs, no side effects — eliminate entire categories of concurrency bugs and make pricing, eligibility, and promotion logic reliably testable at scale."
 date: 2026-01-18
 authors: [tony]
-tags: [functional-programming, architecture, blog, concurrency]
+tags: [functional-programming, architecture]
 image: /img/funcprog-1.jpg
 series: "Functional Programming Isn't Just for Academics"
 series_part: 3
@@ -116,7 +116,7 @@ In small teams, that discipline holds. In organizations with dozens of contribut
 
 ## Why Scala Makes Purity Natural
 
-Scala makes pure functions the intuitive choice. Immutable data structures are the default; methods tend to be referentially transparent unless you explicitly introduce side effects; function composition is expressive; and domain models are concise enough that purity does not require elaborate scaffolding. The language exposes, rather than conceals, a function's dependencies. And because of that, concurrency comes almost for free.
+Scala makes pure functions the intuitive choice. Immutable data structures are the default; methods tend to be referentially transparent unless you explicitly introduce side effects; function composition is expressive; and domain models are concise enough that purity does not require elaborate scaffolding. The language exposes, rather than conceals, a function's dependencies. And because of that comes almost for free.
 
 The distinction is not that Scala prevents impurity. It is that Scala makes purity the simplest way to express your domain's logic. The cleaner the logic, the cleaner the concurrency story around it.
 

@@ -3,7 +3,7 @@ title: "Capability Surfaces: A Mediating Architecture for Agent-Native Commerce"
 description: "How a mediating architectural pattern called capability surfaces reduces agent-merchant integration complexity from O(A×M) to O(A+M), enabling any compliant agent to transact with any compliant merchant without bespoke integration."
 date: 2026-04-21
 authors: [tony]
-tags: [architecture, ai, digital-commerce, paper, agent-commerce, mcp]
+tags: [architecture, ai, digital-commerce, agentic-commerce]
 image: /img/digital-transformation.jpg
 ---
 
@@ -57,7 +57,7 @@ The Model Context Protocol [Anthropic 2024] extends this concept into a general-
 
 ### 2.4 Commerce Protocol Standards
 
-EDI (Electronic Data Interchange) addressed machine-to-machine commerce integration in B2B contexts but required bilateral partner agreements and bespoke translation layers. OCI (Open Catalog Interface) and cXML addressed specific procurement use cases but achieved limited generality. More recently, the Universal Commerce Protocol [Commerce Alliance 2024] has been proposed as a shared semantic vocabulary for agent-commerce interaction, covering product discovery, cart management, checkout, and post-purchase operations.
+EDI (Electronic Data Interchange) addressed machine-to-machine commerce integration in B2B contexts but required bilateral partner agreements and bespoke translation layers. OCI (Open Catalog Interface) and cXML addressed specific procurement use cases but achieved limited generality. More recently, the Universal Commerce Protocol [Commerce Alliance 2024] has been proposed as a shared semantic vocabulary for agentic-commerce interaction, covering product discovery, cart management, checkout, and post-purchase operations.
 
 ---
 
@@ -320,7 +320,7 @@ The UCP analysis is necessarily provisional — the standard is early-stage, and
 
 ## 9. Conclusion
 
-We have identified the agent-merchant integration problem as the principal barrier to the O(A + M) agent-commerce ecosystem and proposed capability surfaces as the mediating architectural pattern that addresses it. The pattern is grounded in formal properties derived from agent interaction failure modes, mapped to current protocol infrastructure (MCP, UCP), and illustrated through scenario analysis of a three-party transaction.
+We have identified the agent-merchant integration problem as the principal barrier to the O(A + M) agentic-commerce ecosystem and proposed capability surfaces as the mediating architectural pattern that addresses it. The pattern is grounded in formal properties derived from agent interaction failure modes, mapped to current protocol infrastructure (MCP, UCP), and illustrated through scenario analysis of a three-party transaction.
 
 The key finding is that capability surfaces shift integration cost from per-pair connectors (O(A × M)) to per-participant implementation (O(A + M)), enabling an open ecosystem where any compliant agent can interact with any compliant merchant. This is the structural precondition for agent-mediated commerce to scale beyond hand-crafted integrations.
 

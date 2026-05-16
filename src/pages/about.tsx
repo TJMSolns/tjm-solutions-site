@@ -50,10 +50,14 @@ export default function About(): ReactNode {
   return (
     <Layout title={TITLE} description={DESCRIPTION}>
       <Head>
+        <link rel="canonical" href="https://www.tjm.solutions/about" />
         <meta property="og:title" content={TITLE} />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions/about" />
         <meta property="og:image" content="https://www.tjm.solutions/img/banner.jpg" />
+        <meta property="og:image:alt" content="TJM Solutions — Technology Advisory and Consulting" />
+        <meta property="og:image:width" content="5742" />
+        <meta property="og:image:height" content="3569" />
         <script type="application/ld+json">{JSON.stringify(personSchema)}</script>
       </Head>
       <div className={styles.aboutContainer}>

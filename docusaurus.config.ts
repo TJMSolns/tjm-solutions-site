@@ -63,8 +63,23 @@ const config: Config = {
         },
         sitemap: {
           changefreq: 'weekly',
-          priority: 0.5,
           ignorePatterns: ['/articles/tags/**', '/articles/archive'],
+          createSitemapItems: async (params) => {
+            const {defaultCreateSitemapItems, ...rest} = params;
+            const items = await defaultCreateSitemapItems(rest);
+            return items.map((item) => {
+              if (item.url === 'https://www.tjm.solutions') {
+                return {...item, priority: 1.0};
+              }
+              if (/\/(?:about|rates)$/.test(item.url)) {
+                return {...item, priority: 0.8};
+              }
+              if (item.url.includes('/articles/')) {
+                return {...item, priority: 0.6};
+              }
+              return {...item, priority: 0.5};
+            });
+          },
         },
         theme: {
           customCss: './src/css/custom.css',

@@ -90,7 +90,7 @@ canonical: https://tmoores.medium.com/...
 ```
 The `src/theme/BlogPostPage/index.tsx` wrapper injects this as a `<link rel="canonical">` head tag automatically. No JSX needed.
 
-**Tag taxonomy** (use these exactly): `functional-programming`, `architecture`, `digital-commerce`, `strategy`, `ai`, `microservices`
+**Tag taxonomy** (use these exactly): `functional-programming`, `architecture`, `digital-commerce`, `strategy`, `ai`, `microservices`, `agentic-commerce`
 
 **Series:** "Functional Programming Isn't Just for Academics" — Parts 2–11 currently in `blog/`. Add `series:` + `series_part:` frontmatter to any new articles that continue it.
 

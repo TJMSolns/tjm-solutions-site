@@ -3,7 +3,7 @@ title: "Delegating the Deal: Human Authority, Accountability, and Oversight in A
 description: "An examination of what changes when humans delegate purchasing authority to autonomous software agents, and the accountability, oversight, and trust infrastructure required for agent-mediated commerce to function within organizational contexts."
 date: 2026-04-21
 authors: [tony]
-tags: [ai, strategy, architecture, paper, agent-commerce]
+tags: [ai, strategy, architecture, agentic-commerce]
 image: /img/experience-engineering.jpg
 ---
 
@@ -11,7 +11,7 @@ image: /img/experience-engineering.jpg
 
 Autonomous software agents are increasingly executing commercial transactions on behalf of human principals — discovering suppliers, evaluating offers, and placing orders without human involvement at each decision point. This paper examines the human factors dimension of this transition: what changes when humans delegate purchasing authority to agents, how the cooperative structure of commerce changes when one or more parties to a transaction is a software system, and what oversight, accountability, and trust mechanisms are required for agent-mediated commerce to function within organizational contexts.
 
-We analyze a three-party transaction scenario (human principal, procurement agent, manufacturer) to identify the moments of delegation, the accountability gaps that delegation creates, and the design requirements for capability surfaces — the architectural interface layer through which agents interact with merchants — that support rather than undermine human oversight. We argue that the technical architecture of agent-commerce systems encodes assumptions about human authority that deserve explicit examination, and that CSCW research has important contributions to make in designing systems where automation is a tool of human delegation rather than a replacement for human judgment.
+We analyze a three-party transaction scenario (human principal, procurement agent, manufacturer) to identify the moments of delegation, the accountability gaps that delegation creates, and the design requirements for capability surfaces — the architectural interface layer through which agents interact with merchants — that support rather than undermine human oversight. We argue that the technical architecture of agentic-commerce systems encodes assumptions about human authority that deserve explicit examination, and that CSCW research has important contributions to make in designing systems where automation is a tool of human delegation rather than a replacement for human judgment.
 
 <!-- truncate -->
 
@@ -106,7 +106,7 @@ When a human purchasing agent makes a procurement decision, accountability is le
 
 If a procurement decision turns out to be wrong — the product was out of specification, the supplier was unreliable, the price was above market — attributing accountability to the right party requires visibility into the agent's decision process that may not exist.
 
-This accountability gap is not purely technical. It is a design gap: accountability infrastructure must be built into agent-commerce systems explicitly, or it will be absent. The technical mechanism for this — the audit pipeline at the capability surface layer — is necessary but not sufficient; organizational processes must also be designed to make use of audit records.
+This accountability gap is not purely technical. It is a design gap: accountability infrastructure must be built into agentic-commerce systems explicitly, or it will be absent. The technical mechanism for this — the audit pipeline at the capability surface layer — is necessary but not sufficient; organizational processes must also be designed to make use of audit records.
 
 ---
 
@@ -265,7 +265,7 @@ Based on the analysis, we offer design recommendations for capability surface de
 
 Agent-mediated commerce is a significant change in how commercial authority is delegated within and between organizations. The transition is not merely technical — it changes the cooperative structure of commercial interaction, the accountability relationships within organizations, and the social contracts between commercial counterparties.
 
-CSCW research is well-positioned to examine these changes empirically and to inform the design of systems that support human oversight, organizational learning, and appropriate trust calibration in agent-commerce deployments. The technical architecture of capability surfaces — the interface layer through which agents interact with merchants — encodes assumptions about human authority that deserve explicit examination and are amenable to design interventions.
+CSCW research is well-positioned to examine these changes empirically and to inform the design of systems that support human oversight, organizational learning, and appropriate trust calibration in agentic-commerce deployments. The technical architecture of capability surfaces — the interface layer through which agents interact with merchants — encodes assumptions about human authority that deserve explicit examination and are amenable to design interventions.
 
 The central design principle we advance is this: automation in commerce should be a tool of human delegation, not a displacement of human authority. The difference is accountability infrastructure — audit records, explainability mechanisms, escalation paths, and governance processes — built into the system from the start. Without this infrastructure, agent-mediated commerce creates accountability gaps that become visible only when something goes wrong, and visible at a scale proportional to the automation's reach.
 

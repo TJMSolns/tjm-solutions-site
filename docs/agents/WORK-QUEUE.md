@@ -42,4 +42,3 @@
 - **Cascade block:** WQ-003 (remove workshops card) cannot proceed until WQ-005, WQ-006, and WQ-007 are all complete — 4 cards remain until 3 cards each have ≥3 offers listed.
 - **Offer detail pages:** Each card enhancement (WQ-005–007) should link to individual offer detail pages (WQ-009 [PROPOSED]). Pages should be created when the first offer per card reaches Level 1.
 - **WQ-008 closed:** GitHub App installation consolidated to org-level WQ-P4-023; no separate site-level item needed.
-- **WQ-012 blocked on mdslides release:** Trigger this item when mdslides ships. All implementation steps are captured in the queue entry — no re-derivation needed.

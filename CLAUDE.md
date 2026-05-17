@@ -107,3 +107,12 @@ The `src/theme/BlogPostPage/index.tsx` wrapper injects this as a `<link rel="can
 - Prefer CSS variable overrides in `custom.css` over `yarn swizzle` (swizzling ejects theme components and creates long-term maintenance burden).
 - Import path aliases: `@site/` → project root, `@theme/` → Docusaurus theme components.
 - SVG imports: `require('@site/static/img/file.svg').default` for use as React components.
+
+## Harness Rules — Non-Negotiable
+
+**Rule 1 — Bugs and issues:** Use `/bug <description>`. Queue it. Stop. `/groom` decides priority. `/next` executes. No inline diagnosis, no inline fixes, no self-sequencing.
+
+**Rule 2 — Discussion is not instruction:** A design conversation or question produces words only — no file writes, no WORK-QUEUE additions, no artifacts — unless Tony explicitly asks for one. If something seems worth recording, ask "Should I queue this?" and wait.
+
+**Rule 3 — Approved plan ≠ execute permission:** A plan record in HANDOFF-LEDGER is history, not a command. Execution requires explicit instruction in the current session.
+

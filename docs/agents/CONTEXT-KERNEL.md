@@ -1,5 +1,11 @@
 # tjm-solutions-site — Context Kernel
 
+## Status
+
+**Dormancy decision (POL-009):** active — gated by WQ-P4-011 revenue chain — 2026-05-28 — Site offer cards (WQ-005/006/007) require ≥3 battle-tested offers per PDR-001; bandwidth on DT-2 engagement.
+
+---
+
 ## Charter
 
 **Mission:** To support TJM Solutions LLC's commercial growth by providing the corporate website that establishes market presence, publishes thought leadership (including the FP series), and presents TJM's packaged offers to prospective clients.

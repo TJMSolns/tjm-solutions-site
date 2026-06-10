@@ -37,6 +37,37 @@ Close this session cleanly by writing a handoff entry.
    - Leave in_progress items as-is if genuinely still in progress
    - Add any newly discovered items
 
+5a. **CONTEXT-KERNEL substantive-edit gate (BLOCKING — POL-013 / WQ-P4-109)**:
+   ```bash
+   git diff HEAD -- docs/agents/CONTEXT-KERNEL.md 2>/dev/null
+   ```
+   If the diff is non-empty:
+   - **Substantive change** (Current Phase, Status, dormancy decision, non-negotiables, decisions, charter) → drafted HL MUST include `**CONTEXT-KERNEL change:** <section> — <reason or DR-ID>`.
+   - **Cosmetic only** → include `**CONTEXT-KERNEL change:** cosmetic — <one-line>` to satisfy explicitly.
+   Source: POL-013, RL-009 F3.
+
+5b. **Git audit gate (BLOCKING — WQ-P4-103)** — applies to this project's repo.
+
+   **(a) Working tree clean check:**
+   ```bash
+   git status --short
+   ```
+   If output is non-empty, do **not** write the HL entry. Resolve first:
+     - **Commit** the file(s) and reference the new hash in the HL entry; or
+     - **Stash** with `git stash push -m "pre-handoff stash"`; or
+     - **Explicit defer** — add to the HL body:
+       ```
+       **Working-tree carry-over:** <file path> — <reason> — revisit by <date>
+       ```
+
+   **(b) Commit-hash existence check:** grep the drafted HL body for commit hashes (regex `[0-9a-f]{7,40}` appearing after "commit" / "Commit" / "@"). For each hash:
+   ```bash
+   git cat-file -e <hash> 2>/dev/null && echo OK || echo MISSING
+   ```
+   If any MISSING in this repo, the HL entry references a ghost commit. Correct or remove the hash before writing.
+
+   Source: HL-093 ghost-commit pattern; org POL via TJMSolns WQ-P4-103.
+
 6. **Write HANDOFF-LEDGER entry** at the TOP of `docs/agents/HANDOFF-LEDGER.md`:
    ```markdown
    ## HL-<next-id> — <date> — <session summary in 5 words>

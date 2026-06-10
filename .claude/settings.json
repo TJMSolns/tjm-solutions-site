@@ -54,6 +54,21 @@
             "type": "command",
             "command": "bash .claude/hooks/source-edit-check.sh",
             "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": "bash /home/tjm/Cloud/Dropbox/TJM-ALL/TJMSolns/.claude/snitches/secrets-snitch.sh",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/tjm/Cloud/Dropbox/TJM-ALL/TJMSolns/.claude/snitches/secrets-snitch.sh",
+            "timeout": 5000
           }
         ]
       }

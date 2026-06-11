@@ -26,6 +26,7 @@ thought leadership channel.
 - No broken internal links — `onBrokenLinks: 'throw'` is enforced in build; fix immediately
 - Node.js ≥ 20.0 required
 - All articles must have canonical links back to original Medium publication
+- **Medium-parity invariant (WQ-027, Tony directive 2026-06-10):** `/articles` must be a **superset** of https://tmoores.medium.com/ — every Medium article must exist on the site (site-only articles are fine; the reverse is not required). Check at every parity-relevant session: diff the Medium index (sitemap + profile page — the sitemap can lag recent posts) against `blog/*.mdx` canonicals; queue one WQ item per missing article
 - No Docusaurus swizzle — prefer CSS variable overrides in `custom.css`
 - Dark mode overrides: use `[data-theme='dark'] .className` in CSS modules, never `@media (prefers-color-scheme: dark)`
 

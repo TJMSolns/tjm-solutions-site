@@ -102,6 +102,7 @@ The `src/theme/BlogPostPage/index.tsx` wrapper injects this as a `<link rel="can
 
 ## Key Constraints
 
+- **Medium-parity invariant:** `https://www.tjm.solutions/articles` must be a **superset** of `https://tmoores.medium.com/` — every Medium article must exist on the site; site-only articles are fine (the reverse is not required). To audit: diff the Medium sitemap (`https://tmoores.medium.com/sitemap/sitemap.xml`) **plus** the profile page (sitemap can lag recent posts) against the canonical URLs in `blog/*.mdx`; queue one WQ item per missing article. (WQ-027, Tony directive 2026-06-10.)
 - `onBrokenLinks: 'throw'` — broken internal links fail the build. Fix immediately.
 - Node.js ≥ 20.0 required.
 - Prefer CSS variable overrides in `custom.css` over `yarn swizzle` (swizzling ejects theme components and creates long-term maintenance burden).

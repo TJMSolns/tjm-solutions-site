@@ -4,6 +4,34 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-005 — 2026-06-10 — Backlog sync, WQ-023 resolution, Medium-parity invariant (WQ-027)
+
+**Session:** Tony + Claude (status review → queue decisions → /next WQ-027)
+
+**What happened:**
+- **Committed 3 weeks of uncommitted governance backlog** found at session start (org-level sessions had edited site files without running site /handoff): harness gates in commit 90470d8, governance state in c2a3418. Pushed; remote switched to HTTPS with `gh` credential helper after sandbox SSH failure (`gh auth setup-git`; use `GIT_USER=TJMSolns npm run deploy`, not `USE_SSH=true`).
+- **WQ-023 resolved** (Tony confirmed: Medium live numbering stands): Part 12 = "When Good Enough Is Not", 13 = "It Was Never about the Money", 14 = "The Aggregate Cost of Composition", 15 = "A Case for Capabilities". WQ-021/WQ-024 unblocked; WQ-028/WQ-029 queued; WQ-022 ("Authentication Is Not Authority", part TBD) blocked on Medium publication per Tony directive — not on site before live on Medium.
+- **WQ-027 executed:** (a) Medium-parity invariant codified in CLAUDE.md Key Constraints + CONTEXT-KERNEL Non-Negotiables, with audit procedure (sitemap + profile diff vs blog canonicals) — commit 44f8580. (b) Full parity audit: Medium 22 articles vs site 17 Medium-canonical; 5 missing = Parts 12–15 (pre-queued) + "Modeling Distribution on Tracing Ideals" (COVID vaccine, 2020-12-06) → **WQ-030 queued**. Site is parity-complete once WQ-021/024/028/029/030 land.
+- **Org item WQ-P4-139 queued** (org WORK-QUEUE, lock protocol honored): extend org /handoff git-audit gate to sweep every repo touched in a session — closes the cross-repo gap that caused the backlog above.
+
+**Decisions made:** Medium numbering stands (Tony, 2026-06-10 — supersedes draft-file part labels); WQ-022 gated on Medium publication; remote auth via HTTPS/gh.
+
+**CONTEXT-KERNEL change:** Non-Negotiables — Medium-parity invariant added (WQ-027 / Tony directive 2026-06-10, org HL-068).
+
+**Harvest candidates:** Medium sitemap-diff parity-audit procedure (sitemap + profile page vs canonical greps) — reusable for any republished-content site.
+
+**Open items carried forward:**
+- WQ-030/018/019/020: unblocked Claude items (WQ-030 now queue head)
+- WQ-021/024/028/029: FP Parts 12–15 article adds — unblocked, content + pattern ready
+- WQ-022: blocked on Medium publication (Tony)
+- WQ-016/017: blocked on revenue chain (SCKB-275 → WQ-P4-011 → PO-007)
+- WQ-005/006/007/003/009: blocked on PDR-001
+- WQ-025 [PROPOSED]: deployment-currency check — awaiting groom promotion
+
+**Next owner:** any — `/next` picks up WQ-030 (COVID article add) or the four FP article adds
+
+---
+
 ## HL-004 — 2026-05-16 — Article SEO: og:type + BlogPosting JSON-LD
 
 **Session:** Tony + Claude (/next autonomous run, continued)

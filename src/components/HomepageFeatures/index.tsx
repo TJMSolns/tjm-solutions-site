@@ -58,15 +58,6 @@ const FeatureList: FeatureItem[] = [
       {id: 'EE-4', label: 'Engagement Architecture Review', href: '/services/engagement-architecture-review'},
     ],
   },
-  {
-    title: 'Workshop Management',
-    imageUrl: '/img/workshop-management.jpg',
-    description: (
-      <>
-        Organize and drive sessions with stakeholders to manage requirement discovery & elaboration, system mapping, gap/overlap analysis. Analyze organizational agility & readiness. Explore benefits and practical approaches to MSA, ML/AI Agentic frameworks.
-      </>
-    ),
-  },
 ];
 
 function Feature({title, imageUrl, description, offers}: FeatureItem) {

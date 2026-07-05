@@ -31,4 +31,32 @@ mistaken for a real entry, even though it contains example `## ESC-`/`**Status:*
 
 ---
 
-_No escalations yet._
+## ESC-001 — 2026-07-05 — WQ-031 / WQ-009 / WQ-005 / WQ-006 / WQ-007 / WQ-003 (infra, not a verifier ESCALATE)
+
+**Status:** open
+**Verifier tier:** N/A — the `verifier` subagent could not be spawned at all in this session
+**Question for Tony:** This session (executing the WQ-031 → WQ-009 → WQ-005/006/007 → WQ-003 → deploy
+chain per your direction) attempted to spawn the `verifier` agent per `.claude/agents/verifier.md` /
+`draw-verifier-tier.py` for the first item (WQ-031). The `Agent` tool call failed with
+`Agent type 'verifier' not found. Available agents: claude, claude-code-guide, Explore,
+general-purpose, Plan, statusline-setup` — tried at two different drawn tiers (opus, then a manual
+sonnet test) with the identical error both times, confirming this is NOT the DN-007
+model-tier-unavailable case (which `draw-verifier-tier.py`'s exclude-and-redraw mechanism is designed
+to handle) — it is that the custom `subagent_type: "verifier"` registration itself is not loaded in
+this session's environment, regardless of requested model. This session appears to be a sub-agent
+spawned by a parent orchestrator without custom `.claude/agents/*.md` definitions available to it (the
+"Available agents" list was static and identical before any project file was even read). I could not
+find a documented remedy for this failure mode (as opposed to tier-unavailability) — DN-007's redraw
+only changes the model tier argument, which does not address a missing agent-type registration. Per
+DN-004 ("do not fix-and-retry; escalate instead"), I am stopping the Done-transition workflow rather
+than inventing a workaround (self-certifying, hand-writing a PASS, or bypassing/disabling
+`pretooluse-done-gate.py`). **Question for Tony:** how should sessions in this kind of restricted
+sub-agent environment satisfy the verifier gate — e.g., should the gate accept a documented
+infra-unavailability carve-out (analogous to `GIT-DURABILITY-DEFER.md`), should this session be re-run
+from a top-level session where custom agents are registered, or is there a different invocation path
+for `subagent_type: "verifier"` I'm missing?
+**Evidence artifact:** `docs/agents/evidence/WQ-031.md` (Verifier-verdict left as `PENDING` — no fabricated
+PASS/VETO written)
+**Resolved:**
+
+---

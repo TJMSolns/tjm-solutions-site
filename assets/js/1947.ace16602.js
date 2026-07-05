@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunktjm_solutions_site=globalThis.webpackChunktjm_solutions_site||[]).push([[1947],{1947(s,e,t){t.d(e,{createWardleyServices:()=>i.J});var i=t(2295);t(2519)}}]);

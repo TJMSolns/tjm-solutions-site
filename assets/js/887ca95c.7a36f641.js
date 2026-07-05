@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunktjm_solutions_site=globalThis.webpackChunktjm_solutions_site||[]).push([[8903],{1799(s){s.exports=JSON.parse('{"name":"docusaurus-plugin-content-docs","id":"mdslides"}')}}]);

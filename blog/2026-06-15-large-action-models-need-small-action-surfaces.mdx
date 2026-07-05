@@ -1,0 +1,130 @@
+---
+title: "Large Action Models Need Small Action Surfaces"
+description: "Why commerce platforms should give large action models a small, governed set of typed actions rather than broad endpoint access — separating authentication from authority, and deciding before executing."
+date: 2026-06-15
+authors: [tony]
+tags: [functional-programming, ai, architecture]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 16
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/large-action-models-need-small-action-surfaces-257e02d01b03" />
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2026-06-15T00:00:00Z" />
+  <meta property="article:author" content="Tony Moores" />
+  <script type="application/ld+json">{`{"@context":"https://schema.org","@type":"BlogPosting","headline":"Large Action Models Need Small Action Surfaces","description":"Why commerce platforms should give large action models a small, governed set of typed actions rather than broad endpoint access — separating authentication from authority, and deciding before executing.","datePublished":"2026-06-15","author":{"@type":"Person","name":"Tony Moores","url":"https://www.tjm.solutions/about"},"publisher":{"@type":"Organization","name":"TJM Solutions","url":"https://www.tjm.solutions"},"url":"https://www.tjm.solutions/articles/2026/06/15/large-action-models-need-small-action-surfaces","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.tjm.solutions/articles/2026/06/15/large-action-models-need-small-action-surfaces"}}`}</script>
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 16*
+
+A language model can answer a question. An action model can do something about it. That distinction is going to matter more than most commerce platforms are ready for. Whether the term is "agent," "large action model," "task-specific AI," or something else that marketing teams have not finished sanding down yet, the direction is clear enough: software will not merely describe commercial options to buyers, operators, partners, and employees. It will increasingly select actions, call tools, negotiate constraints, and attempt to move workflows forward.
+
+In commerce, "move the workflow forward" is not a harmless phrase. It might mean reserving inventory. It might mean accepting a substitution. It might mean committing an order, issuing a refund, changing a shipping promise, requesting a quote, applying a contract price, cancelling a shipment, or escalating a return. These are not generic software actions. They move money, create obligations, expose data, affect inventory, alter customer trust, and (should) leave evidence behind for someone else to explain later.
+
+<!-- truncate -->
+
+That is why I think large action models need small action surfaces… small in the sense of bounded, intentional, typed, governed, testable, and explainable. If a model is going to act inside a commerce platform, the platform should not expose a broad pile of endpoints and hope the model chooses wisely. It should expose a deliberately constrained set of commercial capabilities whose meanings are explicit and whose use is governed before side effects occur. Ideally, that use should be governed by policy: who may do what, under which authority, in which context, and with what obligations.
+
+Authentication is not authority. Authentication gives the platform a fact about the caller. Authorization, in the commercial sense, requires a conclusion about the action. That sounds obvious until you look at how many systems blur the distinction. The gateway identifies the caller. A token is valid. A tenant claim exists. A scope says something like *orders:write*. A role check passes. The request enters the application, and from there the real business judgment starts leaking into whatever service happens to need it first. Coordinating policy, authority, and functionality across composed systems is already difficult. Leaving that coordination to an unsupervised action model is worse.
+
+There is a temptation to think of this as an AI safety problem first but I think it is a platform design problem that AI makes harder to ignore… A procurement agent may be allowed to search and compare products but not place orders. It may be allowed to place orders below a threshold but not above it. It may be allowed to buy from approved suppliers but not onboard new sellers. It may be allowed to request quotes but not accept substitutions. It may be allowed to share a shipping address but not employee contact data. It may be allowed to recommend a return disposition but not issue a refund. Put aside AI and automation for a moment and consider what kind of decisions one might trust to our human procurement agent and which might be less risky if driven by corporate policy… Where is that policy stated, how often does it change, how do you keep your workforce compliant? Driving actions through a governed capability service is handy whether or not you care about AI. If the platform already has vague actions, scattered policy, ambiguous failures, and poorly separated side effects, humans will learn how to "work the system"… LAMs will industrialize it. It will try more paths, faster, with more confidence, and then generate a persuasive explanation after the fact even if the system underneath cannot actually defend the outcome.
+
+A scope like *orders:write* may still be useful at the technical boundary, but it is too blunt to represent the full decision. The same order operation may be permitted for one buyer, blocked for another, allowed under one contract, escalated under another, permitted below one threshold, and denied above it. Those distinctions are not just token scopes. They are commercial authorities. If those distinctions live inside the incidental code paths of each adapter, interface, or service, consistency becomes accidental.
+
+The platform has to define the world the model is allowed to act within regardless if the operators are human or not. It should be a governed capability surface: a set of named commercial operations, each with explicit inputs, explicit outcomes, explicit authority checks, explicit obligations, and recorded evidence. Large action models and their ilk should not need broader access, they need a more disciplined action surface. A model can request an action. The platform decides whether the action is allowed. Execution follows only after the decision permits it. That sequencing matters.
+
+In a commerce system, deciding and doing are not the same thing. Evaluating whether an order can be placed is not the same as placing it. Calculating whether a refund is allowed is not the same as issuing it. Determining that a substitution is eligible is not the same as committing the customer to it. A safe action surface should make that distinction hard to skip. Functional programming gives us a useful way to think about the shape of that boundary because it encourages us to model the decision before we perform the effect. A simple model might look like this:
+
+```
+final case class GovernedIntent[A](
+  principal: BuyerPrincipal,
+  authority: DelegatedAuthority,
+  context:   CommercialContext,
+  action:    A
+)
+```
+
+The names above are doing most of the work. BuyerPrincipal is the actor: a person, an agent, an internal system, or some combination of them. DelegatedAuthority describes the authority under which that actor claims to operate. CommercialContext contains the facts that change the answer: account, contract, cost center, budget, seller eligibility, geography, payment terms, fulfillment constraints, regulatory concerns, risk signals, and whatever else the business needs to judge the action. The action is the thing being attempted.
+
+Already, this is more honest than a token and a scope. It says the commercial decision is not merely "who called?" It is "who is acting, on whose behalf, under what authority, in which context, attempting what?"
+
+```
+enum GovernedDecision:
+  case Permit(obligations: List[Obligation])
+  case Deny(reasons: List[PolicyReason])
+  case RequireApproval(route: ApprovalRoute, reasons: List[PolicyReason])
+  case RequireQuote(reasons: List[PolicyReason])
+  case Escalate(reasons: List[PolicyReason])
+  case CannotDetermine(gaps: List[EvidenceGap])
+```
+
+The decision also cannot be a Boolean without throwing away meaning. Commerce decisions are rarely just yes or no. A permitted action may carry obligations. A denied action should carry reasons. Approval may be the correct next step rather than an error. A quote may be required before the platform can commit to terms. Escalation may be appropriate when the request is unusual but not necessarily invalid. CannotDetermine is an honest answer when the platform lacks enough trustworthy information to decide.
+
+That last case matters more than it looks. A system that cannot determine whether an action is allowed should not pretend the action is approved. It also should not always pretend the action is forbidden. Missing certification evidence, stale contract data, unavailable freight quotes, unresolved authority claims, or conflicting seller information may require more information rather than a denial. Naming that state gives both the platform and the caller a better path. This is the kind of distinction that disappears when policy is treated as scattered conditionals and message strings.
+
+The capability that performs an action should respect the decision boundary. The exact Scala design can vary, but the architecture should make it natural to decide before executing.
+
+```
+trait GovernedCommerceCapabilities[F[_]]:
+  def decide[A](intent: GovernedIntent[A]): F[GovernedDecision]
+  def execute[A](
+    intent:   GovernedIntent[A],
+    decision: GovernedDecision.Permit
+  ): F[ExecutionResult]
+```
+
+That is one shape, not the shape. A real system might use workflow states, signed policy decisions, approval records, refined command types, or separate capabilities for different commercial actions. The load-bearing idea is the sequencing: execution follows a governed decision, and application code should never confuse a known caller with an authorized action.
+
+This is not FP decoration. This is the point. The model may be large. The action surface should be small. A small action surface is not just a security preference. It is an operational strategy.
+
+The larger and looser the action surface, the more the model has to infer. Inference is useful when writing prose. It is dangerous when moving money or creating obligations. A commerce platform should not ask a model to infer whether it may refund an order, accept a substitution, bypass an approval, expose a contract price, or ship to a restricted location. It should give the model a narrow vocabulary of actions and make the platform responsible for deciding whether each action is allowed.
+
+This is where functional programming and commerce architecture meet cleanly. Closed action vocabularies are easier to test than open-ended endpoint access. Explicit outcomes are easier to reason about than exceptions and strings. Deterministic decision logic is easier to simulate than workflows whose behavior depends on hidden state and incidental side effects. Policy records are easier to audit than logs assembled after a customer, partner, or regulator asks a question.
+
+A large action model may be able to plan across a broad commercial task. The platform should still require each meaningful step to pass through a governed capability because: Search is not reserve; Reserve is not commit; Commit is not refund; Refund is not appeasement; and Explain is not expose-the-rulebook. Each action has different risk, authority, evidence, and obligations. Treating them as one broad "commerce write" permission is exactly the kind of shortcut that feels fine until software starts acting faster than humans can supervise.
+
+This is also where protocol enthusiasm can mislead us. MCP, UCP, REST routes, storefront calls, scheduled jobs, procurement integrations, and customer service tools may all become ways into the platform. That does not mean each interface should rebuild the business interpretation of authority. The adapter should translate. The governed capability should decide.
+
+The implementation should execute only after the decision permits it. A request arrives through some interface. The platform authenticates the caller. The adapter turns the request into a governed intent. The capability evaluates that intent against authority, context, and policy. The result is encoded back to the caller. If execution is permitted, the platform performs the action and records what happened. That design gives every interface the same business spine. A storefront, a buyer agent, a support tool, and a scheduled process may have different presentation layers and different permissions, but they should not each invent a private theory of commercial authority.
+
+This is especially important for action models because the adapter layer will be tempting. It will be easy to make an MCP tool or UCP adapter that calls an internal endpoint directly because the demo looks good. The demo will not show the missing policy boundary. The demo will not show the missing evidence. The demo will not show the support case six months later when someone asks why the system accepted a substitution or issued a refund. The demo never pays the interest. Operations does.
+
+A governed action should leave evidence behind. Digital commerce produces disputes, escalations, approvals, reversals, and questions. Consider:
+
+```
+final case class PolicyDecisionRecord(
+  decisionId: DecisionId,
+  principal:  BuyerPrincipal,
+  authority:  DelegatedAuthority,
+  context:    CommercialContextSnapshot,
+  action:     RequestedAction,
+  decision:   GovernedDecision,
+  decidedAt:  Instant
+)
+```
+
+This record is not logging. It is evidence. It preserves who acted, on whose behalf, under which authority, against which context, producing which decision, and when. Execution records can then connect that decision to the effects that followed: reservation, approval request, order creation, cancellation, refund, shipment change, notification, or whatever else the workflow required.
+
+A platform that cannot produce this evidence is asking the organization to trust outcomes it cannot defend. That may be tolerable for low-risk interactions. It is a poor foundation for delegated purchasing, contract pricing, regulated goods, multi-seller commerce, high-value refunds, or any workflow likely to produce disputes.
+
+The explanation problem also changes once action models enter the system. A caller may need to know why an action was denied, why approval is required, why a quote is needed, or what obligations attach to a permitted action. That does not mean every caller should see the full rule book. A weakly authorized agent should not be able to probe the surface until it learns exact spend thresholds, seller risk scores, fraud signals, pricing floors, or internal approval logic. A buyer administrator may be entitled to more detail. An internal compliance team may be entitled to still more. Those differences are easier to manage when the system separates the decision, the evidence, the internal reasoning, the external explanation, and the next action. If the only output is a message string, teams will either reveal too much, reveal too little, or create a new convention for every integration.
+
+Testing a governed action surface is not the same as proving an authenticated caller can reach an endpoint. A platform that claims delegated purchasing, governed ordering, quote negotiation, return management, or explanation should be able to prove the commercial scenarios directly.
+
+*   Can an agent evaluate a purchase without committing it?
+*   Can it request a quote without accepting one?
+*   Can it place an order below its delegated threshold and be routed for approval above it?
+*   Can it buy from approved sellers and be denied for unapproved ones?
+*   Can it handle expired contracts, missing evidence, restricted categories, stale pricing, unavailable freight estimates, and retry after temporary failure?
+*   Can it prove that policy precedes execution?
+*   Can it prove that decision records exist and link to the side effects that followed?
+
+Those are not merely QA cases. They are the contract of the action surface.
+
+This is where Scala and FP are useful in a practical way. They do not answer governance questions for the business. Someone still has to decide who authors policies, how they are reviewed, how conflicts are resolved, how emergency exceptions work, and who is accountable when policy and business reality disagree.
+
+What they can do is keep the software boundary honest. Authority, context, action, decision, obligation, and evidence become explicit values rather than informal assumptions. Policy evaluation becomes a named step rather than a side effect of whichever service happened to receive the request. Execution follows the decision. Explanations are grounded in recorded facts. Tests target commercial scenarios directly instead of discovering policy through accidental end-to-end behavior.
+
+I do not know which agent or LAM predictions will come true on which timeline. The industry has a long history of naming the future before it knows how to operate the present. Some projects will fail. Some will be cancelled. Some will turn out to be RPA wearing a new hat. Some will matter a lot. But the direction is still worth taking seriously because the underlying shift is not speculative: software is being asked to act with more discretion. When software acts, authority matters.

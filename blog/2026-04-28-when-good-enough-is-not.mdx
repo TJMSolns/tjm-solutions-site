@@ -1,0 +1,246 @@
+---
+title: "When Good Enough is Not"
+description: "Why commerce systems that read fine to a human buyer routinely fail to give a purchasing agent a decision it can safely act on -- and how algebraic data types close that gap."
+date: 2026-04-28
+authors: [tony]
+tags: [functional-programming, digital-commerce, ai]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 12
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/when-good-enough-is-not-9b1287979f49" />
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2026-04-28T00:00:00Z" />
+  <meta property="article:author" content="Tony Moores" />
+  <script type="application/ld+json">{`{"@context":"https://schema.org","@type":"BlogPosting","headline":"When Good Enough is Not","description":"Why commerce systems that read fine to a human buyer routinely fail to give a purchasing agent a decision it can safely act on -- and how algebraic data types close that gap.","datePublished":"2026-04-28","author":{"@type":"Person","name":"Tony Moores","url":"https://www.tjm.solutions/about"},"publisher":{"@type":"Organization","name":"TJM Solutions","url":"https://www.tjm.solutions"},"url":"https://www.tjm.solutions/articles/2026/04/28/when-good-enough-is-not","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.tjm.solutions/articles/2026/04/28/when-good-enough-is-not"}}`}</script>
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 12*
+
+A purchasing manager needs 200 units of a replacement part delivered to a job site by Friday. The budget is already approved. The supplier must meet a certification requirement. Substitutions are acceptable, but only if they preserve the tolerance class and do not change the installation procedure.
+
+A person can work through that situation even when the systems involved are messy. They can search a supplier's site, read a product page, notice a message like "usually ships in one to two weeks," and decide whether that is worth a phone call. They can ask whether the warehouse really has enough stock. They can ask whether a substitute part is equivalent. They can judge whether the shipping estimate is conservative or risky. Human beings are very good at operating in the gaps between what a system says and what the business actually means.
+
+<!-- truncate -->
+
+A procurement agent has a different problem. It has to turn the same situation into a decision. It has to determine whether the supplier can satisfy the request, whether the item can be reserved, whether the delivery promise is real, whether the buyer is allowed to make the purchase, whether the price is valid long enough to act on, and whether the right next step is to proceed, compare alternatives, escalate, or stop. It cannot safely base that decision on a display message written for a person.
+
+That is where a lot of commerce systems start to look less ready than they appear. They may have APIs. They may have search, pricing, inventory, promotions, and fulfillment services. They may even have a modern architecture behind the scenes. But the answers exposed by those systems are often still shaped for human interpretation rather than machine decision-making. Consider a simple availability response.
+
+```scala
+final case class ProductAvailability(
+ sku: String,
+ status: String,
+ message: String,
+ quantityAvailable: Option[Int],
+ estimatedShipDate: Option[String]
+)
+```
+
+There is nothing unusual about this model. Something like it exists in countless systems. It probably started innocently. A page needed a status. A customer needed a friendly message. An integration needed a quantity. A supplier feed sometimes included an estimated ship date and sometimes did not. Over time, the model became useful enough to survive.
+
+For a human-facing screen, it may even be adequate. The problem is not that the fields are obviously wrong. The problem is that too much meaning is hidden inside them. What values can status contain? Does *available* mean available in a warehouse, available to promise, available after supplier confirmation, or merely active in the catalog? Does *quantityAvailable = None* mean unknown, unlimited, hidden from this buyer, not applicable, or temporarily unavailable because the inventory service is recalculating? Is *estimatedShipDate* a real promise, a rough estimate, a formatted display value, or a stale value copied from a supplier record the night before?
+
+The message field may say "usually ships in one to two weeks," and that may be perfectly reasonable copy for a product page. But it is not a business state. It does not tell an automated buyer whether to reserve the item, look for a substitute, accept the risk, or escalate to a person.
+
+The issue is not whether the product page reads well. The issue is whether the platform has modeled the promise it is making. A better model starts by naming the business states. A product may be available. It may be backordered. It may be restricted. It may be discontinued. The system may genuinely not know. Those situations imply different next actions, so collapsing them into a status string and a display message loses information the caller needs.
+
+```scala
+final case class ProductAvailability(
+  sku: Sku,
+  result: AvailabilityResult
+)
+
+enum AvailabilityResult:
+  case Available(
+    quantity: Quantity,
+    reservationWindow: ReservationWindow
+  )
+
+  case Backordered(
+    expectedDate: Option[LocalDate]
+  )
+
+  case Restricted(
+    reason: RestrictionReason
+  )
+
+  case Discontinued(
+    replacement: Option[Sku]
+  )
+
+  case Unknown(
+    reason: AvailabilityUnknownReason
+  )
+```
+
+This is still a small model, but it carries more meaning. If the product is available, the response includes a quantity and a reservation window. That tells the caller not only that stock exists, but also how long the answer can be trusted. If the product is backordered, the expected date is represented as a date rather than prose. If the product is restricted, the reason is part of the result. If the product is discontinued, a replacement may be provided. If the platform does not know, that uncertainty is explicit instead of being confused with zero stock, a missing field, or a vague message. The human-readable message can still exist. There is nothing wrong with rendering useful language for a user. But the message should be downstream from the structured result. It should not be the source of truth. Once the possible states are represented explicitly, the decision logic becomes easier to see.
+
+```scala
+def nextStep(result: AvailabilityResult): BuyerAction =
+  result match
+    case AvailabilityResult.Available(quantity, window) =>
+      BuyerAction.Reserve(quantity, window)
+
+    case AvailabilityResult.Backordered(expectedDate) =>
+      BuyerAction.CompareAlternatives(expectedDate)
+
+    case AvailabilityResult.Restricted(reason) =>
+      BuyerAction.Escalate(reason)
+
+    case AvailabilityResult.Discontinued(replacement) =>
+      BuyerAction.EvaluateReplacement(replacement)
+
+    case AvailabilityResult.Unknown(reason) =>
+      BuyerAction.RetryOrEscalate(reason)
+```
+
+This is not clever code, and it should not be. The value is that the business cases are visible. A reviewer can inspect them. A test can exercise them. If a new availability state is added later, the compiler can force the team to revisit the places where that state matters.
+
+The compiler does not understand procurement. It does not know whether the business policy is wise. But if the business possibilities are modeled honestly, the compiler can help prevent the team from silently forgetting one of them. That matters in any system. It matters more when software is acting on the answer.
+
+Availability is only the easiest example. Price has the same problem.
+
+```scala
+final case class PriceResponse(
+  sku: String,
+  price: BigDecimal,
+  currency: String,
+  message: Option[String]
+)
+```
+
+This might be enough to put a number on a page, but it is not enough to support a delegated purchase. The caller needs to know what kind of price this is. Is it a list price, a contract price, a promotional price, or a quote? Is it valid for this buyer? Does it expire? Does it include freight? Does it depend on quantity? Can it be used to create an order, or is it only informational? Those distinctions are not presentation details. They determine whether another system can act.
+
+```scala
+final case class PriceQuote(
+  sku: Sku,
+  result: PriceQuoteResult
+)
+
+enum PriceQuoteResult:
+  case Quoted(
+    amount: Money,
+    validUntil: Instant,
+    basis: PriceBasis
+  )
+
+  case RequiresApproval(
+    reason: ApprovalReason
+  )
+
+  case NotEntitled(
+    reason: EntitlementFailure
+  )
+
+  case Unavailable(
+    reason: PricingUnavailableReason
+  )
+```
+
+Now the caller has something to work with. If the result is Quoted, the agent knows the amount and the time window. If the result is RequiresApproval, the agent knows this is not a technical failure but a business workflow. If the result is NotEntitled, retrying will not help unless the authority changes. If the result is Unavailable, the system can classify why pricing could not be produced.
+
+Fulfillment has the same shape. "Ships soon" is not a fulfillment promise. It is copy. A useful fulfillment model should distinguish between shipping, pickup, digital delivery, appointment scheduling, split fulfillment, and unavailability.
+
+```scala
+enum FulfillmentPromise:
+  case ShipsBy(
+    date: LocalDate,
+    method: ShippingMethod,
+    cost: Money
+  )
+
+  case PickupAvailable(
+    location: LocationId,
+    window: PickupWindow
+  )
+
+  case DigitalDelivery(
+    method: DigitalDeliveryMethod
+  )
+
+  case AppointmentRequired(
+    serviceWindow: ServiceWindow
+  )
+
+  case Unavailable(
+    reason: FulfillmentFailure
+  )
+```
+
+Again, the goal is not to decorate the code with types. The goal is to stop hiding different business meanings behind the same shape. A buyer trying to source replacement parts by Friday needs to distinguish between "can ship by Friday," "can be picked up," "requires scheduling," and "unavailable." A model that cannot express those differences clearly is asking the caller to guess.
+
+This is where functional programming becomes practical rather than philosophical. The useful habit is not abstraction for its own sake. The useful habit is representing the domain honestly. If something may be absent, make absence explicit. If something may fail, make failure explicit. If there are several valid business states, model them as distinct cases. If a decision should be made before an effect occurs, separate the decision from the effect. If a policy determines behavior (and it must in an agentic world), make that policy visible and testable.
+
+Those habits are valuable in ordinary enterprise systems because they reduce confusion. They become more valuable as the system is exposed to automation because automated callers do not compensate for ambiguity the way people do. They classify results and choose next actions. That classification is only as good as the model.
+
+There is another issue hidden underneath the availability example. Many systems mix the decision with the action. A method checks inventory, updates a reservation, recalculates a cart, logs a message, publishes an event, and throws an exception if something goes wrong. It may work most of the time, but it is hard to inspect. It is hard to test without half the world attached. It is hard to explain after the fact. A functional style encourages a different separation. First decide. Then act.
+
+```scala
+def decideAvailability(
+  inventory: InventorySnapshot,
+  request: AvailabilityRequest
+): AvailabilityResult =
+  inventory.find(request.sku) match
+    case Some(item) if item.available >= request.quantity =>
+      AvailabilityResult.Available(
+        quantity = item.available,
+        reservationWindow = item.reservationWindow
+      )
+
+    case Some(item) if item.backorderDate.isDefined =>
+      AvailabilityResult.Backordered(
+        expectedDate = item.backorderDate
+      )
+
+    case Some(item) if item.restricted =>
+      AvailabilityResult.Restricted(
+        reason = RestrictionReason.BuyerNotEligible
+      )
+
+    case Some(item) if item.discontinued =>
+      AvailabilityResult.Discontinued(
+        replacement = item.replacement
+      )
+
+    case Some(_) =>
+      AvailabilityResult.Unknown(
+        reason = AvailabilityUnknownReason.InconsistentInventoryState
+      )
+
+    case None =>
+      AvailabilityResult.Unknown(
+        reason = AvailabilityUnknownReason.SkuNotFound
+      )
+```
+
+This function does not reserve inventory. It does not update a database. It does not publish an event. It decides. Given the same inventory snapshot and the same request, it produces the same answer. That makes the decision easier to test, easier to review, and easier to explain.
+
+The reservation still has to happen. Real commerce systems mutate the world. They create orders, reserve inventory, authorize payments, schedule shipments, send emails, and publish events. Pretending otherwise would be silly. The point is not to eliminate side effects. The point is to avoid smearing side effects across the logic that determines what should happen. When the decision is explicit, the platform can record it.
+
+```scala
+final case class AvailabilityDecisionRecord(
+  request: AvailabilityRequest,
+  result: AvailabilityResult,
+  factsUsed: List[FactReference],
+  decidedAt: Instant
+)
+```
+
+That record is not exciting, but it is important. It tells us what was asked, what was decided, which facts were used, and when the decision was made. In a human-only flow, that may be useful. In a delegated purchasing flow, it may be necessary. If software acted on behalf of a person or an organization, someone will eventually ask why it acted the way it did.
+
+It is tempting to think of agent-facing commerce as an API problem. Add an endpoint. Add a protocol adapter. Add documentation. Expose the same underlying behavior through a new interface.
+
+That can help only if the underlying behavior is clear enough to expose. If the internal model cannot distinguish unavailable from unknown, an adapter will not make the distinction real. If pricing cannot say how long a quote is valid, an agent cannot safely treat the price as actionable. If fulfillment promises are display strings, they remain display strings no matter how modern the interface around them is. If you are currently neck-deep in "making the catalog machine-readable," or "slapping an agentic interface" on your current commerce system to get it "Agent-Ready," you may be fooling yourself. The contract starts in the model.
+
+That does not mean the internal model and the external model must be identical. They often should not be. Internal services have histories, constraints, and implementation details that do not belong in a public capability. But somewhere between the internal system and the external promise, the platform has to decide what it is willing to say clearly. That promise needs a shape.
+
+Functional programming gives us useful tools for shaping it. Algebraic data types let us name business states. Pattern matching makes handling visible. Option makes absence explicit. Either and similar types make failure explicit. Pure functions make decisions easier to test. Immutable values make facts and records safer to pass around. Composition lets policy and workflow be assembled without burying every rule in one procedural knot.
+
+Human-centered systems have often survived by relying on people to absorb that hidden meaning. A vague availability message becomes a phone call. A missing attribute becomes a judgment call. A promotion failure becomes a support ticket. A strange status becomes tribal knowledge. Those workarounds are not free, but organizations know how to live with them.
+
+Software buyers operate differently. They compare structured signals. They rank confidence. They retry. They escalate based on policy. They choose another supplier when the current one cannot provide a reliable answer. The competitive question changes from "Can a customer complete checkout?" to "Can another system understand what we are able to promise?"
+
+That question reaches deeper than the API gateway. It reaches into the ordinary models that represent availability, price, fulfillment, authorization, policy, and order state. If those models are vague, the platform's promises will be vague. If those models are explicit, the platform has a chance to be understood, trusted, and automated.

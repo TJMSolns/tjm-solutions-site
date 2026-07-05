@@ -1,0 +1,75 @@
+---
+title: "A Case for Capabilities"
+description: "Why agent-facing commerce platforms should model business capabilities as a typed algebra before mapping them onto any protocol -- MCP, UCP, or otherwise."
+date: 2026-06-07
+authors: [tony]
+tags: [functional-programming, digital-commerce, ai]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 15
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/a-case-for-capabilities-9db4366a07d0" />
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2026-06-07T00:00:00Z" />
+  <meta property="article:author" content="Tony Moores" />
+  <script type="application/ld+json">{`{"@context":"https://schema.org","@type":"BlogPosting","headline":"A Case for Capabilities","description":"Why agent-facing commerce platforms should model business capabilities as a typed algebra before mapping them onto any protocol -- MCP, UCP, or otherwise.","datePublished":"2026-06-07","author":{"@type":"Person","name":"Tony Moores","url":"https://www.tjm.solutions/about"},"publisher":{"@type":"Organization","name":"TJM Solutions","url":"https://www.tjm.solutions"},"url":"https://www.tjm.solutions/articles/2026/06/07/a-case-for-capabilities","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.tjm.solutions/articles/2026/06/07/a-case-for-capabilities"}}`}</script>
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 15*
+
+Operators preparing to support agentic commerce will eventually have to talk about protocols. That may mean MCP, UCP, a marketplace-specific interface, a procurement network, a partner API, or something that has not yet settled into a standard. If they start with a protocol, the first questions tend to be mechanical. Which tools do we expose? Which existing endpoints map to those tools? What schema does this protocol expect? How do we authenticate the caller? How do we serialize the response? Those are all necessary questions, but they are boundary questions. They deal with the outside edge of the system. The deeper question is whether there is a coherent business capability behind that edge.
+
+<!-- truncate -->
+
+A protocol can expose a tool called *evaluatePurchase*, *createCart*, *checkInventory*, or *submitOrder*. It cannot decide what those operations mean. It cannot decide whether the platform is making an estimate, a quote, a reservation, a recommendation, or a commitment. It cannot decide whether the same rules are applied when the caller is a storefront, a procurement agent, a marketplace, a customer service representative, or an automated replenishment job. That is platform work.
+
+Functional programming is useful here because it gives us a way to describe that platform work before we turn it into an adapter. It allows us to define a capability surface as a small, typed algebra of business operations: inputs with clear meaning, outputs with known outcomes, and effects kept visible at the boundary. In less formal language, it gives us a disciplined way to write down what the business can do before arguing about how a protocol should call it.
+
+A capability is not an endpoint with a nicer name. It is not a bundle of endpoints hidden behind another endpoint. It is not a protocol operation by itself. A capability is a business question the platform agrees to answer or a business action the platform agrees to perform under defined rules. Given this buyer, acting under this authority, requesting this quantity of this item, for this destination, under these constraints, is there an actionable offer the platform is prepared to stand behind? That is not a product, inventory, or a price lookup. It may depend on all of them, but it is not reducible to any one of them. That is the capability. In code, the idea can be sketched very simply.
+
+```
+PurchaseIntent => PurchaseEvaluation
+```
+
+This is the shape we want the business decision to have: structured intent in, structured evaluation out. The live system may need effects to gather facts, apply policy, record the decision, or reserve inventory, but the business meaning should still be expressible as a clear transformation. That is the point of the capability surface: it gives the decision a home before the protocol adapter gets involved. PurchaseIntent captures who is asking, under what authority, for what item, in what quantity, with what constraints. PurchaseEvaluation is the platform's commercial answer. The purchase may be possible with an offer. It may be possible only with approval. It may be blocked for specific reasons. It may not be determinable because a required fact is missing or a dependent system cannot answer. The capability is the promise to turn one into the other. In Scala, that might become part of a small capability surface.
+
+```scala
+trait CommerceCapabilities[F[_]]:
+  def evaluatePurchase(intent: PurchaseIntent): F[PurchaseEvaluation]
+  def reserveOffer(command: ReserveOffer):      F[ReservationOutcome]
+  def commitOrder(command: CommitOrder):        F[OrderCommitment]
+  def explainDecision(id: DecisionId):          F[DecisionExplanation]
+```
+
+This is not REST, MCP or UCP. It is the platform saying, "We know how to answer this business question." The F[_] matters because the real world is involved. Evaluating a purchase may require database reads, service calls, policy checks, pricing calculations, inventory snapshots, fulfillment estimates, and audit records. Functional programming does not pretend those effects disappear. It asks us to keep them at the boundary so the business operation still has a visible shape.
+
+That visible shape is the valuable part. Product, inventory, pricing, fulfillment, entitlement, and policy can remain separate internally. The caller does not have to become the orchestrator of those services. The platform accepts the responsibility for turning internal facts into an external business answer. Once that idea is clear, other capabilities become easier to identify.
+
+A purchase evaluation answers whether the platform can make an offer. A reservation answers whether the platform can hold that offer long enough for the caller to act. An order commitment answers whether the reserved offer can become an order under the caller's authority and payment instruction. An explanation answers why a decision was made.
+
+Those are not random verbs. They are stages of trust. The platform first evaluates. Then it may reserve. Then it may commit. Later, it may explain. That gives the capability surface a shape without requiring the article to drown in domain fields. *evaluatePurchase* prevents every caller from reconstructing a purchase decision from product, price, inventory, fulfillment, and policy fragments. *reserveOffer* gives the platform a way to stabilize an answer that might otherwise go stale. *commitOrder* gives the platform a place to enforce idempotency, authority, and order creation rules. *explainDecision* acknowledges that delegated execution needs accountability, not just success and failure messages.
+
+If a team starts with MCP or UCP or any other protocol and maps protocol operations directly onto the services it already has, it may produce something callable without producing something coherent. The agent can reach the system, but the adapter is forced to assemble the business meaning at the edge. It becomes the place where pricing semantics, buyer authority, reservation behavior, retry rules, and explanation logic are discovered or improvised. That is backwards, and a little scary.
+
+The adapter should be boring. A request arrives through a protocol. The adapter decodes it into a domain request or command. The capability evaluates or performs the operation. The adapter encodes the result back into the protocol response.
+
+```scala
+final class AgentProtocolAdapter[F[_]](
+  capabilities: CommerceCapabilities[F]
+):
+  def evaluatePurchaseTool(input: AgentInput): F[AgentResult] =
+    for
+      intent <- decodePurchaseIntent(input)
+      result <- capabilities.evaluatePurchase(intent)
+    yield encodePurchaseEvaluation(result)
+```
+
+This is the right kind of boring. The adapter is not deciding what a purchase means. It is not inventing policy. It is not coordinating half the platform by itself. It is translating between an external protocol and an internal capability that already exists.
+
+That separation has a practical advantage beyond cleanliness. It means the same capability can be exposed through more than one surface. A web checkout, a customer service tool, a scheduled replenishment job, a REST API, an MCP server, and a commerce-specific protocol adapter may all need to evaluate purchases, reserve offers, commit orders, and explain decisions. If each surface implements those behaviors separately, the platform drifts. If each surface delegates to the same capability algebra, the platform has a better chance of remaining consistent, even when the implementation is not. The algebra describes what can be done. Different interpreters decide how it is done in different contexts.
+
+The production interpreter will need to perform real work, coordinate real services and produce the typed business results promised by the capability surface. A test interpreter can exercise the same capability without requiring the entire platform to be running… Agent-facing behavior should not only be tested through protocol calls and integration environments. The business promise should be testable directly. If the platform says a reservation command is idempotent, that behavior should be tested against the reservation capability, not merely inferred from a happy-path demo. If the platform says every purchase evaluation has an explanation, that should be tested against the capability itself. A simulation interpreter may be even more valuable. Before allowing agents to execute real transactions, we may want to know how the platform behaves under a supply shortage, a regional fulfillment outage, an expired contract, a missing certification, an unclear buyer authority, or a supplier-direct lead time change. If the capability surface is independent of the protocol adapter, simulation becomes a natural extension. The same business question can be asked without changing the world. This is a more important point than it may first appear. Agent readiness is not just about letting agents act. It is also about letting teams understand what agents would do before granting them more authority.
+
+No one wants to be surprised when real money and goods are being exchanged, which is why it is so much more important to nail down our interaction model unequivocally than it is to agree on a language or protocol for such interactions. Modeling capability surfaces within a FP paradigm is a convenient and extensible way to do so.

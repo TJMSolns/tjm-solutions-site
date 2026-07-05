@@ -1,0 +1,124 @@
+---
+title: "What Time Is It?"
+description: "Why treating Instant.now() as a plain value instead of an explicit input is a silent source of pricing and business-logic bugs in commerce systems."
+date: 2026-07-05
+authors: [tony]
+tags: [functional-programming, digital-commerce, architecture]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 18
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/what-time-is-it-7bd0af35d390" />
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2026-07-05T00:00:00Z" />
+  <meta property="article:author" content="Tony Moores" />
+  <script type="application/ld+json">{`{"@context":"https://schema.org","@type":"BlogPosting","headline":"What Time Is It?","description":"Why treating Instant.now() as a plain value instead of an explicit input is a silent source of pricing and business-logic bugs in commerce systems.","datePublished":"2026-07-05","author":{"@type":"Person","name":"Tony Moores","url":"https://www.tjm.solutions/about"},"publisher":{"@type":"Organization","name":"TJM Solutions","url":"https://www.tjm.solutions"},"url":"https://www.tjm.solutions/articles/2026/07/05/what-time-is-it","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.tjm.solutions/articles/2026/07/05/what-time-is-it"}}`}</script>
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 18*
+
+A customer adds a jacket to their cart on Friday night. It is on promotion: 30% off, a weekend sale. They get distracted, come back Monday morning, and check out. What do they pay?
+
+There is a correct answer, a defensible answer, and the answer the code actually gives. In a surprising number of systems those are three different numbers, and the last one was chosen by nobody at all. The code's answer turns on one small decision made deep inside a pricing function: when that function needed to know the time, where did it get it?
+
+<!-- truncate -->
+
+If it called something like `Instant.now()`, it got Monday. The weekend sale is over. The customer is charged full price, and the screen that showed them 30% off on Friday has no memory and no vote. They are now a support ticket, and they are not wrong to be annoyed.
+
+## The Innocent-Looking Line
+
+`Instant.now()` is the most innocent-looking line of code in any commerce system. It reads like a value, a plain fact, the way π or `False` is a fact. It is not a value. It is an effect. Every time you call it, it returns something different, which is precisely the thing a pure function does not do.
+
+A function that calls `now()` inside its body may still be a method, but it is no longer a pure function. Give it the same cart, the same customer, the same everything, and it will hand back different prices depending on what minute it happened to run. You cannot unit-test it without freezing the clock. You cannot replay it to find out what it did last Tuesday. You cannot fully reason about it, because part of its input is invisible. It is not in the signature. It is reached for in the dark.
+
+The fix is almost too small to call a technique. Stop fetching the time. Receive it:
+
+```scala
+// reaches for an ambient effect — not really a pure function
+def priceCart(cart: Cart): Money
+
+// honest — its answer depends on `asOf`, and the signature says so
+def priceCart(cart: Cart, asOf: Instant): Money
+```
+
+The second version is at least honest with respect to time: same cart, same `asOf`, same time-dependent answer, every minute of every day. But notice the bargain that word "honest" is striking, because the rest of the function still has to keep it. `asOf` is the first ambient input you have dragged into the open, and it is not the only one. The same pricing function may also depend on catalog prices, tax rules, customer eligibility, contract terms, inventory promises, and promotion policies. Each of those is another invisible argument until you name it too. Time is simply the one nobody notices, because reaching for it feels like reading a constant.
+
+The deterministic part, real as it is, is not even the main prize. The main prize is the word *caller*. In the second version the pricing function no longer decides which moment matters. The caller does. And the caller is the part of the system that actually knows. This is the FP habit hiding under the syntax: stop letting business facts enter through side doors.
+
+## "Now" Is Almost Never the Time You Want
+
+"Now" is almost never the time you want because in commerce the time you want is almost never "now."
+
+The price as of when the cart was created. The price as of when the cart was quoted. The tax rate as of the order date. The contract terms as of the ship date. The exchange rate as of the moment payment was captured. A revenue report as of the end of the quarter. Every one of those is a question about a specific business moment, anchored to a business event, and not one of them is answered by "whatever time it is right now."
+
+A naive system has exactly one notion of time, and it is `now()`, and it is whatever moment the code happened to execute. A commerce system that is telling the truth has many times, each anchored to an event and each carried explicitly as data: the cart remembers when it was created, the quote remembers when it was issued, the order remembers when it was placed, the payment remembers when it was captured, the shipment remembers when it left. "Now" is just one more instant in that set, and usually not the one the business rule means.
+
+Return to the jacket. It is tempting to say the bug is simply that the customer should have gotten the Friday price, but that is not quite right, and a sharp reader will push back: promotions expire, and Monday checkout at Monday prices can be perfectly defensible. They have a point. The business rule might be "price as of checkout." It might be "price as of when the cart was quoted." It might be "price as of reservation, until the reservation lapses." A flash sale answers one way, a negotiated contract another.
+
+The bug is not that Monday was chosen. The bug is that the pricing function chose Monday silently, by reaching for the clock instead of receiving the business moment.
+
+Pass an `asOf` and the choice moves to the part of the system entitled to make it: checkout, the cart, the quote, the promotion engine, whichever one the business says owns the price. The pricing function stops voting on a question that was never its to answer.
+
+That is the three numbers from the opening, resolved. The correct price is whatever instant the business deliberately chose. The defensible price is the proof that the instant is a real decision with more than one good answer, not a default to be stumbled into. And the price the code produced is the one no decision ever reached, because a low-level function made the call in the dark.
+
+## Policy, Promise, Contract
+
+A promotion is not merely "30% off." That is the math, not the rule. A promotion is a pricing policy. Sometimes it is also a promise. Sometimes, in B2B or contracted commerce, it is effectively part of a commercial agreement. Those are not the same thing, but they are close enough to be dangerous when the code treats them as a discount plus a clock call. A policy says what is allowed. A promise says what the customer was led to expect. A contract says what the business is obligated to honor.
+
+A weekend promotion may begin as a policy: 30% off jackets between Friday and Sunday. Once shown, quoted, reserved, or attached to a cart, that policy may become a promise. Once tied to a negotiated account, a purchase agreement, or a contract price book, it may become something stronger. The code should not blur those states by calling `now()` and hoping the business meaning survives. This is why `asOf` matters. It is not just a testing trick. It is the place where the system admits that pricing is not only arithmetic. Pricing is a decision made under policy, promise, and time.
+
+## Modeling the Window
+
+If we look closely at time-dependent commerce rules, most of them are not about an instant at all. They are about a window. A promotion runs from a start to an end. A contract price is effective for a term. A tax rate applies from a date until it is superseded. A loyalty benefit expires after a period. A return policy applies for thirty days after delivery. Model the window as a value, and "is this in effect?" becomes a pure function of the window and an instant:
+
+```scala
+final case class EffectivePeriod(from: Instant, until: Option[Instant]):
+  def contains(at: Instant): Boolean =
+    !at.isBefore(from) && until.forall(at.isBefore)
+```
+
+`until` is an `Option` because "effective from now until further notice" is a real and common case, a price that has no scheduled end. An open-ended window is a thing the type should be able to say plainly, not something you fake with a magic year-9999 date that some other code will one day mistake for data.
+
+Now a promotion is an `EffectivePeriod` plus a discount. "Does it apply to this order?" is `promotion.period.contains(asOf)`, a pure check, with no clock call anywhere near the business rule, and with the caller supplying the instant the business actually cares about.
+
+## Whose Monday?
+
+One last place the clock lies, and it folds straight back into the discussion above. An `Instant` is a point on the timeline, the same point everywhere. A business date is a local calendar claim, and it does not become meaningful until the system knows the zone the rule is evaluated in. "March 14th," "the end of the quarter," "Black Friday," "midnight on Monday": none of them has an answer until you say where. And once you fix a place, a date is usually not a point but a window: local midnight through the start of the next local day.
+
+A promotion that runs from midnight to midnight on Monday is not complete until the system knows whose Monday it is. If the operator owns the promotion calendar, then Monday means Monday in the operator's business zone. However, Monday may mean Monday in the buyer's local zone, or the delivery address zone, or the market in which the offer was made. That's a business decision.
+
+Those are different policies. Neither is more correct in the abstract. The bug is when the code treats "Monday" as obvious:
+
+```scala
+final case class BusinessDay(date: LocalDate, zone: ZoneId):
+  def period: EffectivePeriod =
+    val start = date.atStartOfDay(zone).toInstant
+    val end   = date.plusDays(1).atStartOfDay(zone).toInstant
+    EffectivePeriod(start, Some(end))
+```
+
+That small type carries a large admission: "Monday" is business language. Pricing code cannot safely use it until some boundary has translated it into an effective period. The important choice is not hidden in a date parser, a database default, a JVM timezone, or a server clock. It is named. It is modeled. It is available for review.
+
+The same shape appears outside promotions. Buyer's remorse periods, return windows, cancellation deadlines, SLA clocks, loyalty expiration, quote expiration, contract renewal notices, and subscription grace periods are all promises with a clock attached. "Thirty days after delivery" sounds simple until you ask whether the clock starts at shipment, delivery scan, customer receipt, local delivery time, or the end of the delivery day. Again, the answer is not universal. The answer is policy.
+
+Functional programming does not tell you which policy to choose. It gives you habits that make the choice visible.
+
+## Establish It Once, Carry It Through
+
+So far this is one function and one caller. Your real system is many services, and the rule scales in a precise way: establish the business instant once, at the edge, and carry it through.
+
+Checkout fixes the moment that prices the order, and every downstream service that touches that price receives the same `asOf` instead of reading its own clock. A request that crosses five services and lets each call `now()` is a request that disagrees with itself about when it happened. Maybe only by milliseconds. Maybe by seconds. Maybe by far more once retries, queues, schedulers, batch jobs, or clock drift enter the picture.
+
+The instant that matters is a fact you establish once and carry, exactly like the order id or the customer id, not something every service rediscovers on its own. That does not mean your system never reads the clock. Of course it does. Something at the edge has to observe the world. The point is not to pretend time is unreal. The point is to decide where the effect belongs. Read the clock where the system accepts a command, records an event, issues a quote, captures payment, or evaluates a policy. Then pass the result as data.
+
+Effects at the edge. Facts in the core. That sentence is easy to say and harder to practice, but time is one of the cleanest places to start. The clock is the single most reached-for ambient dependency in any system, and the least noticed, because reaching for it feels like reading a constant.
+
+It is not a constant. It is the one input guaranteed to be different every time you look. You knew that. That's why you used it to seed your random number generator.
+
+Pulling it into the signature is a one-arg change, `asOf: Instant`, and it turns a function that secretly depends on when it ran into one that honestly depends on when you tell it. The engineering benefits follow from that honesty: the test that no longer needs a frozen clock, the replay that can ask "what would this have priced in March," the audit that can explain which policy was in effect, the bug that cannot happen because the caller, not the calendar, chose the moment.
+
+"What time is it?" sounds like a question with one answer. In a commerce system it has as many answers as there are business events: cart-created, quote-issued, order-placed, payment-captured, shipment-sent, rate-quoted, delivery-confirmed, return-requested. A function that calls `now()` has chosen one of them for you, silently, and, as the customer with the expired weekend sale discovered, usually the wrong one.
+
+Make it an argument. Let the part of the system that knows which time matters be the part that says so.

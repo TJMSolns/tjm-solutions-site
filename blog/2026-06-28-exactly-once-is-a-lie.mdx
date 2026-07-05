@@ -1,0 +1,79 @@
+---
+title: "Exactly Once Is a Lie"
+description: "Why exactly-once delivery is impossible over an unreliable network, and how modeling an effect as a function of its intent -- not bolting on dedupe infrastructure -- is what actually makes a retry safe."
+date: 2026-06-28
+authors: [tony]
+tags: [functional-programming, architecture, microservices]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 17
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/exactly-once-is-a-lie-719fa7106891" />
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2026-06-28T00:00:00Z" />
+  <meta property="article:author" content="Tony Moores" />
+  <script type="application/ld+json">{`{"@context":"https://schema.org","@type":"BlogPosting","headline":"Exactly Once Is a Lie","description":"Why exactly-once delivery is impossible over an unreliable network, and how modeling an effect as a function of its intent -- not bolting on dedupe infrastructure -- is what actually makes a retry safe.","datePublished":"2026-06-28","author":{"@type":"Person","name":"Tony Moores","url":"https://www.tjm.solutions/about"},"publisher":{"@type":"Organization","name":"TJM Solutions","url":"https://www.tjm.solutions"},"url":"https://www.tjm.solutions/articles/2026/06/28/exactly-once-is-a-lie","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.tjm.solutions/articles/2026/06/28/exactly-once-is-a-lie"}}`}</script>
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 17*
+
+You send a command to unlock a door; not a metaphor, an actual lock, on an actual door, opened over the network because a tenant is standing outside it and your service has decided to let them in. The command goes out. Somewhere between your server and the lock a packet is lost — not the command, the acknowledgment. The lock opened. The confirmation never came back. From where your code stands, the operation has no result. The safest-looking move, the one every retry policy in the world will make, is to send the command again.
+
+Whether that second command is harmless or a small disaster was decided long ago, not by the network, but by whoever modeled the operation. And the same question hides inside far more than the state of a lock. Provision a server, and a lost reply means you pay for two. Issue a customer the license they bought, dispatch a shipment, send a notification, publish a post, grant a permission… Every one is the same operation: an effect that leaves your control and cannot be pulled back, reached across a channel that can lose the receipt.
+
+<!-- truncate -->
+
+Underneath all of these is a single fact, and it has nothing to do with what the operation was about. Over an unreliable channel, the caller cannot tell "the operation failed" apart from "the operation succeeded and the response was lost." From the outside the two are identical — you spoke into the dark and nothing came back. The only safe response to *I don't know whether it worked* is to do it again. Retries are not a malfunction. They are the rational answer to silence.
+
+A person who gets no confirmation might refresh once and give up; an automated caller (or a partner integration, a job runner, an agent acting on someone's behalf, etc.) retries instantly and relentlessly, the moment a reply goes missing. So the retry is a given. The only real question is what the operation does when it arrives. There are two kinds of answer, and the difference between them is the whole point of this piece.
+
+One answer reaches outward. Put a dedupe table in front of the operation; route everything through a broker that promises to deliver each message once; bolt an idempotency layer onto the gateway. Infrastructure remembers on the operation's behalf. The most respectable version of reaching outward is to wrap the whole thing in a transaction… and when the entire effect lives inside one database, you should, because a database can roll back, so a retry redoes nothing or redoes it cleanly. But that is the lucky case: the one place the effect can be taken back. The world cannot. You cannot un-unlock a door, un-send an email, un-ship a box, un-provision a server. The instant an effect has happened out in the world, rollback leaves the table — and with it every "just make it transactional" answer, including two-phase commit, which needs every participant to be a thing that can hold a change in suspense and undo it on command. Alas, most can't do that.
+
+The other answer reaches inward. Instead of surrounding the operation with machinery that remembers, it changes what the operation *is*, so that running it twice is the same as running it once, so it stops mattering how many times the retry fires, because the second call produces nothing new to clean up. This is the functional move, though it rarely gets called that: make an effect behave like a function of its intent. A function, given the same input, returns the same result and changes nothing the second time you call it. An operation with that property doesn't need a platform to remember for it. The remembering is built into its type.
+
+For an operation to behave like a function of its intent, it first has to know what its intent *is* — that this attempt and that earlier one mean the same act. That is all an idempotency key is, though the term makes it sound like a billing feature. It is a name for one specific intended act, generated by the caller and carried with the request: not "an unlock" but *this* unlock, for *this* tenant at *this* door at *this* moment.
+
+```scala
+opaque type IntentId = String   // names one intended act; generated by the caller
+final case class GrantAccess(
+  intent:  IntentId,
+  account: AccountId,
+  scope:   Scope
+)
+```
+
+The caller coins the name once, when the intent forms, and reuses it on every retry of that same intent. Two attempts at one act carry one name; two different acts carry two. Coin it in the wrong place (on the server, on receipt, for example) and every retry looks new, because the server has stamped each attempt as unique. The name has to originate with the intent and travel with it.
+
+Now the act itself, and the move that makes it functional. What does it return? The naive answer is "the thing it produced, or an error." That misses the case this whole piece is about. An act can succeed, an act can fail, and an act can be asked to do something it has already done — and the third is not an error. It is the operation working correctly under a retry. So make it a value:
+
+```scala
+enum Outcome[A]:
+  case Done(result: A)        // this attempt performed the act
+  case AlreadyDone(result: A) // an earlier attempt performed it; here is what it produced
+
+def grant(cmd: GrantAccess): IO[GrantError, Outcome[License]]
+```
+
+The operation looks up the intent's name. Never seen it: perform the act, record the result against the name, return `Done`. Seen it: do nothing at all, return `AlreadyDone` carrying the license the first attempt produced. The retry receives the same license — not a new one, not nothing. One grant, one credential, one open door.
+
+That is the whole idea, and it is worth saying plainly: an effectful operation has been made to behave like a function of its intent, that is, same intent in, same result out, the second call observably identical to the first. That is referential transparency, earned for an operation that moves the real world. And the signature is now honest in a way the usual one never is… `def unlock(door: DoorId): Unit` …is a lie: it hides that there is an effect, that it can fail, and that "success" has structure. `IO[GrantError, Outcome[License]]` tells the truth — effectful, typed in its failure, a sum in its success — and because `AlreadyDone` is a case the compiler makes you handle, the retry path and the first-attempt path cannot quietly diverge. The obvious way to handle it, give the customer their license, is also the correct one. This is why recognition is so often a panicked retrofit: the operation was modeled as fire-and-forget: `def notify(user: UserId): Unit`, and a `Unit` has nowhere to put "I have seen this before." There is no seam. The retrofit becomes a tangle of pre-flight existence checks racing the real act, which is the outward answer at its worst: it guards the request and misses the duplicate that arrives by a retry the guard never saw.
+
+The inward redesign has no such gap, but it rests on one detail: the record that says "this intent is done, here is what it produced" must be written as a single indivisible step with the local result you own. Do the act, then separately record it, crash in between — and the next retry won't recognize the name and will act again. The proof has to be as durable as the deed. This, and not spanning the door and the carrier and the gateway, is the one job a transaction actually does here: bind "done" to its result in the single resource you control. Small, local, ordinary.
+
+The discipline so far protects one operation. Your world is made of many, scattered across services you own, services another team owns, and services another company runs in a cloud you have never logged into. The principle carries unchanged; what varies is how much of it you can enforce.
+
+Start with the services you own: make each of them idempotent the way described above, and you have made yourself the one thing nobody else has to defend against. Anything that calls you should be able to ask twice and get one effect and the same answer back. You cannot govern how others behave. You can be the service that is always safe to ask again.
+
+When you call someone else's services there are three situations:
+
+- **Their API supports idempotency and accepts a key.** Derive a stable key from your intent and send it on every attempt. The only trap is minting a fresh key per call; a retry has to carry the same one, so coin it once, store it with your intent, and reuse it. Their machinery does the rest.
+- **Their API doesn't.** First, try to reshape the call into one that is idempotent whether the other side intended it or not. "Set the shipping address to X" survives repetition where "add an address" does not; creating a resource under a client-chosen unique id turns the second attempt into an "already exists" you can treat as success. A surprising number of non-idempotent APIs have an idempotent shape hiding in them if you reach for it. When none does, accept that you cannot make them safe, and plan to recover rather than prevent.
+- **You don't know.** Assume it does not, because that is the assumption that fails safe. You can't make their operation idempotent, but you can make your *calling* of it idempotent: record the intent before you call, record the result after it returns, and on a retry consult your own record before reaching out again. You have wrapped an effect you don't trust in a boundary you do. A window remains, between their effect and your record of it, which is the same atomic-write problem as before, now stretched across a wire. You shrink it, and you reconcile whatever slips through.
+
+When the operation spans two or more of these at once, you are orchestrating, and the constraint is the one you already know: no transaction reaches across clouds and operators. So model the orchestration as something you can stop and resume. Record what has happened as you go, so a crash picks up where it left off instead of starting over… the running state is data you keep, not a position you lose. Keep every step idempotent, by the rules above, so resuming is always safe. Do the irreversible step last, after the steps you can still take back, so an early failure costs nothing permanent. And when something fails after the irreversible step, you do not undo it, you recover forward, with a deliberate compensating act, because the thing has happened and the only honest response is the next thing you choose to do about it.
+
+None of this left the discipline. Each step is still an operation modeled as a function of its intent; the orchestration is still a value you fold to know where you stand, and a decision you can take again without harm. Correctness across a system you only partly control is the same property as correctness in a single operation — built into how you modeled it, not bought from the wire between the parts.
+
+Exactly once is a story we tell because it is the behavior we want: do the thing, one time, done. Over any channel that can lose a reply (every channel?) it is a lie, and not only when the thing is money. It is a lie for a door, a license, a shipment, a server, a grant of authority. What you cannot take back, you can only recognize… and recognition is not something you buy and bolt on. It is something you model in. The reliability engineer reaches outward, for a platform that will remember on the code's behalf. The functional answer reaches inward and makes the operation a function of its intent, so that asking twice and asking once arrive at the same value. Do that, and the retry stops being a second door flung open. It becomes what it should have been all along: the same answer, delivered twice.

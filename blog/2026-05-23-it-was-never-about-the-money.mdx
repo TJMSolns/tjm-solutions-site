@@ -1,0 +1,102 @@
+---
+title: "It Was Never about the Money"
+description: "Why modeling money as a bare number instead of a typed Amount or Price with currency and precision is the real source of bugs that later look like unit or locale problems."
+date: 2026-05-23
+authors: [tony]
+tags: [functional-programming, digital-commerce, architecture]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 13
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/it-was-never-about-the-money-1bdbdc75afce" />
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2026-05-23T00:00:00Z" />
+  <meta property="article:author" content="Tony Moores" />
+  <script type="application/ld+json">{`{"@context":"https://schema.org","@type":"BlogPosting","headline":"It Was Never about the Money","description":"Why modeling money as a bare number instead of a typed Amount or Price with currency and precision is the real source of bugs that later look like unit or locale problems.","datePublished":"2026-05-23","author":{"@type":"Person","name":"Tony Moores","url":"https://www.tjm.solutions/about"},"publisher":{"@type":"Organization","name":"TJM Solutions","url":"https://www.tjm.solutions"},"url":"https://www.tjm.solutions/articles/2026/05/23/it-was-never-about-the-money","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.tjm.solutions/articles/2026/05/23/it-was-never-about-the-money"}}`}</script>
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 13*
+
+The total comes back as `59.666666666667`, and somewhere downstream we must ensure that we don't end up with $59.67 on the invoice and $59.66 in the ledger.
+
+The instinct is to reach for more precision. But precision was the easy part. A drifting penny is a symptom. The disease is poor modeling. "Money is not a number. Money is a number plus everything we forget to carry with it."
+
+<!-- truncate -->
+
+The standard progression is well-worn. `Double` is wrong because binary floating point cannot represent $0.10. `BigDecimal` is better. Better still, for many systems, is to drop the fraction entirely and store money as a whole number of minor units: not $59.67 but `5967` cents. Integers add, subtract, and compare without surprises. Most mature payment code settles here, and settling here is correct.
+
+But notice what that fix addresses… precision. It makes the arithmetic exact but says nothing about *which* money this is, and it quietly assumed something about the *kind* of money it is. Those two omissions are where bugs live and breed. They are harder bugs, because they do not announce themselves with a stray nine in the fourth decimal place. They announce themselves much later, in a different currency or a different country, as real money. Here is a trap cloaked in a perfectly reasonable looking function signature:
+
+```scala
+def total(lines: List[Long]): Long = lines.sum
+```
+
+`Long` cents in, `Long` cents out. It compiles. It passes a unit test written by someone whose test data is all US dollars. And the first time a EUR line item and a USD line item land in the same list, it produces a number that is arithmetically valid and commercially meaningless. Adding 1000 cents of USD to 1000 cents of EUR yields 2000 cents of nothing meaningful. The number could not stop this, because the number does not know it is dollars. The fix is to make a money value carry its currency, and to make that currency something the compiler checks:
+
+```scala
+opaque type Money = (Long, Currency)   // minor units, currency
+
+object Money:
+  def apply(minorUnits: Long, currency: Currency): Money = (minorUnits, currency)
+  extension (m: Money)
+    def minorUnits: Long   = m._1
+    def currency:   Currency = m._2
+    def +(other: Money): Either[CurrencyMismatch, Money] =
+      if m.currency == other.currency then
+        Right(Money(m.minorUnits + other.minorUnits, m.currency))
+      else
+        Left(CurrencyMismatch(m.currency, other.currency))
+```
+
+Addition now returns `Either`. You cannot add two `Money` values and simply get a `Money` back; you get either a sum or a typed refusal. Cross-currency arithmetic is no longer a silent number — it is a case the caller has to handle, and the only honest way to handle it is to convert one value into the other's currency first, through an explicit function that carries an exchange rate and the time the rate was taken, because a converted amount is a different fact than an original one.
+
+And locale (the thing that produced `1.000,50` where you expected `1,000.50`) is not in this type at all. That is deliberate. A `Money` value has a currency but not a locale. Locale is a property of *rendering* a value for a particular human, and of *parsing* a string a particular human typed. Both are boundary operations. Parsing especially can fail, and a localized-money parser should return `Either` or `Option`, never a bare number — because `1.000,50` read with the wrong locale is off by a factor of a hundred thousand and will not look wrong.
+
+Storing money as integer minor units smuggled in an assumption: that the minor unit is the smallest amount of money the system will ever need to represent. For money that changes hands, that is true. Banks settle in whole cents; you cannot wire someone a third of a cent. But not every monetary value in a commerce system is money that changes hands.
+
+Consider a B2B order: 100,000 fasteners at a negotiated price of $0.0034 each. The line total is $340.00 or `34000` cents, comfortably a whole number. But the unit price is $0.0034. That is 0.34 of a cent. It is not representable as integer cents at all, not even by the `Money` type discussed above.
+
+This is not an exotic edge case. Bulk industrial pricing lives below the cent routinely. So does anything metered: a service billed at three dollars per million calls is charging $0.000003 per call. The per-unit price is sub-cent by orders of magnitude, and a "money is integer cents" model cannot express it.
+
+Bolting decimal places onto the money type is the wrong fix if it conflates two genuinely different things you'll have to deal with later. Consider:
+
+An **Amount** is settled money — a quantity that has changed or will change hands. It is denominated in whole minor units, because that is what banks move. Integer cents is correct for an Amount.
+
+A **Price** is a **rate** — money per unit of something. It is a ratio, not a settlement. It can be arbitrarily precise, because nobody settles a price; they settle the Amount that a Price and a quantity produce.
+
+```scala
+opaque type Amount = (Long, Currency)        // whole minor units — settled money
+opaque type Price  = (BigDecimal, Currency)  // money per unit — arbitrary precision
+object Price:
+  extension (p: Price)
+    def perUnit:  BigDecimal = p._1
+    def currency: Currency   = p._2
+def lineTotal(price: Price, quantity: Long): Amount =
+  val raw: BigDecimal = price.perUnit * BigDecimal(quantity)
+  Amount(
+    raw.setScale(0, RoundingMode.HALF_EVEN).toLong,
+    price.currency
+  )
+```
+
+The rounding happens exactly once, in `lineTotal`, when a `Price` and a quantity become an `Amount`. It does not happen when the price is stored, and it absolutely does not happen per unit. Rounding the unit price to cents first and then multiplying is the canonical bulk-pricing bug: $0.0034 rounds to $0.00, and 100,000 times $0.00 is zero. The buyer's $340 order becomes free, and the arithmetic was exact the whole way down.
+
+Displaying a `Price` is its own small discipline. You do not render $0.0034 as "$0.00," you either render the precise figure, or you render it against a larger unit: "$3.40 per thousand," "$3.00 per million." And the moment you say "per thousand," you have stopped talking about money and started talking about units.
+
+It was never really about the money. If we step back from money, you'll see the shape repeats everywhere a commerce value looks like a number. Assume your customer orders 3000 cans of soda. A standard pallet of soda typically holds 1,920 to 2,880 cans, depending on how it's packaged. A full pallet generally contains 80 to 120 cases, which equates to 1,920 to 2,880 cans per pallet. How many are in a pallet at your warehouse? Will you ship so many pallets, cases, and cans? What if you sell wire by the linear foot but stock it in two meter spools… what will you send a customer who orders 400 feet of wire and who will pay the return freight when they complain that they needed it to be contiguous? A length should carry its unit, the way `Money` carries its currency:
+
+```scala
+enum LengthUnit:
+  case Millimeter, Inch, Foot, Meter
+opaque type Length = (BigDecimal, LengthUnit)
+```
+
+Now we have the framework to convert units and set max quantity. Let's go back to soda. A line on a purchase order says "Quantity: 3." Three what? The SKU is counted and sold by the can, but in the warehouse you may have pallets of 12-packs, 24-packs, cases of four 6-packs or six 4-packs. There's nothing stopping you from having separate SKUs for each packaging. Are they priced at the same unit rate? How does bulk pricing work and is there a relationship to packaging units? Are there discounted shipping rates when we don't have to break or assemble warehouse units? How do you write the pick list? Are warehouse workers allowed to break down packaging units? A SKU is understood to have a default quantity of 1 but a quantity should carry its unit of measure. And converting between units of measure is not arithmetic: it depends on *this SKU's* pack structure, which is data, so the conversion is an operation that can fail. The folks building the model are probably thinking about the website (and about the agent tools if you are lucky) and may dismiss this conversion as a trivial UI matter… just make the user order whole numbers of SKUs and let them do their own math…
+
+Just don't lose anything from order capture, through submission, acceptance, pick, pack, ship, returns and exchanges, and resolution! Math always works, but carting calculus may or may not be aligned to shipping calculus.
+
+A number is a value with its context cut away. That is what makes it a number: it is pure, portable, and it composes under arithmetic. That is exactly what you want for most computing tasks. But digital commerce is one of many domains where the context matters, and may change from one part of the process to another.
+
+My high school chemistry teacher was famous for the phrase, "Digits without units are meaningless and therefore wrong," and graded our lab reports that way. She would have fits grading most of our software but if Mrs. Nadel were designing our models, I'm confident it would be consistent and accurate from end to end and include propagation of error — imagine selling deli meat and substitute 'waste' for 'error' if you can't see the value. The point is, if you take the time to model quantity in a manner that makes parsing, converting, pricing, storing, shipping and accounting across all contexts where a quantity figures, you can avoid mistakes. The discipline is small, and boring, and it works. Give the value a type that carries what the number forgot: a currency, a unit, a precise amount or rate with a unit of measure. Then the operations that were silently wrong stop being runtime or downstream surprises and start being code the compiler will not let you write.

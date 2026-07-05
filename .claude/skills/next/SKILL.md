@@ -28,6 +28,10 @@ Drive the WORK-QUEUE forward.
      `PreToolUse` hook (`.claude/hooks/pretooluse-done-gate.py`) structurally blocks (exit 2) the
      WORK-QUEUE edit if this is missing, incomplete, or the verdict is VETO/ESCALATE. On ESCALATE: do
      not fix-and-retry, log to `docs/agents/ESCALATIONS.md` and stop for Tony instead.
+     - **Gap 1 closed (HE-011/DN-006):** a written `PASS` is now cross-checked against the session
+       transcript's actual `Agent` tool-call record (`subagent_type: "verifier"`, matching `model`,
+       a completed result ending in `PASS`) — spawning the verifier for real is what makes the check
+       pass, not just writing the field.
    - Update `docs/agents/WORK-QUEUE.md`: move to Done with evidence
    - Write a HANDOFF-LEDGER entry (use the `/handoff` pattern)
 6. **After writing the HANDOFF-LEDGER entry in step 5, stop.** Do not loop. Print:

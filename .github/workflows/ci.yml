@@ -55,9 +55,14 @@ jobs:
   links:
     name: Link check
     runs-on: ubuntu-latest
-    needs: build
-    # Run on push and scheduled runs; skip on PRs to avoid noise from draft content
-    if: github.event_name == 'schedule' || github.event_name == 'push'
+    needs: [build, deploy]
+    # Run on push (after deploy actually completes, so the live site being checked
+    # reflects this push) and on schedule (deploy is skipped there; build alone is enough).
+    # Skip on PRs to avoid noise from draft content.
+    if: |
+      always() &&
+      needs.build.result == 'success' &&
+      (github.event_name == 'schedule' || (github.event_name == 'push' && needs.deploy.result == 'success'))
     steps:
       - uses: actions/download-artifact@v4
         with:

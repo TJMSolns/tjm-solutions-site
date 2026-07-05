@@ -68,6 +68,13 @@ Close this session cleanly by writing a handoff entry.
 
    Source: HL-093 ghost-commit pattern; org POL via TJMSolns WQ-P4-103.
 
+   **Now also structurally enforced (propagated from harness-evolution HE-006, DN-003/DN-005):** a
+   blocking `Stop` hook (`.claude/hooks/stop-git-durability-gate.py`) sweeps every repo touched this
+   session (via the transcript, not just CWD) at session end and blocks the stop if any is dirty or
+   unpushed. A pre-existing, deliberately-deferred backlog can be carved out via
+   `docs/agents/GIT-DURABILITY-DEFER.md` rather than silently blocking on debt this session isn't
+   responsible for — see that file for this project's current entry.
+
 6. **Write HANDOFF-LEDGER entry** at the TOP of `docs/agents/HANDOFF-LEDGER.md`:
    ```markdown
    ## HL-<next-id> — <date> — <session summary in 5 words>

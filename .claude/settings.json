@@ -71,6 +71,16 @@
             "timeout": 5000
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/pretooluse-done-gate.py",
+            "timeout": 5000
+          }
+        ]
       }
     ],
     "Stop": [
@@ -85,6 +95,15 @@
           {
             "type": "command",
             "command": "echo '{\"systemMessage\": \"Remember to run: npm run wcag (before deploying)\"}'"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/stop-git-durability-gate.py",
+            "timeout": 10000
           }
         ]
       }

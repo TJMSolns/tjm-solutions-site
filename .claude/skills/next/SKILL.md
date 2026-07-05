@@ -21,6 +21,14 @@ Drive the WORK-QUEUE forward.
 
 5. When complete:
    - Verify evidence exists (file path or commit SHA)
+   - **Evidence-artifact + independent-verifier gate (propagated from harness-evolution HE-006,
+     DN-001/DN-002):** create `docs/agents/evidence/<ID>.md` with `Commit:`, `Run-count:`,
+     `Invariance-recheck:`, `Verified-by:`, `Verifier-tier:`, and `Verifier-verdict:` filled in. Spawn
+     the `verifier` agent (fresh context, tier drawn per DN-002's ±1 clamped/stake-weighted coin —
+     never self-selected) and require its `PASS` before the Done edit; do not self-certify. A
+     `PreToolUse` hook (`.claude/hooks/pretooluse-done-gate.py`) structurally blocks (exit 2) the
+     WORK-QUEUE edit if this is missing, incomplete, or the verdict is VETO/ESCALATE. On ESCALATE: do
+     not fix-and-retry, log to `docs/agents/ESCALATIONS.md` and stop for Tony instead.
    - Update `docs/agents/WORK-QUEUE.md`: move to Done with evidence
    - Write a HANDOFF-LEDGER entry (use the `/handoff` pattern)
 6. **After writing the HANDOFF-LEDGER entry in step 5, stop.** Do not loop. Print:

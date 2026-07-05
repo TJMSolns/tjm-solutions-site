@@ -4,6 +4,108 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-006 — 2026-07-05 — PDR-008 offer-listing chain: pages, cards, deploy
+
+**Session:** Claude, driving the WQ-031 → WQ-009 → WQ-005/006/007 → WQ-003 → deploy chain per Tony's
+direction (org-level PDR-008 offer selection already confirmed 2026-06-26; this session executed the
+site-side implementation).
+
+**What happened:**
+
+- **WQ-031** (commit 5221d39) — Finished the PDR-008 re-baseline: flipped WQ-016/005/006/007 to
+  Unblocked (PDR-008), promoted WQ-009 from Proposed to Queued, reordered the queue per GL-028. Built the
+  full credibility map (below) — every offer backed by a named prior engagement or published article,
+  never a claim of internal TJMSolns battle-testing. Evidence: `docs/agents/evidence/WQ-031.md`.
+
+  **Credibility map (Tony-confirmed selection, 2026-06-26):**
+
+  | Card | Offer | Credibility source |
+  |------|-------|---------------------|
+  | Commerce Strategy | CS-2 Marketplace Integration Strategy | Named engagement: Principal Solutions Consultant, Mirakl |
+  | Commerce Strategy | CS-4 Composable Commerce Architecture Review | Named engagement: CTO, RETISIO Inc. |
+  | Commerce Strategy | CS-3 Agent-Commerce Readiness Audit | Published articles: Invisible Buyer / Economics of Agent-Mediated Commerce / Capability Surfaces / Protocol Stack |
+  | Digital Transformation | DT-2 KCS Knowledge Base Implementation | Named engagement: decade at ATG (search & knowledge mgmt) — **not** the paused internal SCKB dogfood engagement |
+  | Digital Transformation | DT-3 Microservices Modernization Assessment | Named engagement: CTO, Professional Access |
+  | Digital Transformation | DT-5 Reactive Systems & Reliability Review | Named engagement: CTO, RETISIO Inc. + published FP series |
+  | Experience Engineering | EE-1 Commerce Search & Discovery Audit | Named engagement: decade at ATG (search) |
+  | Experience Engineering | EE-4 Engagement Architecture Review | Named engagement: Director of Product Management, Oracle Americas |
+  | Experience Engineering | EE-5 Agent-Ready Experience Design | Published articles (same 4 as CS-3, explicitly cited in the EE-5 offer doc itself) |
+
+- **WQ-009** (commit 090f720) — New shared `src/components/OfferPage/` component + 9 detail pages under
+  `src/pages/services/`: `marketplace-integration-strategy`, `agent-commerce-readiness-audit`,
+  `composable-commerce-architecture-review`, `kcs-knowledge-base`,
+  `microservices-modernization-assessment`, `reactive-systems-reliability-review`,
+  `commerce-search-discovery-audit`, `engagement-architecture-review`,
+  `agent-ready-experience-design`. Content sourced from each offer's Level 1 doc in
+  `Projects/packaged-offers/`. Each page carries a credibility section per the map above.
+
+- **WQ-005/006/007** (commit 39b7862) — Redesigned `HomepageFeatures` card layout (top-image banner +
+  content below, replacing the absolute-overlay style) and wired each of the three homepage cards to its
+  3 offer detail pages, in Tony's confirmed order.
+
+- **WQ-003** (commit 68d9e90) — Removed the "Workshop Management" placeholder card; rebalanced the
+  services grid to 3 columns.
+
+- **Verification:** `npm run build` (onBrokenLinks: throw) passed after every change. `npm run wcag`
+  (pa11y WCAG2AA) run against the homepage, `/about`, `/rates`, `/articles`, plus 3 sampled `/services/*`
+  pages — no issues found on any.
+
+- **Deploy:** Pushed all commits to `origin/main` (5221d39 → 19cd961). Ran
+  `GIT_USER=TJMSolns npm run deploy` (per HL-005's documented HTTPS/gh-credential-helper note) —
+  succeeded, pushed to `gh-pages` at a982dc0. Confirmed via `git ls-tree origin/gh-pages` that all 9
+  `/services/*.html` files and the updated `index.html` (new cards, no workshops card) are present in the
+  deployed branch, and via the GitHub deployments API
+  (`GET /repos/TJMSolns/tjm-solutions-site/deployments`) that GitHub's `github-pages` app processed
+  deployment `5319492061` for sha a982dc0 successfully. **Live-site propagation status:** see the
+  addendum immediately below this entry, or `docs/agents/evidence/` — a Fastly/CDN cache delay was
+  observed on the custom domain (www.tjm.solutions) at session-writing time; content correctness at the
+  origin/branch level is independently confirmed regardless of CDN propagation timing.
+
+- **ESC-001 (infra blocker):** The Done-transition gate (`pretooluse-done-gate.py`, DN-006) requires
+  spawning a real `verifier` subagent. In this session's environment, `subagent_type: "verifier"` could
+  not be invoked at all — confirmed identically at two different requested model tiers (opus, sonnet),
+  which rules out the DN-007 tier-unavailable case (whose redraw-with-exclusion remedy only changes the
+  model argument, not agent-type registration). This is logged as `docs/agents/ESCALATIONS.md` ESC-001
+  (status: open) rather than worked around — no PASS was fabricated, no gate bypassed. As a result,
+  WQ-031/009/005/006/007/003 are all implemented, committed, pushed, and deployed, but remain in the
+  Active table annotated **"Implementation complete — Done-transition blocked (ESC-001)"** rather than
+  moved to Done. Evidence files for all six items exist at `docs/agents/evidence/WQ-{031,009,005,006,007,003}.md`
+  with `Verifier-verdict: PENDING`.
+
+- **WQ-016/WQ-009 overlap flagged, not resolved:** WQ-009 built the DT-2 detail page at the exact path
+  WQ-016 specifies (`/services/kcs-knowledge-base`) with equivalent scope. WQ-016 itself was left
+  untouched — out of this session's assigned chain (WQ-031→WQ-009→WQ-005/006/007→WQ-003→deploy only, per
+  explicit instruction to stop at this chain). Flagged in WORK-QUEUE Notes for `/groom` to reconcile.
+
+**Decisions made:** none new (this session executed decisions already recorded — PDR-008/DR-034, and
+Tony's 2026-06-26 offer selection — it did not make new governance decisions).
+
+**CONTEXT-KERNEL change:** none (`git diff HEAD -- docs/agents/CONTEXT-KERNEL.md` empty this session).
+
+**Harvest candidates:**
+- Shared detail-page component pattern (`OfferPage` + thin data pages) — **already has a WQ item**:
+  folded into WQ-018's scope (harvest Docusaurus patterns into LESSONS-LEARNED.md), no new item needed.
+- ESC-001's underlying gap — DN-007's tier-redraw remedy doesn't cover "custom agent-type unavailable in
+  a nested/sub-agent session" as distinct from "model tier unavailable" — **harvest deferred**: this is a
+  harness-evolution-owned mechanism (DN-006/DN-007), not a tjm-solutions-site-owned one, and cross-project
+  discipline means it should be queued in a harness-evolution session, not written into this project's
+  queue from here. Revisit by 2026-08-04 (within 30 days) — either in the next harness-evolution session
+  or via org-level `/harvest-all`.
+
+**Open items carried forward:**
+- ESC-001 (open) — needs Tony's direction on how sub-agent sessions without custom agent-type access
+  should satisfy the verifier gate.
+- WQ-016/017 — untouched this session; WQ-016/WQ-009 overlap needs `/groom` reconciliation.
+- WQ-030/021/028/024/029/018/019/020/002 — unaffected, still queued in prior order.
+- WQ-025 [Proposed] — deployment-currency check; this session's own deploy addresses much of its intent
+  but the item itself was not formally executed.
+
+**Next owner:** Tony — resolve ESC-001 (how should the verifier gate work in this kind of session?), and
+if desired, run `/groom` to reconcile the WQ-016/WQ-009 overlap and formally close WQ-031/009/005/006/007/003
+once a verifier path is available.
+
+---
+
 ## HL-005 — 2026-06-10 — Backlog sync, WQ-023 resolution, Medium-parity invariant (WQ-027)
 
 **Session:** Tony + Claude (status review → queue decisions → /next WQ-027)

@@ -81,7 +81,6 @@ export default function OfferPage({ offer }: { offer: OfferPageData }): ReactNod
               </div>
               <h1>{offer.name}</h1>
             </div>
-            <p className={styles.heroDescription}>{offer.description}</p>
           </div>
         </section>
 

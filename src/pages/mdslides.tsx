@@ -62,8 +62,7 @@ export default function MDSlides(): ReactNode {
             Write in <em>Markdown</em>.<br />Present Anywhere.
           </h1>
           <p className={styles.heroSubtitle}>
-            MD-Slides converts structured Markdown into self-contained HTML presentations —
-            structured, validated, and speaker-ready. One JAR. Java 11+. Nothing else required.
+            Markdown to self-contained HTML presentations. One JAR. Java 11+.
           </p>
           <div className={styles.heroCtas}>
             <Link to="/mdslides/docs/intro" className={styles.ctaPrimary}>

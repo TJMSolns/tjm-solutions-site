@@ -2,8 +2,6 @@
   position: relative;
   padding: 56px 0 40px;
   text-align: left;
-  border-bottom: 1px solid var(--color-gray-200);
-  margin-bottom: 60px;
 }
 
 .hero::before {

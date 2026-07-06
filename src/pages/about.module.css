@@ -7,12 +7,26 @@
   padding: 56px 20px 40px;
   text-align: left;
   border-bottom: 1px solid var(--color-gray-200);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background-image:
     linear-gradient(var(--color-gray-200) 1px, transparent 1px),
     linear-gradient(90deg, var(--color-gray-200) 1px, transparent 1px);
   background-size: 42px 42px;
+  opacity: 0.45;
   -webkit-mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
   mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero :global(.container) {
+  position: relative;
+  z-index: 1;
 }
 
 

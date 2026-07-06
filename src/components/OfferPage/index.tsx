@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import Head from '@docusaurus/Head';
 import Layout from '@theme/Layout';
 import CategoryIcon, { type Category } from '@site/src/components/CategoryIcon';
+import GlyphIcon from '@site/src/components/GlyphIcon';
 import styles from './styles.module.css';
 
 export interface OfferDeliverable {
@@ -106,7 +107,7 @@ export default function OfferPage({ offer }: { offer: OfferPageData }): ReactNod
           </section>
 
           <section className={styles.block}>
-            <h2>What You Get</h2>
+            <h2 className={styles.h2WithIcon}><GlyphIcon glyph="checkSquare" size={20} /> What You Get</h2>
             <div className={styles.tableWrap}>
               <table className={styles.deliverablesTable}>
                 <thead>
@@ -131,7 +132,7 @@ export default function OfferPage({ offer }: { offer: OfferPageData }): ReactNod
 
           <section className={styles.twoCol}>
             <div className={styles.colBlock}>
-              <h2>Typical Duration</h2>
+              <h2 className={styles.h2WithIcon}><GlyphIcon glyph="clock" size={20} /> Typical Duration</h2>
               <p>{offer.duration}</p>
             </div>
             <div className={styles.colBlock}>
@@ -142,7 +143,7 @@ export default function OfferPage({ offer }: { offer: OfferPageData }): ReactNod
 
           {offer.credibility && (
             <section className={styles.credibilitySection}>
-              <h2>Grounded in Real Experience</h2>
+              <h2 className={styles.h2WithIcon}><GlyphIcon glyph="users" size={20} /> Grounded in Real Experience</h2>
               <p>{offer.credibility.summary}</p>
               {offer.credibility.links && offer.credibility.links.length > 0 && (
                 <ul className={styles.credibilityLinks}>
@@ -168,7 +169,7 @@ export default function OfferPage({ offer }: { offer: OfferPageData }): ReactNod
               rel="noopener noreferrer"
               className={styles.ctaButton}
             >
-              Schedule a Consultation
+              <GlyphIcon glyph="calendar" size={18} /> Schedule a Consultation
             </a>
           </section>
         </main>

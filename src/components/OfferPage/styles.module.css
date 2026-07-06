@@ -174,7 +174,9 @@
 }
 
 .ctaButton {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 12px;
   padding: 14px 32px;
   background: var(--ifm-color-primary-darker);
@@ -183,6 +185,17 @@
   font-weight: 700;
   text-decoration: none;
   transition: background 0.2s ease;
+}
+
+.h2WithIcon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.h2WithIcon svg {
+  flex-shrink: 0;
+  color: var(--ifm-color-primary);
 }
 
 .ctaButton:hover {

@@ -22,7 +22,7 @@ const FeatureList: FeatureItem[] = [
     title: 'Commerce Strategy',
     description: (
       <>
-        Need based evaluation of platforms, tools, processes and systems related to commerce for new installs, migrations, upgrades and enhancements. Opportunistic enhancement via adoption of new search, marketplace and intelligent systems. Transition to agentic commerce.
+        Evaluating platforms, search, and marketplace systems — for new builds, migrations, and the move to agentic commerce.
       </>
     ),
     offers: [
@@ -36,7 +36,7 @@ const FeatureList: FeatureItem[] = [
     title: 'Digital Transformation',
     description: (
       <>
-        Align technical road map to business objectives. Deploy microservices to modernize while reducing technical debt. Optimize resources according to fit & function. Adoption of headless/API-first & content driven strategies. Incorporation of GenAI, RAG, and Knowledge Bases into current processes.
+        Modernizing architecture — microservices, headless/API-first systems, and AI-adjacent knowledge bases — without a rewrite.
       </>
     ),
     offers: [
@@ -50,7 +50,7 @@ const FeatureList: FeatureItem[] = [
     title: 'Experience Engineering',
     description: (
       <>
-        Recommend strategic steps to boost engagement. Marry architecture & tooling to your community, education and retail goals. Evaluate dashboards and business user tools against operational needs to maximize out-of-the-box functionality with process and outcomes.
+        Architecture and tooling built around how your team and customers actually engage — not just what shipped out of the box.
       </>
     ),
     offers: [

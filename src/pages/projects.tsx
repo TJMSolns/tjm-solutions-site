@@ -78,6 +78,13 @@ export default function Projects(): ReactNode {
         <meta property="og:image:height" content="571" />
       </Head>
 
+      <section className={styles.hero}>
+        <div className="container">
+          <h1>Projects</h1>
+          <p className={styles.subtitle}>Tools and products from TJM Solutions</p>
+        </div>
+      </section>
+
       <div className={styles.grid}>
         <div className="container">
           <div className={styles.projectsGrid}>

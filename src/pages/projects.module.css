@@ -1,5 +1,50 @@
+.hero {
+  position: relative;
+  padding: 56px 0 40px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-gray-200);
+  margin-bottom: 40px;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--color-gray-200) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-gray-200) 1px, transparent 1px);
+  background-size: 42px 42px;
+  opacity: 0.45;
+  -webkit-mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
+  mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero :global(.container) {
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  margin: 0 0 16px 0;
+  font-size: 2.5em;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1.25em;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+[data-theme='dark'] .subtitle {
+  color: var(--color-gray-400);
+}
+
 .grid {
-  padding: 5rem 0;
+  padding: 0 0 5rem;
 }
 
 .projectsGrid {
@@ -21,7 +66,7 @@
 
 .card:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border-color: #c00000;
+  border-color: var(--ifm-color-primary);
 }
 
 .cardHeader {
@@ -54,7 +99,7 @@
   text-transform: uppercase;
   padding: 0.15rem 0.5rem;
   border-radius: 3px;
-  background: #c00000;
+  background: var(--ifm-color-primary-darker);
   color: #fff;
 }
 
@@ -96,7 +141,7 @@
   flex: 1;
   text-align: center;
   padding: 0.55rem 1rem;
-  background: #c00000;
+  background: var(--ifm-color-primary-darker);
   color: #fff !important;
   border-radius: 4px;
   font-size: 0.85rem;
@@ -106,7 +151,7 @@
 }
 
 .linkPrimary:hover {
-  background: #a00000;
+  background: var(--ifm-color-primary-darkest);
 }
 
 .linkSecondary {
@@ -123,5 +168,5 @@
 }
 
 .linkSecondary:hover {
-  border-color: #c00000;
+  border-color: var(--ifm-color-primary);
 }

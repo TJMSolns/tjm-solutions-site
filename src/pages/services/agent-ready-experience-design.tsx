@@ -48,17 +48,6 @@ const offer: OfferPageData = {
     'discovery systems learn which vendors are reliable and structured over time, so building this early ' +
     'reputation now, before agent traffic is significant in the analytics, is how the advantage is ' +
     'established.',
-  credibility: {
-    summary:
-      'Grounded in Tony’s published research on capability surfaces and agent-native commerce — the same ' +
-      'framework this offer applies as design methodology, not just theory.',
-    links: [
-      { label: 'Capability Surfaces', href: '/articles/2026/04/21/capability-surfaces' },
-      { label: 'The Invisible Buyer Has Arrived', href: '/articles/2026/04/09/the-invisible-buyer-has-arrived' },
-      { label: 'The Economics of Agent-Mediated Commerce', href: '/articles/2026/04/21/economics-of-agent-mediated-commerce' },
-      { label: 'A Protocol Stack for Agent-Native Commerce', href: '/articles/2026/04/21/protocol-stack-agent-native-commerce' },
-    ],
-  },
 };
 
 export default function EE5Page(): ReactNode {

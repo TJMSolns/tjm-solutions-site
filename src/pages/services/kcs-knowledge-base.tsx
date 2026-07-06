@@ -50,12 +50,6 @@ const offer: OfferPageData = {
     'SCKB\'s KCS approach breaks this loop: the first resolution produces the article, the second ' +
     'encounter finds it. The infrastructure cost is server time, and the data stays on-premise — no ' +
     'per-seat AI licensing, no data-privacy exposure.',
-  credibility: {
-    summary:
-      'SCKB is an open-source KCS v6-governed knowledge base system TJM Solutions built and operates — ' +
-      'not a design document, a working system with its own track record.',
-    links: [{ label: 'About Tony Moores', href: '/about' }],
-  },
 };
 
 export default function DT2Page(): ReactNode {

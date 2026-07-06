@@ -46,18 +46,6 @@ const offer: OfferPageData = {
     'costly than discovering them in audit: failed transactions erode trust with the systems that route ' +
     'agent buyers, and rebuilding it requires both technical remediation and re-certification in agent ' +
     'discovery layers.',
-  credibility: {
-    summary:
-      'Grounded in Tony’s published research on agent-mediated commerce — the analytical framework this ' +
-      'audit applies, developed and tested in public writing on capability surfaces and agent-native ' +
-      'commerce protocols.',
-    links: [
-      { label: 'The Invisible Buyer Has Arrived', href: '/articles/2026/04/09/the-invisible-buyer-has-arrived' },
-      { label: 'The Economics of Agent-Mediated Commerce', href: '/articles/2026/04/21/economics-of-agent-mediated-commerce' },
-      { label: 'Capability Surfaces', href: '/articles/2026/04/21/capability-surfaces' },
-      { label: 'A Protocol Stack for Agent-Native Commerce', href: '/articles/2026/04/21/protocol-stack-agent-native-commerce' },
-    ],
-  },
 };
 
 export default function CS3Page(): ReactNode {

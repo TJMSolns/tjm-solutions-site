@@ -64,8 +64,12 @@
 .categoryCount {
   font-family: var(--font-mono);
   font-size: 0.75em;
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
   margin-left: auto;
+}
+
+[data-theme='dark'] .categoryCount {
+  color: var(--color-gray-400);
 }
 
 .categoryDescription {

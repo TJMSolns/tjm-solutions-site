@@ -47,13 +47,6 @@ const offer: OfferPageData = {
     'events — every week of recurring unreliability diverts engineering time from forward progress into ' +
     'fire-fighting. Implementation fixes address the last incident, not the pattern; an architectural ' +
     'diagnosis is what prevents the next one.',
-  credibility: {
-    summary:
-      'Grounded in Tony\'s published "Functional Programming Isn\'t Just for Academics" series, which ' +
-      'develops the same immutability, pure-function, and explicit-error-handling framework this review ' +
-      'applies as a diagnostic lens.',
-    links: [{ label: 'Functional Programming Series', href: '/articles/tags/functional-programming' }],
-  },
 };
 
 export default function DT5Page(): ReactNode {

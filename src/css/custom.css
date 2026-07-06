@@ -307,8 +307,12 @@ a:hover {
 }
 
 .pricing-period {
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
   font-size: 0.9em;
+}
+
+[data-theme='dark'] .pricing-period {
+  color: var(--color-gray-400);
 }
 
 .pricing-description {
@@ -489,7 +493,7 @@ a:hover {
   align-items: center;
   margin-top: 12px;
   font-size: 0.85em;
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
 }
 
 [data-theme='dark'] .article-card-meta {

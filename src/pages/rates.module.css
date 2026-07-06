@@ -161,7 +161,7 @@
 
 .rateLabel {
   font-size: 0.8em;
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -189,7 +189,7 @@
 
 .rateNote {
   font-size: 0.75em;
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
   margin-left: 4px;
   white-space: nowrap;
 }
@@ -200,7 +200,7 @@
 
 .overageNote {
   font-size: 0.8em;
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
   text-align: right;
   margin-top: 8px;
   margin-bottom: 0;
@@ -219,10 +219,8 @@
   margin: 60px 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .disclaimer {
-    background: var(--ink-soft);
-  }
+[data-theme='dark'] .disclaimer {
+  background: var(--ink-soft);
 }
 
 .disclaimer p {
@@ -244,10 +242,8 @@
   margin: 60px 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .ctaSection {
-    background: var(--ink-soft);
-  }
+[data-theme='dark'] .ctaSection {
+  background: var(--ink-soft);
 }
 
 .ctaSection h2 {

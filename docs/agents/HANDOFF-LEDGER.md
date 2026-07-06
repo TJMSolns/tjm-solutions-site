@@ -4,6 +4,94 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-007 — 2026-07-06 — Site-wide visual identity redesign, deploy fix, legal cleanup
+
+**Session:** Claude, driving an extensive iterative redesign at Tony's direction, starting from "the site
+is pretty ugly and looks very unprofessional" through a style-guide/mockup review cycle (several
+directions rejected — warm-serif-plus-red for resembling Oracle's Redwood rebrand; an early
+too-orange dark-mode red), to a final terminal-color-profile-inspired direction, then full
+implementation on the live site with real WCAG AA verification in both themes and independent
+production verification (not just CI status).
+
+**What happened:**
+
+- **Deploy infra (WQ-038, commits 2e32c7c, 8c225ff):** Diagnosed the legacy branch-based GitHub Pages
+  build as silently broken since 2026-05-16 (every deploy since, including HL-006's, had actually
+  failed with no diagnostic). Migrated to Actions-based deploy (`upload-pages-artifact`/`deploy-pages`),
+  which also fixed an unrelated pre-existing broken page (`/services/kcs-knowledge-base`). Also fixed a
+  link-check CI race (was running concurrently with deploy, catching the site mid-deploy).
+
+- **Visual identity redesign (WQ-039, commit 2e55512):** New dark-mode-primary palette (deep
+  red/blue/green mapped to CS/DT/EE categories, terminal-profile-inspired per Tony's GNOME term
+  preference); Bricolage Grotesque + Public Sans + Space Mono type system; logo recolored
+  #C00000→#770000 (midpoint of deep red and oxblood, per Tony); self-hosted Phosphor Icons (MIT) for
+  category marks; homepage rebuilt as a cover-sheet hero + CS/DT/EE spec index; all 9 offer pages
+  rebuilt as spec sheets; stock `banner.jpg` removed everywhere in favor of the logo.
+
+- **Legal cleanup (folded into WQ-039/WQ-042):** Tony flagged a legal-exposure concern — offer pages
+  named former employers/clients (RETISIO, ATG, Oracle, Professional Access, Mirakl) in credibility
+  sections. Scoped explicitly to offer pages only (About page career-history bio deliberately
+  untouched, per Tony). Removed credibility specifics from all 9 offer pages by end of session (5 for
+  the named-company reason directly; 4 more for pure structural consistency once the gap was noticed).
+
+- **Consistency fixes (WQ-040/041/042/043, commits cd6f88c, 41adef9, 99feb28, 0fbf049):** Iteratively
+  found and fixed, per Tony's direct escalating feedback: a CSS mask bug that faded hero text (not just
+  the decorative background); a missing header on the projects page; a retainer-card density problem on
+  rates (fixed via 2×2 grid, not content removal); inconsistent credibility-section presence across
+  offer pages; missing grid-texture hero treatment on offer pages; and — the most severe complaint — 7
+  hero banners with 3 different padding schemes, inconsistent borders, and wildly different prose volume.
+  All 7 heroes now share one identical spec.
+
+- **Real WCAG bugs found and fixed (WQ-042, commit 99feb28):** Tony directly caught a methodology gap —
+  contrast had never been explicitly verified in both themes, only whichever theme was default (dark).
+  Built a localStorage-injection Puppeteer+pa11y harness to force each theme reliably; found two real
+  bugs: (1) `rates.module.css` used `@media (prefers-color-scheme: dark)` instead of `[data-theme='dark']`
+  (banned pattern, causes black-on-black when OS is dark but site is manually set to light); (2)
+  `--color-gray-500` failed light-mode contrast in 6 places. Also caught and fixed a self-introduced
+  regression: redefining the shared `--color-gray-*` scale per theme broke every pre-existing dark-mode
+  override elsewhere that assumed the scale was fixed/absolute.
+
+- **Verification:** `npm run build` (`onBrokenLinks: throw`) and `npm run wcag` passed after every
+  change. Dual-theme pa11y sweeps run locally via `npx docusaurus serve` (not `npx serve -s`, which
+  silently mis-serves nested clean-URL routes in SPA-fallback mode). After deploy, independently verified
+  the live production site directly (not just CI green) via Puppeteer `getComputedStyle` checks
+  confirming identical hero padding/border across `/`, `/about`, `/rates`, `/articles`, `/projects`,
+  `/mdslides`, and a sampled `/services/*` page.
+
+- **Handoff git-audit (this entry):** Swept `tjm-solutions-site` (not on the hardcoded org-root repo
+  list, but audited anyway per the gate's own cross-project rationale, since 100% of this session's work
+  landed here). Found and resolved two working-tree issues: reverted an incidental `package-lock.json`
+  dependency bump from `npx` tool side effects (not intentional work); added `.claude/hooks/__pycache__/`
+  to `.gitignore` (commit fead2e7). `git status --short` clean and all commits pushed as of this entry.
+
+**Decisions made:** None formally recorded via `/decide` — DECISION-REGISTER.md remains empty despite
+substantive design and legal-scope decisions this session (design direction, credibility-removal scope).
+Not retroactively creating DR entries for this session's decisions; flagging so a future session doesn't
+assume design/legal calls of this weight are always durably registered.
+
+**Harvest candidates:** Both resolved inline this session — folded into WQ-018's scope (see WORK-QUEUE.md):
+(4) localStorage-injection dual-theme Puppeteer+pa11y verification pattern; (5) never redefine a shared
+neutral-gray token scale per theme.
+
+**CONTEXT-KERNEL change:** none — file not touched this session (confirmed via `git log --since` check).
+
+**Cross-project dependencies:** none discovered this session — all work and all blocking relationships
+were internal to tjm-solutions-site.
+
+**Open items carried forward:**
+- ESC-001 (verifier subagent unavailable for Done-transition gate) — still open, unresolved by Tony;
+  all WQ-038 through WQ-044 items added this session use the same "Implementation complete —
+  Done-transition blocked (ESC-001)" status as precedent from HL-006, rather than attempting to bypass
+  the gate.
+- WQ-036 (13 remaining offer pages) — queued, not started.
+- WQ-037 (homepage chip layout) — deliberately blocked on WQ-036 per Tony.
+- WQ-018 — now carries 5 harvest items (3 pre-existing + 2 from this session), still Queued.
+
+**Next owner:** any — resume with WQ-036 (remaining 13 offer pages) as the next unblocked substantive
+item, or escalate ESC-001 to Tony directly if a verifier-gate resolution is wanted first.
+
+---
+
 ## HL-006 — 2026-07-05 — PDR-008 offer-listing chain: pages, cards, deploy
 
 **Session:** Claude, driving the WQ-031 → WQ-009 → WQ-005/006/007 → WQ-003 → deploy chain per Tony's

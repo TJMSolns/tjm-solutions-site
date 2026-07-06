@@ -49,10 +49,10 @@ export default function MDSlides(): ReactNode {
         <meta property="og:title" content={TITLE} />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions/mdslides" />
-        <meta property="og:image" content="https://www.tjm.solutions/img/banner.jpg" />
+        <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
         <meta property="og:image:alt" content="MD-Slides — Markdown presentation tool by TJM Solutions" />
-        <meta property="og:image:width" content="5742" />
-        <meta property="og:image:height" content="3569" />
+        <meta property="og:image:width" content="576" />
+        <meta property="og:image:height" content="571" />
       </Head>
 
       <section className={styles.hero}>

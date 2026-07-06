@@ -35,6 +35,7 @@ function HomepageHeader() {
   return (
     <header className={styles.heroBanner}>
       <div className="container">
+        <p className={styles.heroEyebrow}>TJM Solutions · Advisory</p>
         <h1 className={styles.heroTitle}>
           {siteConfig.title}
         </h1>
@@ -55,10 +56,10 @@ export default function Home(): ReactNode {
         <meta property="og:title" content="TJM Solutions | Architecture, Engineering, and Advisory" />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions" />
-        <meta property="og:image" content="https://www.tjm.solutions/img/banner.jpg" />
+        <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
         <meta property="og:image:alt" content="TJM Solutions — Technology Advisory and Consulting" />
-        <meta property="og:image:width" content="5742" />
-        <meta property="og:image:height" content="3569" />
+        <meta property="og:image:width" content="576" />
+        <meta property="og:image:height" content="571" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
       </Head>

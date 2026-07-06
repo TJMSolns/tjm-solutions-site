@@ -72,10 +72,10 @@ export default function Projects(): ReactNode {
         <meta property="og:title" content={TITLE} />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions/projects" />
-        <meta property="og:image" content="https://www.tjm.solutions/img/banner.jpg" />
+        <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
         <meta property="og:image:alt" content="TJM Solutions Open Source Projects" />
-        <meta property="og:image:width" content="5742" />
-        <meta property="og:image:height" content="3569" />
+        <meta property="og:image:width" content="576" />
+        <meta property="og:image:height" content="571" />
       </Head>
 
       <div className={styles.grid}>

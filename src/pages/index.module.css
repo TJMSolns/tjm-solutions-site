@@ -4,49 +4,63 @@
  */
 
 .heroBanner {
-  padding: 80px 20px;
-  text-align: center;
-  background: 
-    linear-gradient(135deg, rgba(192, 0, 0, 0.85) 0%, rgba(165, 0, 0, 0.85) 100%),
-    url(/img/banner.jpg) center / cover no-repeat;
-  background-attachment: fixed;
-  border-bottom: 1px solid #374151;
+  position: relative;
+  padding: 56px 0 28px;
+  text-align: left;
+  background-image:
+    linear-gradient(var(--color-gray-200) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-gray-200) 1px, transparent 1px);
+  background-size: 42px 42px;
+  -webkit-mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
+  mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
+}
+
+.heroEyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--deep-blue);
+  margin: 0 0 18px;
+}
+
+[data-theme='dark'] .heroEyebrow {
+  color: #5b9bd8;
 }
 
 .heroTitle {
   margin: 0 0 16px 0;
-  font-size: 3em;
-  font-weight: 800;
-  color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-[data-theme='dark'] .heroTitle {
-  color: #ffffff;
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ifm-font-color-base);
 }
 
 .heroSubtitle {
-  margin: 0 0 32px 0;
-  font-size: 1.25em;
-  color: #ffffff;
-  font-weight: 500;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  margin: 0;
+  max-width: 62ch;
+  font-size: 1.15rem;
+  font-weight: 400;
+  font-family: var(--font-body);
+  color: var(--color-gray-600);
 }
 
 [data-theme='dark'] .heroSubtitle {
-  color: #ffffff;
+  color: var(--color-gray-400);
 }
 
 .buttons {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 16px;
   flex-wrap: wrap;
+  margin-top: 28px;
 }
 
 @media screen and (max-width: 996px) {
   .heroBanner {
-    padding: 60px 20px;
+    padding: 56px 0 40px;
   }
 
   .heroTitle {
@@ -54,11 +68,11 @@
   }
 
   .heroSubtitle {
-    font-size: 1.1em;
+    font-size: 1.05em;
   }
 
   .buttons {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
   }
 }

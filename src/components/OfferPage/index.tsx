@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Head from '@docusaurus/Head';
 import Layout from '@theme/Layout';
+import CategoryIcon, { type Category } from '@site/src/components/CategoryIcon';
 import styles from './styles.module.css';
 
 export interface OfferDeliverable {
@@ -20,7 +21,6 @@ export interface OfferPageData {
   category: 'Commerce Strategy' | 'Digital Transformation' | 'Experience Engineering';
   categoryHref: string;
   slug: string;
-  imageUrl: string;
   description: string;
   problemStatement: string;
   valueProposition: string;
@@ -28,18 +28,20 @@ export interface OfferPageData {
   deliverables: OfferDeliverable[];
   duration: string;
   costBenefit: string;
-  credibility: OfferCredibility;
+  credibility?: OfferCredibility;
 }
 
-const CATEGORY_COLORS: Record<OfferPageData['category'], string> = {
-  'Commerce Strategy': '#c00000',
-  'Digital Transformation': '#c00000',
-  'Experience Engineering': '#c00000',
+const CATEGORY_CODE: Record<OfferPageData['category'], Category> = {
+  'Commerce Strategy': 'CS',
+  'Digital Transformation': 'DT',
+  'Experience Engineering': 'EE',
 };
 
 export default function OfferPage({ offer }: { offer: OfferPageData }): ReactNode {
   const title = `${offer.name} | ${offer.category} | TJM Solutions`;
   const url = `https://www.tjm.solutions/services/${offer.slug}`;
+  const code = CATEGORY_CODE[offer.category];
+  const catClass = `cat-${code.toLowerCase()}`;
 
   const serviceSchema = {
     '@context': 'https://schema.org',
@@ -59,19 +61,25 @@ export default function OfferPage({ offer }: { offer: OfferPageData }): ReactNod
         <meta property="og:title" content={title} />
         <meta property="og:description" content={offer.description} />
         <meta property="og:url" content={url} />
-        <meta property="og:image" content={`https://www.tjm.solutions${offer.imageUrl}`} />
+        <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
         <meta property="og:image:alt" content={`${offer.category} — TJM Solutions`} />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
       </Head>
 
       <div className={styles.offerContainer}>
-        <section className={styles.hero} style={{ backgroundImage: `url(${offer.imageUrl})` }}>
+        <section className={styles.hero}>
           <div className={`container ${styles.heroInner}`}>
-            <p className={styles.eyebrow} style={{ color: CATEGORY_COLORS[offer.category] }}>
-              {offer.category} &middot; {offer.id}
-            </p>
-            <h1>{offer.name}</h1>
+            <div className={styles.codeRow}>
+              <span className={`${styles.badge} ${catClass}`}>{offer.id}</span>
+              <span className={catClass}>{offer.category}</span>
+            </div>
+            <div className={styles.heroTitleRow}>
+              <div className={`${styles.iconCircle} ${catClass}`}>
+                <CategoryIcon category={code} size={28} />
+              </div>
+              <h1>{offer.name}</h1>
+            </div>
             <p className={styles.heroDescription}>{offer.description}</p>
           </div>
         </section>
@@ -132,19 +140,21 @@ export default function OfferPage({ offer }: { offer: OfferPageData }): ReactNod
             </div>
           </section>
 
-          <section className={styles.credibilitySection}>
-            <h2>Grounded in Real Experience</h2>
-            <p>{offer.credibility.summary}</p>
-            {offer.credibility.links && offer.credibility.links.length > 0 && (
-              <ul className={styles.credibilityLinks}>
-                {offer.credibility.links.map((l) => (
-                  <li key={l.href}>
-                    <a href={l.href}>{l.label}</a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          {offer.credibility && (
+            <section className={styles.credibilitySection}>
+              <h2>Grounded in Real Experience</h2>
+              <p>{offer.credibility.summary}</p>
+              {offer.credibility.links && offer.credibility.links.length > 0 && (
+                <ul className={styles.credibilityLinks}>
+                  {offer.credibility.links.map((l) => (
+                    <li key={l.href}>
+                      <a href={l.href}>{l.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
 
           <section className={styles.ctaSection}>
             <h2>Ready to Talk?</h2>

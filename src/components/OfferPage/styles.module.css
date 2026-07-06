@@ -4,55 +4,64 @@
 
 .hero {
   position: relative;
-  padding: 72px 20px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(31, 31, 32, 0.92) 0%, rgba(31, 31, 32, 0.75) 100%);
-}
-
-[data-theme='dark'] .hero::before {
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.94) 0%, rgba(17, 24, 39, 0.8) 100%);
+  padding: 56px 20px 40px;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .heroInner {
-  position: relative;
-  z-index: 1;
   max-width: 820px;
 }
 
-.eyebrow {
-  margin: 0 0 12px 0;
-  font-size: 0.9em;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  background: #ffffff;
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 999px;
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  margin-bottom: 18px;
+}
+
+.badge {
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-weight: 500;
+}
+
+.heroTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.iconCircle {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-gray-100);
 }
 
 .hero h1 {
-  color: #ffffff;
-  margin: 0 0 16px 0;
-  font-size: 2.4em;
-  font-weight: 800;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  margin: 0;
+  font-size: 2.2em;
+  line-height: 1.1;
 }
 
 .heroDescription {
-  color: #ffffff;
-  font-size: 1.15em;
+  font-size: 1.1em;
   line-height: 1.6;
   margin: 0;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  max-width: 68ch;
+  color: var(--color-gray-600);
+}
+
+[data-theme='dark'] .heroDescription {
+  color: var(--color-gray-400);
 }
 
 .twoCol {
@@ -60,11 +69,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 40px;
   padding: 48px 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-[data-theme='dark'] .twoCol {
-  border-bottom-color: #374151;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .colBlock h2 {
@@ -78,11 +83,7 @@
 
 .block {
   padding: 48px 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-[data-theme='dark'] .block {
-  border-bottom-color: #374151;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .block h2 {
@@ -112,31 +113,26 @@
 .deliverablesTable td {
   text-align: left;
   padding: 12px 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   vertical-align: top;
 }
 
-[data-theme='dark'] .deliverablesTable th,
-[data-theme='dark'] .deliverablesTable td {
-  border-color: #374151;
-}
-
 .deliverablesTable th {
-  background: #f9fafb;
-  font-weight: 700;
+  background: var(--color-gray-100);
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
 }
 
 [data-theme='dark'] .deliverablesTable th {
-  background: #1f2937;
+  background: var(--ink-soft);
 }
 
 .credibilitySection {
   padding: 48px 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-[data-theme='dark'] .credibilitySection {
-  border-bottom-color: #374151;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .credibilitySection h2 {
@@ -156,26 +152,16 @@
   display: inline-block;
   padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid #c00000;
-  color: #c00000;
+  border: 1px solid var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
   font-weight: 600;
   text-decoration: none;
   font-size: 0.9em;
 }
 
 .credibilityLinks a:hover {
-  background: #c00000;
+  background: var(--ifm-color-primary-darker);
   color: #ffffff;
-}
-
-[data-theme='dark'] .credibilityLinks a {
-  border-color: #ff6b6b;
-  color: #ff6b6b;
-}
-
-[data-theme='dark'] .credibilityLinks a:hover {
-  background: #ff6b6b;
-  color: #111827;
 }
 
 .ctaSection {
@@ -191,16 +177,16 @@
   display: inline-block;
   margin-top: 12px;
   padding: 14px 32px;
-  background: #c00000;
+  background: var(--ifm-color-primary-darker);
   color: #ffffff;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 700;
   text-decoration: none;
   transition: background 0.2s ease;
 }
 
 .ctaButton:hover {
-  background: #950000;
+  background: var(--ifm-color-primary-darkest);
   color: #ffffff;
 }
 

@@ -7,7 +7,6 @@ const offer: OfferPageData = {
   category: 'Experience Engineering',
   categoryHref: '/#experience-engineering',
   slug: 'agent-ready-experience-design',
-  imageUrl: '/img/experience-engineering.jpg',
   description:
     'A design for an experience layer that serves both human buyers and agent buyers — without forcing a ' +
     'choice between them. We audit the current experience, design the structured capability surfaces ' +

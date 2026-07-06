@@ -3,29 +3,28 @@
 }
 
 .hero {
-  background: 
-    linear-gradient(135deg, rgba(192, 0, 0, 0.92) 0%, rgba(165, 0, 0, 0.92) 100%),
-    url(/img/banner.jpg) center / cover no-repeat;
-  background-attachment: fixed;
-  color: white;
-  padding: 80px 20px;
-  text-align: center;
-  margin-bottom: 60px;
+  position: relative;
+  padding: 56px 20px 40px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-gray-200);
+  background-image:
+    linear-gradient(var(--color-gray-200) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-gray-200) 1px, transparent 1px);
+  background-size: 42px 42px;
+  -webkit-mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
+  mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
 }
 
-[data-theme='dark'] .hero {
-  background: 
-    linear-gradient(135deg, rgba(255, 77, 77, 0.80) 0%, rgba(229, 0, 0, 0.80) 100%),
-    url(/img/banner.jpg) center / cover no-repeat;
-  background-attachment: fixed;
-}
 
 .subtitle {
   margin: 0;
   font-size: 1.25em;
-  opacity: 0.95;
   font-weight: 500;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  color: var(--color-gray-600);
+}
+
+[data-theme='dark'] .subtitle {
+  color: var(--color-gray-400);
 }
 
 .bioSection {
@@ -33,24 +32,24 @@
   grid-template-columns: 1fr;
   gap: 40px;
   margin: 60px 0;
-  background: #ffe6e6;
+  background: var(--paper-soft);
   padding: 40px;
-  border-radius: 12px;
+  border-radius: 6px;
 }
 
 [data-theme='dark'] .bioSection {
-  background: rgba(255, 77, 77, 0.08);
+  background: var(--ink-soft);
 }
 
 .bioContent h2 {
-  color: #c00000;
+  color: var(--ifm-color-primary);
   font-size: 2.5em;
   margin: 0 0 8px 0;
   font-weight: 800;
 }
 
 .bioContent h3 {
-  color: #c00000;
+  color: var(--ifm-color-primary);
   font-size: 1.3em;
   margin: 32px 0 16px 0;
   font-weight: 700;
@@ -59,12 +58,8 @@
 .bioContent p {
   font-size: 1em;
   line-height: 1.8;
-  color: #1f1f20;
+  color: var(--ifm-font-color-base);
   margin: 0 0 16px 0;
-}
-
-[data-theme='dark'] .bioContent p {
-  color: #ffffff;
 }
 
 .competencyList {
@@ -79,7 +74,7 @@
 .competencyItem {
   background: rgba(192, 0, 0, 0.08);
   border: 1px solid rgba(192, 0, 0, 0.25);
-  color: #1f1f20;
+  color: var(--color-gray-900);
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.9em;
@@ -97,7 +92,7 @@
   padding: 32px;
   border-radius: 12px;
   margin-top: 32px;
-  border-left: 4px solid #c00000;
+  border-left: 4px solid var(--ifm-color-primary);
 }
 
 .contactCard h3 {
@@ -110,7 +105,7 @@
 }
 
 .contactInfo a {
-  color: #c00000;
+  color: var(--ifm-color-primary);
   text-decoration: none;
 }
 
@@ -122,7 +117,7 @@
   display: inline-block;
   margin-top: 24px;
   padding: 14px 32px;
-  background-color: #c00000;
+  background-color: var(--ifm-color-primary-darker);
   color: white;
   text-decoration: none;
   border-radius: 6px;
@@ -132,7 +127,7 @@
 }
 
 .ctaButton:hover {
-  background-color: #a50000;
+  background-color: var(--ifm-color-primary-darkest);
   box-shadow: 0 4px 12px rgba(192, 0, 0, 0.3);
   transform: translateY(-2px);
   color: white;

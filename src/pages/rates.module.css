@@ -3,36 +3,34 @@
 }
 
 .hero {
-  background: 
-    linear-gradient(135deg, rgba(192, 0, 0, 0.92) 0%, rgba(165, 0, 0, 0.92) 100%),
-    url(/img/banner.jpg) center / cover no-repeat;
-  background-attachment: fixed;
-  color: white;
-  padding: 80px 20px;
-  text-align: center;
+  position: relative;
+  padding: 56px 20px 40px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-gray-200);
+  background-image:
+    linear-gradient(var(--color-gray-200) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-gray-200) 1px, transparent 1px);
+  background-size: 42px 42px;
+  -webkit-mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
+  mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
   margin-bottom: 60px;
-}
-
-[data-theme='dark'] .hero {
-  background: 
-    linear-gradient(135deg, rgba(255, 77, 77, 0.80) 0%, rgba(229, 0, 0, 0.80) 100%),
-    url(/img/banner.jpg) center / cover no-repeat;
-  background-attachment: fixed;
 }
 
 .hero h1 {
   margin: 0 0 20px 0;
   font-size: 2.5em;
-  font-weight: 800;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
 }
 
 .subtitle {
   margin: 0;
   font-size: 1.25em;
-  opacity: 0.95;
   font-weight: 500;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  color: var(--color-gray-600);
+}
+
+[data-theme='dark'] .subtitle {
+  color: var(--color-gray-400);
 }
 
 .engagementGrid {
@@ -44,7 +42,7 @@
 
 .engagementCard {
   padding: 32px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-radius: 12px;
   background: white;
   transition: all 0.3s ease;
@@ -53,31 +51,31 @@
 }
 
 [data-theme='dark'] .engagementCard {
-  background: #1f2937;
-  border-color: #374151;
+  background: var(--ink-soft);
+  border-color: var(--color-gray-200);
 }
 
 [data-theme='dark'] .engagementCard h3 {
-  color: #ff4d4d;
+  color: var(--ifm-color-primary);
 }
 
 [data-theme='dark'] .amount {
-  color: #ff4d4d;
+  color: var(--ifm-color-primary);
 }
 
 .engagementCard:hover {
-  border-color: #c00000;
+  border-color: var(--ifm-color-primary);
   box-shadow: 0 8px 24px rgba(192, 0, 0, 0.15);
   transform: translateY(-4px);
 }
 
 [data-theme='dark'] .engagementCard:hover {
-  border-color: #ff4d4d;
+  border-color: var(--ifm-color-primary);
   box-shadow: 0 8px 24px rgba(255, 77, 77, 0.2);
 }
 
 .engagementCard h3 {
-  color: #c00000;
+  color: var(--ifm-color-primary);
   margin: 0 0 12px 0;
   font-size: 1.4em;
   font-weight: 700;
@@ -85,14 +83,14 @@
 
 .engagementDescription {
   font-size: 0.95em;
-  color: #1f1f20;
+  color: var(--color-gray-900);
   line-height: 1.6;
   margin: 0 0 24px 0;
   flex: 1;
 }
 
 [data-theme='dark'] .engagementDescription {
-  color: #d1d5db;
+  color: var(--color-gray-400);
 }
 
 .rateAmount {
@@ -105,18 +103,18 @@
 
 .amount {
   font-size: 2.5em;
-  color: #c00000;
+  color: var(--ifm-color-primary);
   font-weight: 800;
 }
 
 .period {
   font-size: 1em;
-  color: #1f1f20;
+  color: var(--color-gray-900);
   font-weight: 500;
 }
 
 [data-theme='dark'] .period {
-  color: #d1d5db;
+  color: var(--color-gray-400);
 }
 
 .rateRows {
@@ -130,7 +128,7 @@
   align-items: baseline;
   justify-content: space-between;
   padding: 8px 0;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
 }
 
 .rateRow:first-child {
@@ -138,19 +136,19 @@
 }
 
 [data-theme='dark'] .rateRow {
-  border-color: #374151;
+  border-color: var(--color-gray-200);
 }
 
 .rateLabel {
   font-size: 0.8em;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 [data-theme='dark'] .rateLabel {
-  color: #9ca3af;
+  color: var(--color-gray-400);
 }
 
 .rateValue {
@@ -161,28 +159,28 @@
 
 .rowAmount {
   font-size: 1.6em;
-  color: #c00000;
+  color: var(--ifm-color-primary);
   font-weight: 800;
 }
 
 [data-theme='dark'] .rowAmount {
-  color: #ff4d4d;
+  color: var(--ifm-color-primary);
 }
 
 .rateNote {
   font-size: 0.75em;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-left: 4px;
   white-space: nowrap;
 }
 
 [data-theme='dark'] .rateNote {
-  color: #9ca3af;
+  color: var(--color-gray-400);
 }
 
 .overageNote {
   font-size: 0.8em;
-  color: #6b7280;
+  color: var(--color-gray-500);
   text-align: right;
   margin-top: 8px;
   margin-bottom: 0;
@@ -190,12 +188,12 @@
 }
 
 [data-theme='dark'] .overageNote {
-  color: #9ca3af;
+  color: var(--color-gray-400);
 }
 
 .disclaimer {
   text-align: center;
-  background: #ffe6e6;
+  background: var(--paper-soft);
   padding: 32px;
   border-radius: 12px;
   margin: 60px 0;
@@ -203,56 +201,56 @@
 
 @media (prefers-color-scheme: dark) {
   .disclaimer {
-    background: rgba(255, 77, 77, 0.1);
+    background: var(--ink-soft);
   }
 }
 
 .disclaimer p {
   margin: 0;
-  color: #1f1f20;
+  color: var(--color-gray-900);
   font-size: 0.95em;
   line-height: 1.8;
 }
 
 [data-theme='dark'] .disclaimer p {
-  color: #d1d5db;
+  color: var(--color-gray-400);
 }
 
 .ctaSection {
   text-align: center;
   padding: 60px 40px;
-  background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+  background: var(--paper-soft);
   border-radius: 12px;
   margin: 60px 0;
 }
 
 @media (prefers-color-scheme: dark) {
   .ctaSection {
-    background: rgba(255, 77, 77, 0.1);
+    background: var(--ink-soft);
   }
 }
 
 .ctaSection h2 {
-  color: #c00000;
+  color: var(--ifm-color-primary);
   margin: 0 0 16px 0;
   font-size: 2em;
 }
 
 .ctaSection p {
-  color: #1f1f20;
+  color: var(--color-gray-900);
   font-size: 1.1em;
   margin: 0 0 32px 0;
   line-height: 1.8;
 }
 
 [data-theme='dark'] .ctaSection p {
-  color: #d1d5db;
+  color: var(--color-gray-400);
 }
 
 .ctaButton {
   display: inline-block;
   padding: 14px 32px;
-  background-color: #c00000;
+  background-color: var(--ifm-color-primary-darker);
   color: white;
   text-decoration: none;
   border-radius: 6px;
@@ -262,7 +260,7 @@
 }
 
 .ctaButton:hover {
-  background-color: #a50000;
+  background-color: var(--ifm-color-primary-darkest);
   box-shadow: 0 4px 12px rgba(192, 0, 0, 0.3);
   transform: translateY(-2px);
 }

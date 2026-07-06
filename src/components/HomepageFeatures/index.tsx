@@ -1,5 +1,6 @@
 import type {ReactNode} from 'react';
 import Link from '@docusaurus/Link';
+import CategoryIcon, {type Category} from '@site/src/components/CategoryIcon';
 import styles from './styles.module.css';
 
 type OfferLink = {
@@ -9,16 +10,16 @@ type OfferLink = {
 };
 
 type FeatureItem = {
+  code: Category;
   title: string;
-  imageUrl: string;
   description: ReactNode;
-  offers?: OfferLink[];
+  offers: OfferLink[];
 };
 
 const FeatureList: FeatureItem[] = [
   {
+    code: 'CS',
     title: 'Commerce Strategy',
-    imageUrl: '/img/commerce-strategy.jpg',
     description: (
       <>
         Need based evaluation of platforms, tools, processes and systems related to commerce for new installs, migrations, upgrades and enhancements. Opportunistic enhancement via adoption of new search, marketplace and intelligent systems. Transition to agentic commerce.
@@ -31,8 +32,8 @@ const FeatureList: FeatureItem[] = [
     ],
   },
   {
+    code: 'DT',
     title: 'Digital Transformation',
-    imageUrl: '/img/digital-transformation.jpg',
     description: (
       <>
         Align technical road map to business objectives. Deploy microservices to modernize while reducing technical debt. Optimize resources according to fit & function. Adoption of headless/API-first & content driven strategies. Incorporation of GenAI, RAG, and Knowledge Bases into current processes.
@@ -45,8 +46,8 @@ const FeatureList: FeatureItem[] = [
     ],
   },
   {
+    code: 'EE',
     title: 'Experience Engineering',
-    imageUrl: '/img/experience-engineering.jpg',
     description: (
       <>
         Recommend strategic steps to boost engagement. Marry architecture & tooling to your community, education and retail goals. Evaluate dashboards and business user tools against operational needs to maximize out-of-the-box functionality with process and outcomes.
@@ -60,24 +61,28 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, imageUrl, description, offers}: FeatureItem) {
+function Feature({code, title, description, offers}: FeatureItem) {
   return (
-    <div className={styles.serviceCard}>
-      <div className={styles.serviceImage}>
-        <img src={imageUrl} alt={title} />
+    <div className={styles.categoryRow} id={code === 'CS' ? 'commerce-strategy' : code === 'DT' ? 'digital-transformation' : 'experience-engineering'}>
+      <div className={styles.categoryIcon}>
+        <CategoryIcon category={code} size={26} />
       </div>
-      <div className={styles.serviceContent}>
-        <h3>{title}</h3>
-        <p>{description}</p>
-        {offers && offers.length > 0 && (
-          <ul className={styles.offerList}>
-            {offers.map((offer) => (
-              <li key={offer.id}>
-                <Link to={offer.href}>{offer.label}</Link>
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className={styles.categoryContent}>
+        <div className={styles.categoryHeader}>
+          <span className={`${styles.categoryCode} cat-${code.toLowerCase()}`}>{code}</span>
+          <h3 className={styles.categoryName}>{title}</h3>
+          <span className={styles.categoryCount}>{offers.length} OFFERS</span>
+        </div>
+        <p className={styles.categoryDescription}>{description}</p>
+        <ul className={styles.offerList}>
+          {offers.map((offer) => (
+            <li key={offer.id}>
+              <Link to={offer.href} className={`cat-${code.toLowerCase()}`}>
+                {offer.id} — {offer.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -87,9 +92,9 @@ export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
       <div className="container">
-        <div className={styles.servicesGrid}>
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
+        <div className={styles.servicesIndex}>
+          {FeatureList.map((props) => (
+            <Feature key={props.code} {...props} />
           ))}
         </div>
       </div>

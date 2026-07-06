@@ -90,7 +90,7 @@ const config: Config = {
 
   // === Theme configuration ===
   themeConfig: {
-    image: 'img/banner.jpg',
+    image: 'img/tjm-solutions-logo.png',
     metadata: [
       { name: 'twitter:card', content: 'summary_large_image' },
       { property: 'og:type', content: 'website' },
@@ -223,6 +223,10 @@ const config: Config = {
       type: 'text/css',
       integrity: 'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
       crossorigin: 'anonymous',
+    },
+    {
+      href: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Public+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap',
+      type: 'text/css',
     },
   ],
 };

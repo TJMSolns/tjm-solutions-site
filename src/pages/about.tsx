@@ -54,10 +54,10 @@ export default function About(): ReactNode {
         <meta property="og:title" content={TITLE} />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions/about" />
-        <meta property="og:image" content="https://www.tjm.solutions/img/banner.jpg" />
+        <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
         <meta property="og:image:alt" content="TJM Solutions — Technology Advisory and Consulting" />
-        <meta property="og:image:width" content="5742" />
-        <meta property="og:image:height" content="3569" />
+        <meta property="og:image:width" content="576" />
+        <meta property="og:image:height" content="571" />
         <script type="application/ld+json">{JSON.stringify(personSchema)}</script>
       </Head>
       <div className={styles.aboutContainer}>
@@ -74,7 +74,7 @@ export default function About(): ReactNode {
           <section className={styles.bioSection}>
             <div className={styles.bioContent}>
               <h2>Tony Moores</h2>
-              <h3 style={{ color: '#c00000', marginTop: '8px' }}>
+              <h3 style={{ marginTop: '8px' }}>
                 Founder &amp; Principal Consultant, TJM Solutions · CTO, RETISIO Inc.
               </h3>
 

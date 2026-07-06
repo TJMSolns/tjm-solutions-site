@@ -1,70 +1,129 @@
 /**
  * TJM Solutions Custom Styling
- * Modern, minimalist design with professional consulting aesthetic
- * Brand Colors: Red (#c00000) and Dark Gray (#1f1f20) from logo
+ *
+ * Token system: terminal-profile-inspired dark palette. Ink/Paper as the
+ * neutral ground; Deep Red/Blue/Green as three distinct chromatic colors
+ * mapped onto the three service categories (CS/DT/EE) rather than one
+ * restrained "brand accent" -- the color carries meaning, like a terminal
+ * scheme assigns distinct colors to distinct roles. Deep Blue doubles as
+ * the generic structural accent (labels, focus rings) so red reads as
+ * "Commerce Strategy" specifically, not "the color of everything."
+ * Type: Bricolage Grotesque (display) + Public Sans (body) + Space Mono
+ * (offer codes, spec data) -- see stylesheets in docusaurus.config.ts.
+ * Logo mark uses its own color (#770000), not tied to the live --deep-red
+ * token -- see docs/design/ for the full rationale.
  */
 
 :root {
-  /* Primary color palette - Professional Red and Dark Gray */
-  --ifm-color-primary: #c00000;
+  --ink: #131315;
+  --ink-soft: #1d1d20;
+  --paper: #f5f4f1;
+  --paper-soft: #eae8e3;
+  --deep-red: #c00000;
+  --deep-red-dim: #8b0000;
+  --deep-blue: #1d5c9e;
+  --deep-green: #1e7a4a;
+  --neutral-gray: #86847e;
+  --neutral-line: #dcdad4;
+
+  /* Infima primary hooks onto Deep Red (CS / brand mark) */
+  --ifm-color-primary: var(--deep-red);
   --ifm-color-primary-dark: #a50000;
-  --ifm-color-primary-darker: #8b0000;
+  --ifm-color-primary-darker: var(--deep-red-dim);
   --ifm-color-primary-darkest: #700000;
   --ifm-color-primary-light: #e50000;
   --ifm-color-primary-lighter: #ff1a1a;
   --ifm-color-primary-lightest: #ff4d4d;
 
-  /* Neutral palette */
-  --color-gray-50: #f9fafb;
-  --color-gray-100: #f3f4f6;
-  --color-gray-200: #e5e7eb;
-  --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #4b5563;
-  --color-gray-700: #374151;
-  --color-gray-800: #1f2937;
-  --color-gray-900: #111827;
-  --color-brand-dark: #1f1f20;
+  /* Neutral palette (kept as --color-gray-* for existing utility classes) */
+  --color-gray-50: #f7f7f5;
+  --color-gray-100: var(--paper-soft);
+  --color-gray-200: var(--neutral-line);
+  --color-gray-300: #c2c3c2;
+  --color-gray-400: #9a9c9e;
+  --color-gray-500: var(--neutral-gray);
+  --color-gray-600: #5f5d57;
+  --color-gray-700: #45433e;
+  --color-gray-800: #2b2a26;
+  --color-gray-900: var(--ink);
+  --color-brand-dark: var(--ink);
+
+  /* Generic structural accent (eyebrows, labels, focus) -- blue, not red */
+  --accent-soft: var(--deep-blue);
+  --cat-cs: var(--deep-red);
+  --cat-dt: var(--deep-blue);
+  --cat-ee: var(--deep-green);
 
   /* Typography */
-  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Public Sans', sans-serif;
+  --font-body: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, Menlo, monospace;
+
+  --ifm-font-family-base: var(--font-body);
+  --ifm-heading-font-family: var(--font-display);
   --ifm-font-size-base: 16px;
   --ifm-heading-font-weight: 700;
+  --ifm-heading-line-height: 1.15;
 
   /* Spacing and sizing */
   --ifm-spacing-unit: 8px;
-  --ifm-border-radius-base: 4px;
-  
+  --ifm-border-radius-base: 6px;
+
   /* Code styling */
-  --ifm-code-font-size: 95%;
+  --ifm-font-family-monospace: var(--font-mono);
+  --ifm-code-font-size: 90%;
   --docusaurus-highlighted-code-line-bg: rgba(192, 0, 0, 0.1);
 }
 
 [data-theme='dark'] {
-  --ifm-color-primary: #ff4d4d;
-  --ifm-color-primary-dark: #ff1a1a;
-  --ifm-color-primary-darker: #e50000;
-  --ifm-color-primary-darkest: #cc0000;
-  --ifm-color-primary-light: #ff6666;
-  --ifm-color-primary-lighter: #ff7f7f;
-  --ifm-color-primary-lightest: #ff9999;
-  --docusaurus-highlighted-code-line-bg: rgba(255, 77, 77, 0.15);
+  /* Brightened from the style-guide's #ef4444 -- pa11y measured real navbar/card
+     contexts at 4.08-4.47:1 against this ramp, short of the 4.5:1 AA floor. */
+  --ifm-color-primary: #f87171;
+  --ifm-color-primary-dark: #ef4444;
+  --ifm-color-primary-darker: #dc2626;
+  --ifm-color-primary-darkest: #c81e1e;
+  --ifm-color-primary-light: #fca5a5;
+  --ifm-color-primary-lighter: #fecaca;
+  --ifm-color-primary-lightest: #fee2e2;
+
+  /* --color-gray-* deliberately NOT redefined here: the scale is fixed
+     (50=lightest..900=darkest) in both themes, matching the original file's
+     design -- components pick whichever fixed step suits their own
+     light/dark override, rather than the token flipping meaning per theme. */
+
+  --accent-soft: #5b9bd8;
+  --cat-cs: #f87171;
+  --cat-dt: #5b9bd8;
+  --cat-ee: #4ea575;
+
+  --docusaurus-highlighted-code-line-bg: rgba(248, 113, 113, 0.15);
 }
+
+.cat-cs { color: var(--cat-cs) !important; }
+.cat-dt { color: var(--cat-dt) !important; }
+.cat-ee { color: var(--cat-ee) !important; }
 
 /* Remove default borders and add whitespace */
 body {
-  background-color: #ffffff;
+  background-color: var(--paper);
 }
 
 [data-theme='dark'] body {
-  background-color: #111827;
+  background-color: var(--ink);
 }
 
 /* Clean, minimal styling */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
   font-weight: 700;
+  letter-spacing: -0.01em;
   margin-bottom: 16px;
+}
+
+/* Offer codes, spec labels, technical data points */
+.mono, .offer-code {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
 }
 
 /* Link styling */
@@ -86,7 +145,7 @@ a:hover {
 }
 
 [data-theme='dark'] .hero-section {
-  background: #1f2937;
+  background: var(--ink-soft);
 }
 
 .hero-section h1 {
@@ -150,7 +209,7 @@ a:hover {
 }
 
 [data-theme='dark'] .service-item-content {
-  background: #2d3748;
+  background: var(--ink-soft);
 }
 
 .service-item-content h3 {
@@ -198,7 +257,7 @@ a:hover {
 }
 
 [data-theme='dark'] .contact-card {
-  background: #2d3748;
+  background: var(--ink-soft);
 }
 
 .contact-card h3 {
@@ -231,7 +290,7 @@ a:hover {
 }
 
 [data-theme='dark'] .pricing-card {
-  background: #2d3748;
+  background: var(--ink-soft);
   border-color: var(--color-gray-700);
 }
 
@@ -282,7 +341,7 @@ a:hover {
 }
 
 [data-theme='dark'] .article-card {
-  background: #2d3748;
+  background: var(--ink-soft);
   border-color: var(--color-gray-700);
 }
 
@@ -480,7 +539,7 @@ a:hover {
 
 [data-theme='dark'] .blogPostItem {
   border-color: var(--color-gray-700);
-  background: #1f2937;
+  background: var(--ink-soft);
 }
 
 .blogPostItem:hover {

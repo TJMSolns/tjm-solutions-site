@@ -7,7 +7,6 @@ const offer: OfferPageData = {
   category: 'Digital Transformation',
   categoryHref: '/#digital-transformation',
   slug: 'microservices-modernization-assessment',
-  imageUrl: '/img/digital-transformation.jpg',
   description:
     'An evaluation of where your organization actually is on the path from monolith to genuinely ' +
     'decomposed services — and a sequenced, evidence-based plan for closing the gap. We distinguish ' +
@@ -46,12 +45,6 @@ const offer: OfferPageData = {
     'overhead, fragile releases, and an architecture that makes independent scaling impossible. Each new ' +
     'service added without addressing structural issues adds coupling surface — organizations that address ' +
     'decomposition while it is still tractable spend significantly less than those who wait.',
-  credibility: {
-    summary:
-      'Grounded in Tony’s tenure as CTO of Professional Access, where he expanded the firm\'s practice ' +
-      'into Magento, commercetools, and custom microservices for enterprise commerce clients.',
-    links: [{ label: 'About Tony Moores', href: '/about' }],
-  },
 };
 
 export default function DT3Page(): ReactNode {

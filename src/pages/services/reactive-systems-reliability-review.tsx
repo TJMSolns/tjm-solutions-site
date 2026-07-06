@@ -7,7 +7,6 @@ const offer: OfferPageData = {
   category: 'Digital Transformation',
   categoryHref: '/#digital-transformation',
   slug: 'reactive-systems-reliability-review',
-  imageUrl: '/img/digital-transformation.jpg',
   description:
     'Diagnoses the architectural root causes of recurring reliability failures — the ones that don\'t ' +
     'reproduce cleanly, that cascade unexpectedly, and that your incident post-mortems struggle to fully ' +
@@ -50,10 +49,9 @@ const offer: OfferPageData = {
     'diagnosis is what prevents the next one.',
   credibility: {
     summary:
-      'Grounded in Tony’s platform leadership at RETISIO Inc. — reactive, multi-tenant commerce ' +
-      'architecture — and in his published "Functional Programming Isn\'t Just for Academics" series, ' +
-      'which develops the same immutability, pure-function, and explicit-error-handling framework this ' +
-      'review applies as a diagnostic lens.',
+      'Grounded in Tony\'s published "Functional Programming Isn\'t Just for Academics" series, which ' +
+      'develops the same immutability, pure-function, and explicit-error-handling framework this review ' +
+      'applies as a diagnostic lens.',
     links: [{ label: 'Functional Programming Series', href: '/articles/tags/functional-programming' }],
   },
 };

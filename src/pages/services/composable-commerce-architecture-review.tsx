@@ -7,7 +7,6 @@ const offer: OfferPageData = {
   category: 'Commerce Strategy',
   categoryHref: '/#commerce-strategy',
   slug: 'composable-commerce-architecture-review',
-  imageUrl: '/img/commerce-strategy.jpg',
   description:
     'An honest assessment of how well your current architecture actually embodies composable design — ' +
     'and a prioritized remediation plan that distinguishes the quick wins from the structural changes. We ' +
@@ -44,13 +43,6 @@ const offer: OfferPageData = {
     'coupled integration adds coordination overhead to every deployment and vendor decision. The right ' +
     'time to assess and remediate is before the next major integration initiative, not after it has ' +
     'embedded new coupling that will take years to unwind.',
-  credibility: {
-    summary:
-      'Grounded in Tony’s role as CTO of RETISIO Inc., where he owns long-term platform direction across ' +
-      'composable, API-first, and multi-tenant commerce architecture — evaluating exactly this gap between ' +
-      'stated and actual composability as part of the day job.',
-    links: [{ label: 'About Tony Moores', href: '/about' }],
-  },
 };
 
 export default function CS4Page(): ReactNode {

@@ -7,7 +7,6 @@ const offer: OfferPageData = {
   category: 'Commerce Strategy',
   categoryHref: '/#commerce-strategy',
   slug: 'marketplace-integration-strategy',
-  imageUrl: '/img/commerce-strategy.jpg',
   description:
     'A design for adding marketplace capability — whether you are a retailer launching a seller ' +
     'marketplace or a brand expanding into marketplace channels — that balances time-to-value against ' +
@@ -30,7 +29,7 @@ const offer: OfferPageData = {
     'that builds seller supply and buyer demand in the right order.',
   methodSummary: [
     'Business Model Design & Seller Persona Definition — operator commercial terms and category scope, or participant channel strategy and integration requirements.',
-    'Integration Architecture & Platform Evaluation — marketplace platform assessment (Mirakl and alternatives) for operators; per-channel integration design for participants.',
+    'Integration Architecture & Platform Evaluation — marketplace platform assessment across leading platforms for operators; per-channel integration design for participants.',
     'Operational Model Design & Go-Live Sequencing — seller support, returns, payments, and a phased launch plan with readiness gates.',
     'Platform Deep-Dive & Technical Specification — for operators building a net-new marketplace requiring full platform selection.',
   ],
@@ -51,13 +50,6 @@ const offer: OfferPageData = {
     'implementation is the mechanism that prevents this, and the opportunity window is timing-sensitive: ' +
     'organizations that launch a well-designed marketplace before competitors consolidate seller supply ' +
     'capture a structural advantage.',
-  credibility: {
-    summary:
-      'Grounded in Tony’s engagement as Principal Solutions Consultant at Mirakl, where he led ' +
-      'enterprise marketplace consulting across implementation strategy, integration design, and customer ' +
-      'success — the operator-side perspective this offer is built on.',
-    links: [{ label: 'About Tony Moores', href: '/about' }],
-  },
 };
 
 export default function CS2Page(): ReactNode {

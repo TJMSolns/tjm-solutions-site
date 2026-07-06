@@ -1,35 +1,31 @@
 .hero {
-  background:
-    linear-gradient(135deg, rgba(192, 0, 0, 0.92) 0%, rgba(165, 0, 0, 0.92) 100%),
-    url(/img/banner.jpg) center / cover no-repeat;
-  background-attachment: fixed;
-  color: white;
-  padding: 80px 20px;
-  text-align: center;
+  position: relative;
+  padding: 56px 0 40px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-gray-200);
+  background-image:
+    linear-gradient(var(--color-gray-200) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-gray-200) 1px, transparent 1px);
+  background-size: 42px 42px;
+  -webkit-mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
+  mask-image: linear-gradient(to bottom, black, black 40%, transparent 96%);
   margin-bottom: 60px;
-}
-
-[data-theme='dark'] .hero {
-  background:
-    linear-gradient(135deg, rgba(255, 77, 77, 0.80) 0%, rgba(229, 0, 0, 0.80) 100%),
-    url(/img/banner.jpg) center / cover no-repeat;
-  background-attachment: fixed;
 }
 
 .hero h1 {
   margin: 0 0 16px 0;
   font-size: 2.5em;
   font-weight: 700;
-  color: white;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .hero p {
   margin: 0;
   font-size: 1.2em;
-  opacity: 0.95;
   font-weight: 500;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  color: var(--color-gray-600);
   max-width: 600px;
-  margin: 0 auto;
+}
+
+[data-theme='dark'] .hero p {
+  color: var(--color-gray-400);
 }

@@ -7,7 +7,6 @@ const offer: OfferPageData = {
   category: 'Experience Engineering',
   categoryHref: '/#experience-engineering',
   slug: 'commerce-search-discovery-audit',
-  imageUrl: '/img/experience-engineering.jpg',
   description:
     'A structured evaluation of your search quality, relevance configuration, and discovery design — ' +
     'grounded in your actual query data rather than vendor defaults. We identify where relevance gaps, ' +
@@ -45,13 +44,6 @@ const offer: OfferPageData = {
     'search convert at 2–3x the rate of browsers. Every point of no-result rate and every relevance miss ' +
     'on high-volume queries is measurable, recurring revenue impact, and the gap compounds as catalog and ' +
     'campaigns change without re-audit.',
-  credibility: {
-    summary:
-      'Grounded in a decade at Art Technology Group (ATG), where Tony built deep expertise in enterprise ' +
-      'commerce search and solution engineering, helping close significant search-driven deals across the ' +
-      'Americas and Europe.',
-    links: [{ label: 'About Tony Moores', href: '/about' }],
-  },
 };
 
 export default function EE1Page(): ReactNode {

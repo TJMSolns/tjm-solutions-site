@@ -149,8 +149,10 @@ export default function ArticlesList({ items, metadata }: Props) {
         <meta name="description" content={metadata.blogDescription} />
       </Head>
       <div className={styles.hero}>
-        <h1>Articles</h1>
-        <p>Essays on software architecture, digital commerce, and the systems we build now.</p>
+        <div className="container">
+          <h1>Articles</h1>
+          <p>Essays on software architecture, digital commerce, and the systems we build now.</p>
+        </div>
       </div>
       <div className="container margin-vert--lg">
         <div className="articles-controls">

@@ -90,10 +90,10 @@ export default function Rates(): ReactNode {
         <meta property="og:title" content={TITLE} />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions/rates" />
-        <meta property="og:image" content="https://www.tjm.solutions/img/banner.jpg" />
+        <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
         <meta property="og:image:alt" content="TJM Solutions — Technology Advisory and Consulting" />
-        <meta property="og:image:width" content="5742" />
-        <meta property="og:image:height" content="3569" />
+        <meta property="og:image:width" content="576" />
+        <meta property="og:image:height" content="571" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
       </Head>
       <div className={styles.ratesContainer}>

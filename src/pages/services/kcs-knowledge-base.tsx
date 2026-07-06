@@ -7,7 +7,6 @@ const offer: OfferPageData = {
   category: 'Digital Transformation',
   categoryHref: '/#digital-transformation',
   slug: 'kcs-knowledge-base',
-  imageUrl: '/img/digital-transformation.jpg',
   description:
     'Deploys SCKB — a production-grade, KCS v6-governed knowledge base built on open-source components — ' +
     'into your environment. SCKB (Service Centered Knowledge Base) keeps institutional knowledge ' +
@@ -53,9 +52,8 @@ const offer: OfferPageData = {
     'per-seat AI licensing, no data-privacy exposure.',
   credibility: {
     summary:
-      'Grounded in a decade at Art Technology Group (ATG), where Tony built deep expertise in enterprise ' +
-      'commerce, search, and knowledge management. SCKB itself is an open-source system TJM Solutions ' +
-      'built and operates.',
+      'SCKB is an open-source KCS v6-governed knowledge base system TJM Solutions built and operates — ' +
+      'not a design document, a working system with its own track record.',
     links: [{ label: 'About Tony Moores', href: '/about' }],
   },
 };

@@ -7,7 +7,6 @@ const offer: OfferPageData = {
   category: 'Commerce Strategy',
   categoryHref: '/#commerce-strategy',
   slug: 'agent-commerce-readiness-audit',
-  imageUrl: '/img/commerce-strategy.jpg',
   description:
     'An evaluation of whether your commerce systems can serve the autonomous software agents that are ' +
     'beginning to act as buyers, researchers, and procurement intermediaries. We assess your APIs, data ' +

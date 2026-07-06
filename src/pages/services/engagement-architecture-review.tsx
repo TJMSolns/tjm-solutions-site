@@ -7,7 +7,6 @@ const offer: OfferPageData = {
   category: 'Experience Engineering',
   categoryHref: '/#experience-engineering',
   slug: 'engagement-architecture-review',
-  imageUrl: '/img/experience-engineering.jpg',
   description:
     'An evaluation of how well your technical stack supports your stated engagement goals — whether those ' +
     'goals involve commerce, community, education, content, or some combination. We map where the ' +
@@ -47,13 +46,6 @@ const offer: OfferPageData = {
     'expensive. Every feature that has to fight the architecture produces workarounds and technical debt ' +
     'that persist long after it ships. Understanding the architectural source of this friction before the ' +
     'next initiative is scoped is significantly cheaper than discovering it during implementation.',
-  credibility: {
-    summary:
-      'Grounded in Tony’s cross-platform product leadership as Director of Product Management at Oracle ' +
-      'Americas, aligning CX Commerce, marketing, and service platforms into a coherent engagement ' +
-      'architecture for enterprise customers.',
-    links: [{ label: 'About Tony Moores', href: '/about' }],
-  },
 };
 
 export default function EE4Page(): ReactNode {

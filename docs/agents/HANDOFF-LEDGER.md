@@ -4,6 +4,83 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-008 — 2026-07-06 — WQ-036: remaining 13 offer pages, first real E2 verifier PASS since ESC-001
+
+**Session:** Claude (autonomous single-item /next run) — read CONTEXT-KERNEL, WORK-QUEUE, and the last 3
+HANDOFF-LEDGER entries; found HL-007's explicit "next owner" recommendation (WQ-036) matched the only
+genuinely unblocked, Claude-executable, non-judgment-call item at the head of the queue; executed it
+alone per instruction, then stopped.
+
+**What happened:**
+
+- **WQ-036 (commit 28fde1f):** Added the 13 remaining offer detail pages completing the 22-offer
+  packaged-offers catalog: CS-1/5/6/7/8/9, DT-1/4/6, EE-2/3/6/7. Delegated drafting to 3 parallel
+  background agents grouped by category (CS: 6 pages, DT: 3, EE: 4), each instructed to follow the
+  existing `OfferPage` component pattern exactly and source content from each offer's Level 1 doc in
+  `Projects/packaged-offers/<category>/level1/`, with a hard constraint carried over from WQ-039/042:
+  no employer/client names, no credibility section (matching the precedent already applied to all 9
+  existing pages).
+- **Verification:** `npm run build` (`onBrokenLinks: throw`) passed, all 22 `/services/*.html` routes
+  present. `npm run typecheck` — no new errors (the only errors are the pre-existing `Layout` prop-type
+  issue already present in 6 other files before this session). `npm run wcag` (4 fixed pages) — no
+  issues. Additionally sampled 6 of the 13 new pages directly with `pa11y --standard WCAG2AA` in light
+  theme (no issues), and re-ran 4 of those with the localStorage `theme=dark` injection pattern
+  (HL-007's dual-theme pattern) to force dark mode before navigation (no issues). Grepped all 13 files
+  for banned employer/client names and a `credibility` field — zero matches on both.
+- **E2 verifier gate — first genuine PASS since ESC-001 (2026-07-05):** drew a verifier tier via
+  `draw-verifier-tier.py P3 sonnet` → `haiku`. First dispatch was **synchronous** (`run_in_background:
+  false`) and returned a real `PASS`, but `pretooluse-done-gate.py`'s DN-006 transcript-corroboration
+  check rejected it — synchronous `Agent` calls don't produce the `<task-notification>` block the gate
+  parses, so the gate can't confirm a real spawn happened. Re-dispatched the identical verifier prompt
+  as a **background** `Agent` call instead; it independently re-verified the commit, re-ran the build,
+  re-grepped for banned names/credibility, and confirmed the `OfferPage` pattern and category mappings
+  — returned `PASS` again, and this time the gate's corroboration check passed. WQ-036 evidence at
+  `docs/agents/evidence/WQ-036.md`; moved to Done (commit 8e6b6d0). WQ-037 flipped to Unblocked.
+- **ESC-001 note (not resolved, logged as an observation):** the `verifier` subagent — reported entirely
+  unavailable in the 2026-07-05 session (ESC-001, two model tiers tried, identical failure both times) —
+  spawned successfully in this session at the drawn `haiku` tier, both synchronously and in the
+  background. This doesn't confirm the underlying gap is fixed everywhere (could be session/environment
+  -specific), but it means the 13 items still marked "Implementation complete — Done-transition blocked
+  (ESC-001)" (WQ-031/009/005/006/007/003/038/039/040/041/042/043/044) may be closeable now using the
+  same background-dispatch pattern. Did not attempt this myself — out of scope for this session's single
+  -item instruction (do not process a second item). Logged in ESCALATIONS.md ESC-001 as an update, status
+  left `open` since only Tony can decide whether to treat the gap as resolved.
+- **Out-of-scope discovery, not acted on:** while sourcing content from
+  `/home/tjm/TJMSolns/Projects/packaged-offers/` (a sibling org project, read-only), found that repo has
+  21 uncommitted file changes and 1 unpushed commit dating to 2026-05-28 (confirmed via file mtimes —
+  about six weeks old, not something this session touched or caused). The uncommitted diffs are a
+  partial, seemingly abandoned redaction of company names (e.g. "RETISIO" → "the prior organization")
+  across business-sensitive sales/proposal documents, inconsistent even within single files (some
+  company names redacted, others left in place). This session's own git-durability Stop hook flagged the
+  repo as "touched" (my subagents read files there) and demanded a commit+push; I declined — committing
+  and pushing another project's stale, business-sensitive, half-finished edits without Tony's review
+  would be exactly the kind of irreversible, shared-state action that needs confirmation first. Flagging
+  here for Tony's attention rather than acting.
+
+**Decisions made:** None new — WQ-036's constraints (no employer names, offer selection, pattern) were
+all already decided in prior sessions (WQ-039/042/036's own queue text).
+
+**CONTEXT-KERNEL change:** none.
+
+**Harvest candidates:** The synchronous-vs-background verifier dispatch distinction (DN-006 only
+corroborates background `Agent` calls, since only those produce a `<task-notification>` the gate parses)
+is a real, non-obvious gap — worth folding into WQ-018's harvest scope (next `/groom` or harvest session)
+so future sessions don't waste a dispatch on a synchronous call that can't satisfy the gate.
+
+**Open items carried forward:**
+- ESC-001 (open) — still needs Tony's direction; new observation logged (verifier worked this session).
+- 13 items still "Implementation complete — Done-transition blocked (ESC-001)" — candidates for
+  re-attempting Done-transition with the background-dispatch verifier pattern, once Tony weighs in.
+- WQ-037 — now Unblocked (WQ-036 Done); homepage chip-layout redesign, not started.
+- `packaged-offers` repo hygiene (stale uncommitted redaction work, ~6 weeks old) — flagged for Tony,
+  not acted on; out of scope for this project's queue.
+- WQ-018/019/020/030/032 — untouched this session, still Queued (WQ-030 still explicitly held by Tony).
+
+**Next owner:** any — if Tony confirms the verifier gap is resolved, next session could batch-close the
+13 ESC-001-blocked items; otherwise WQ-037 (homepage chip layout) is the next unblocked substantive item.
+
+---
+
 ## HL-007 — 2026-07-06 — Site-wide visual identity redesign, deploy fix, legal cleanup
 
 **Session:** Claude, driving an extensive iterative redesign at Tony's direction, starting from "the site

@@ -59,4 +59,16 @@ for `subagent_type: "verifier"` I'm missing?
 PASS/VETO written)
 **Resolved:**
 
+**Observation (2026-07-06, HL-008, not a resolution):** In a later session (executing WQ-036),
+`subagent_type: "verifier"` spawned successfully — first as a synchronous `Agent` call (which returned a
+real PASS but was *not* corroborated by `pretooluse-done-gate.py`'s DN-006 transcript check, since
+synchronous calls don't produce the `<task-notification>` block the gate parses), then as a background
+`Agent` call with the same `subagent_type`/`model`, which *did* corroborate and unblocked the Done
+transition for WQ-036. This suggests the agent-type-registration gap ESC-001 describes may be
+session/environment-specific rather than universal, and that dispatching the verifier as a background
+call (not synchronous) is required either way for DN-006 corroboration. Still logged as **open** — this
+does not confirm the gap is fixed everywhere, only that it didn't reproduce here. Tony may want to use
+this session's pattern to retry the Done-transition for the 13 items still blocked on ESC-001
+(WQ-031/009/005/006/007/003/038/039/040/041/042/043/044).
+
 ---

@@ -4,6 +4,78 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-010 — 2026-07-07 — WQ-018: harvest 5 patterns into LESSONS-LEARNED.md
+
+**Session:** Claude (autonomous single-item `/next`-style run) — read CLAUDE.md, CONTEXT-KERNEL,
+WORK-QUEUE, and the last 3 HANDOFF-LEDGER entries (HL-009/008/007); scanned the Active table for a
+genuinely unblocked, Claude-executable item that wasn't already implementation-complete-pending-ESC-001,
+explicitly Tony-held (WQ-030), blocked on a real dependency, or flagged for `/groom` judgment (WQ-016's
+overlap with WQ-009, left untouched across 4 consecutive sessions for that reason). WQ-018/019/020/032
+were all simultaneously Queued/Claude/no-deps; used this project's own documented "Ordering convention
+(GL-028)" note — Claude-unblocked article/governance adds are sequenced WQ-030 → WQ-018 → WQ-019 →
+WQ-020 — to pick WQ-018 as the single next item, since WQ-030 (ahead of it in that order) is explicitly
+Tony-held. Executed it alone, then stopped.
+
+**What happened:**
+
+- **WQ-018 (commit abe1895):** Added LL-004 through LL-008 to `docs/agents/LESSONS-LEARNED.md`,
+  harvesting the 5 patterns named in the queue item: (LL-004) per-article `<head>` JSON-LD + og:meta
+  without swizzle (HL-004); (LL-005) card-only landing page pattern (HL-002); (LL-006) shared
+  `OfferPage` detail-page component + thin per-item data pages (HL-006/WQ-009); (LL-007)
+  localStorage-injection dual-theme Puppeteer+pa11y verification pattern (HL-007); (LL-008) never
+  redefine the shared neutral-gray token scale per theme (HL-007). This was a docs/tooling item
+  self-evidently a single artifact, so the Pre-Implementation Gate (E1–E4 enrichment build items only)
+  was skipped per the `/next` skill's own stated scope. New entries inserted above the pre-existing
+  LL-003/002/001 (untouched), matching the file's existing newest-first convention; cross-linked with
+  `[[LL-NNN]]` where relevant (LL-008→LL-007, LL-004→LL-001).
+- **Verification:** Pure documentation change with no application code, build, or runtime surface — no
+  `npm run build`/`typecheck`/`wcag` run (not relevant to this change; noted explicitly in the evidence
+  artifact so no one mistakes the absence for an oversight). Verification consisted of confirming all 5
+  patterns present as substantive entries with correct source citations, and cross-checking each entry's
+  factual content directly against its cited HANDOFF-LEDGER source section to rule out invented/drifted
+  detail.
+- **E2 verifier — background dispatch:** drew a verifier tier via `draw-verifier-tier.py P3 sonnet` →
+  `sonnet` (raw_offset=0). Dispatched directly as a background `Agent` call (per HL-008/HL-009's
+  documented lesson that only background calls produce the `<task-notification>` DN-006's gate parses).
+  The verifier independently re-ran `git show`/`git diff --stat` on commit abe1895, confirmed only the 2
+  intended files changed and the pre-existing LL-001/002/003 entries are byte-identical, cross-checked
+  every new entry against the real HL-002/004/006/007 sections of this ledger, confirmed the
+  `[[LL-NNN]]` cross-links resolve, and independently confirmed on the filesystem that
+  `src/components/OfferPage/index.tsx` and 22 pages under `src/pages/services/` exist (backing LL-006's
+  claim). Returned `PASS`; gate's corroboration check passed. Evidence at
+  `docs/agents/evidence/WQ-018.md`; moved WQ-018 to Done (this commit).
+- **ESC-001 note:** `subagent_type: "verifier"` spawned without issue again this session (3rd
+  consecutive session, alongside HL-008/HL-009) — left `open`, still Tony's call.
+
+**Decisions made:** None new — WQ-018's scope (the 5 patterns to harvest) was already fully specified in
+the queued item text; the choice of WQ-018 over its sibling items (WQ-019/020/032) used this project's
+own pre-existing ordering convention, not a new judgment call.
+
+**CONTEXT-KERNEL change:** none — file not touched this session (confirmed via `git diff HEAD`).
+
+**Harvest candidates:** none new this session — this session itself only consumed already-identified
+harvest candidates, it didn't generate new ones.
+
+**Open items carried forward:**
+- ESC-001 (open) — still needs Tony's direction; 3rd consecutive session logged as a data point
+  (verifier worked without issue again).
+- 13 items still "Implementation complete — Done-transition blocked (ESC-001)"
+  (WQ-031/009/005/006/007/003/038/039/040/041/042/043/044) — candidates for batch Done-transition retry
+  using the background-dispatch verifier pattern, once Tony weighs in on ESC-001.
+- WQ-016 — untouched; still flagged for `/groom` to reconcile against WQ-009's overlap.
+- WQ-019/020/032 — untouched this session, still Queued, no dependencies; next candidates under the same
+  ordering convention.
+- `packaged-offers` repo hygiene (stale uncommitted redaction work, flagged HL-008) — not acted on again
+  this session; still Tony's to review.
+- WQ-030 — still explicitly held by Tony.
+
+**Next owner:** any — WQ-019 (formalize the swizzle restriction as POL-001) is next in this project's
+own documented ordering convention; WQ-020 and WQ-032 are also unblocked and Claude-executable if a
+future session wants to pick a different one of the tied set. If Tony resolves ESC-001, a future session
+could instead batch-close the 13 ESC-001-blocked items first.
+
+---
+
 ## HL-009 — 2026-07-07 — WQ-037: homepage offer chips, full 22-offer catalog live
 
 **Session:** Claude (autonomous single-item `/next` run) — read CLAUDE.md, CONTEXT-KERNEL, WORK-QUEUE,

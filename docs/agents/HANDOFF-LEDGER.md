@@ -4,6 +4,75 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-011 — 2026-07-07 — WQ-019: POL-001-no-swizzle formalized
+
+**Session:** Claude (autonomous single-item run) — read CLAUDE.md, CONTEXT-KERNEL, WORK-QUEUE, and the
+last 3 HANDOFF-LEDGER entries (HL-010/009/008). Scanned the Active table for a genuinely unblocked,
+Claude-executable item, filtering out: items already "Implementation complete — Done-transition blocked
+(ESC-001)" (WQ-031/005/006/007/009/etc. — not re-executable work), WQ-030 (explicitly Tony-held per its
+own row text), WQ-016 (flagged across 4 prior sessions for `/groom` judgment on its WQ-009 overlap, so
+treated as requiring judgment rather than being genuinely mechanical), and anything Owner-tagged Tony
+(WQ-002) or dependency-blocked (WQ-017, WQ-022). That left WQ-019/020/032 as simultaneously
+Queued/Claude/no-deps — the same tie HL-010 identified. HL-010's own "Next owner" line explicitly named
+WQ-019 as next under this project's documented ordering convention (GL-028 Notes: "...Claude-unblocked
+article/governance adds (WQ-030/018/019/020)..."), which resolved the tie without a new judgment call.
+Executed WQ-019 alone, then stopped per instruction not to process a second item.
+
+**What happened:**
+
+- **WQ-019 (commit 156738e):** Wrote `docs/governance/POL/POL-001-no-swizzle.md` per the `/decide`
+  template (Context/Decision/Rationale/Consequences/Alternatives Rejected), formalizing the swizzle ban
+  that previously existed only as prose in CONTEXT-KERNEL.md and CLAUDE.md. This closes the specific gap
+  LL-001 identified: when WQ-014 (og:type + JSON-LD) was proposed, the natural swizzle path was blocked
+  by an informal restriction with no ADR/POL to consult or amend, and resolution required an ad hoc
+  Tony decision mid-session (HL-003 open item → HL-004 resolution via the head-block pattern, LL-004).
+  Also registered DR-001 in `docs/agents/DECISION-REGISTER.md` (previously empty — first entry in this
+  project's decision register). This was a docs/governance item self-evidently a single artifact, so the
+  Pre-Implementation Gate (E1–E4 build items only) was skipped per the `/next` skill's own stated scope.
+- **Verification:** Pure governance-documentation change, no application code/build/runtime surface — no
+  `npm run build`/`typecheck`/`wcag` run (noted explicitly in the evidence artifact, same as WQ-018's
+  precedent, so the absence reads as a deliberate scope call rather than an oversight). Verification
+  consisted of re-reading the POL for all 5 required sections, confirming the DR-001 table row + detail
+  block in DECISION-REGISTER.md, and cross-checking every factual claim in the POL (the WQ-014 stall, its
+  resolution, the LL-001/LL-004 citations, the exact CONTEXT-KERNEL.md/CLAUDE.md prose being formalized)
+  against its real source rather than inventing or paraphrasing from memory.
+- **E2 verifier — background dispatch:** drew a verifier tier via `draw-verifier-tier.py P3 sonnet` →
+  `haiku` (raw_offset=-1). Wrote the evidence artifact FIRST with `Verifier-verdict: PENDING` and
+  `Commit: PENDING`, committed that checkpoint (156738e), then dispatched the verifier as a background
+  `Agent` call per HL-008/009/010's documented lesson that only background dispatch produces the
+  `<task-notification>` DN-006's gate parses. The verifier independently confirmed commit 156738e via
+  `git show --stat`/`git show`, re-derived every Invariance-recheck claim from the real HL-003/HL-004,
+  LL-001/LL-004, CONTEXT-KERNEL.md line 30, and CLAUDE.md line 108 (not from the evidence artifact's
+  prose), and confirmed both POL-001's structure and DR-001's registration. Returned `PASS`; updated the
+  evidence artifact's `Commit:` and `Verifier-verdict:` fields from their PENDING placeholders to the
+  real values, then moved WQ-019 to Done. Evidence at `docs/agents/evidence/WQ-019.md`.
+- **ESC-001 note:** `subagent_type: "verifier"` spawned without issue again this session (4th consecutive
+  session, alongside HL-008/009/010) — left `open`, still Tony's call.
+
+**Decisions made:** DR-001 (No Docusaurus swizzle) — formalizes a rule already in effect since the
+site's founding; no new restriction, no change in practice, just a durable governance record where none
+existed.
+
+**CONTEXT-KERNEL change:** none — file not touched this session (confirmed via `git diff HEAD`); POL-001
+explicitly notes no wording change is needed there, since it already states the rule being formalized.
+
+**Harvest candidates:** none new this session.
+
+**Open items carried forward:**
+- ESC-001 (open) — still needs Tony's direction; 4th consecutive session logged as a data point.
+- 13 items still "Implementation complete — Done-transition blocked (ESC-001)" — unchanged, still
+  candidates for batch Done-transition retry once Tony weighs in.
+- WQ-016 — untouched; still flagged for `/groom` to reconcile against WQ-009's overlap.
+- WQ-020/032 — untouched this session, still Queued, no dependencies; next candidates under the same
+  ordering convention.
+- WQ-030 — still explicitly held by Tony.
+
+**Next owner:** any — WQ-020 (formalize remaining CONTEXT-KERNEL quality gates as POL-002) is next in
+this project's documented ordering convention; WQ-032 is also unblocked and Claude-executable if a future
+session wants to pick a different one of the tied set.
+
+---
+
 ## HL-010 — 2026-07-07 — WQ-018: harvest 5 patterns into LESSONS-LEARNED.md
 
 **Session:** Claude (autonomous single-item `/next`-style run) — read CLAUDE.md, CONTEXT-KERNEL,

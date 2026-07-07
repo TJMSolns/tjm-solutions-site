@@ -4,6 +4,74 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-009 — 2026-07-07 — WQ-037: homepage offer chips, full 22-offer catalog live
+
+**Session:** Claude (autonomous single-item `/next` run) — read CLAUDE.md, CONTEXT-KERNEL, WORK-QUEUE,
+and the last 3 HANDOFF-LEDGER entries; scanned the Active table for genuinely unblocked, Claude-executable
+items and found exactly one that wasn't either already-implemented-pending-ESC-001, explicitly
+Tony-held (WQ-030), blocked on a real dependency, or flagged for `/groom` judgment (WQ-016's overlap
+with WQ-009) — WQ-037, matching HL-008's own "next owner" pointer. Executed it alone, then stopped.
+
+**What happened:**
+
+- **WQ-037 (commit 9dbf3f1):** Redesigned the homepage offer list from a vertical `<ul>` of full-sentence
+  links to a flex-wrap row of compact chips (mono code + name, border colored per category via
+  `--cat-cs`/`--cat-dt`/`--cat-ee`) in `src/components/HomepageFeatures/index.tsx` +
+  `styles.module.css`. Also expanded each category's offer list from the 3 curated offers to the full
+  catalog now that WQ-036 completed all 22 pages: CS 9 (CS-1..9), DT 6 (DT-1..6), EE 7 (EE-1..7). Kept
+  the 3 category header rows (icon, code, name, description) untouched per the WQ-037 spec. Chip text
+  color reuses two already-WCAG-verified combinations from the same file (category-colored mono code
+  matching `.categoryCode`'s existing pattern; chip name in `--color-gray-600`/`--color-gray-400`
+  matching `.categoryDescription`'s existing pattern) rather than introducing new color/background
+  combinations, to avoid the exact class of contrast regression WQ-042 found and fixed.
+- **Verification:** `npm run typecheck` — same 6 pre-existing `Layout` prop-type errors as WQ-036's
+  baseline, none new. `npm run build` (`onBrokenLinks: throw`) — passed, all 22 offer links resolve.
+  `npx pa11y --standard WCAG2AA` against the homepage in light theme — no issues. Independently re-ran
+  in dark theme using the HL-007 localStorage-injection pattern (confirmed `data-theme='dark'` was
+  actually active) — no issues. Took light/dark/mobile (390×844) screenshots and visually confirmed all
+  22 offers render as wrapped chips with correct category coloring, and that chips wrap cleanly at
+  every width sampled (longer labels wrap to a second line inside their own chip on mobile — readable,
+  no clipping).
+- **E2 verifier — background dispatch, first try:** drew a verifier tier via
+  `draw-verifier-tier.py P3 sonnet` → `haiku`. Dispatched directly as a background `Agent` call (per
+  HL-008's documented lesson that only background calls produce the `<task-notification>` DN-006's gate
+  parses — no wasted synchronous dispatch this time). Verifier independently re-checked commit 9dbf3f1,
+  re-ran build/typecheck/pa11y (its own dark-theme injection, not mine), took its own screenshots, and
+  confirmed via `git diff --stat` only the 2 intended files changed. Returned `PASS`; gate's
+  corroboration check passed. Evidence at `docs/agents/evidence/WQ-037.md`; moved WQ-037 to Done
+  (commit e541577).
+- **ESC-001 note (still not resolved, another data point):** `subagent_type: "verifier"` spawned
+  without issue in this session's environment too (now 2 consecutive sessions since ESC-001 was first
+  logged) — consistent with HL-008's hypothesis that the original 2026-07-05 failure was
+  session/environment-specific rather than universal. Left `open`; Tony's call whether to close it and
+  whether to authorize batch-retrying the Done-transition for the 13 items still marked
+  "Implementation complete — Done-transition blocked (ESC-001)".
+
+**Decisions made:** None new — WQ-037's approach (chip redesign, ordering, fallback) was already fully
+specified in the queued item text from the prior session.
+
+**CONTEXT-KERNEL change:** none — file not touched this session (confirmed via `git diff HEAD`).
+
+**Harvest candidates:** none new this session — no novel pattern beyond what HL-007/HL-008 already
+identified and folded into WQ-018's scope.
+
+**Open items carried forward:**
+- ESC-001 (open) — still needs Tony's direction; another session logged as a data point (verifier
+  worked without issue again).
+- 13 items still "Implementation complete — Done-transition blocked (ESC-001)"
+  (WQ-031/009/005/006/007/003/038/039/040/041/042/043/044) — candidates for batch Done-transition retry
+  using the background-dispatch verifier pattern, once Tony weighs in on ESC-001.
+- WQ-016 — untouched; still flagged for `/groom` to reconcile against WQ-009's overlap.
+- `packaged-offers` repo hygiene (stale uncommitted redaction work, ~6 weeks old, flagged HL-008) — not
+  acted on again this session; still Tony's to review.
+- WQ-018/019/020/030/032 — untouched this session, still Queued (WQ-030 still explicitly held by Tony).
+
+**Next owner:** any — if Tony resolves ESC-001, next session could batch-close the 13 ESC-001-blocked
+items; otherwise the queue's next genuinely unblocked Claude-executable items are WQ-018/019/020/032
+(governance/harvest formalization, no dependencies).
+
+---
+
 ## HL-008 — 2026-07-06 — WQ-036: remaining 13 offer pages, first real E2 verifier PASS since ESC-001
 
 **Session:** Claude (autonomous single-item /next run) — read CONTEXT-KERNEL, WORK-QUEUE, and the last 3

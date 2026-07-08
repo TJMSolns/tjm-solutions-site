@@ -4,6 +4,79 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-012 — 2026-07-08 — WQ-020: POL-002-deployment-quality-gates formalized
+
+**Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,
+`WORK-QUEUE.md`, and the last 3 HANDOFF-LEDGER entries (HL-011/010/009). Scanned the Active table for a
+genuinely unblocked, Claude-executable item, applying the same filters HL-011 documented: excluded items
+already "Implementation complete — Done-transition blocked (ESC-001)" (WQ-031/005/006/007/009/etc. — not
+re-executable work), WQ-030 (explicitly Tony-held per its own row text), WQ-016 (still flagged for
+`/groom` judgment on its WQ-009 overlap — a judgment call, not mechanical execution), WQ-032 (ID still
+carries a `[PROPOSED]` tag inconsistent with its "Queued" status column, and its target artifact
+(`Projects/claude-code-methodology.md`) lives outside this repo — ambiguous enough to treat as needing
+`/groom`, not a clean single candidate), and anything Owner-tagged Tony (WQ-002) or dependency-blocked
+(WQ-017, WQ-022, WQ-025 explicitly "Proposed" not "Queued"). That left WQ-020 as the sole clean
+Queued/Claude/no-deps item — the same ordering convention HL-010/HL-011 already named as next (GL-028
+Notes: "...Claude-unblocked article/governance adds (WQ-030/018/019/**020**)..."). Executed WQ-020
+alone, then stopped per instruction not to process a second item.
+
+**What happened:**
+
+- **WQ-020 (commit 20a683f):** Wrote `docs/governance/POL/POL-002-deployment-quality-gates.md` per the
+  `/decide` template (Context/Decision/Rationale/Consequences/Alternatives Rejected), formalizing the 3
+  remaining rules from the `WQ-P4-037` CONTEXT-KERNEL audit that POL-001 (WQ-019, last session) had not
+  covered: WCAG AA dual-theme compliance before every deploy, article canonical links back to Medium, and
+  the `[data-theme='dark']`-only dark-mode CSS pattern. All 3 already existed as CONTEXT-KERNEL/CLAUDE.md
+  prose and are already enforced in practice (most recently exercised by WQ-042's real dual-theme contrast
+  bug find) — this gives them a durable governance record with an amendment path, matching no new
+  restriction. Also registered DR-002 in `docs/agents/DECISION-REGISTER.md` (above DR-001, per the
+  register's "new entries at top" convention). Pure docs/governance item, self-evidently a single
+  artifact — Pre-Implementation Gate (E1–E4 build items only) skipped per the `/next` skill's own stated
+  scope, same as WQ-018/019's precedent.
+- **Verification:** No application code/build/runtime surface touched — no `npm run build`/`typecheck`/
+  `wcag` run, noted explicitly in the evidence artifact as a deliberate scope call (WQ-018/019 precedent).
+  Verification consisted of re-reading POL-002 for all 5 required sections, confirming DR-002's table row
+  + detail block in `DECISION-REGISTER.md`, and cross-checking every factual claim (the 3 gates' exact
+  current wording in CONTEXT-KERNEL.md/CLAUDE.md, the WQ-042 dark-mode bug citation, the WQ-P4-037/POL-001
+  gap-closure relationship) against its real source rather than paraphrasing from memory.
+- **E2 verifier — background dispatch:** drew a verifier tier via `draw-verifier-tier.py P3 sonnet` →
+  `haiku` (raw_offset=-1). Wrote the evidence artifact FIRST with `Verifier-verdict: PENDING`, committed
+  that checkpoint (1678b92), then dispatched the verifier as a background `Agent` call (the pattern
+  HL-008 through HL-011 established as the only one that produces the `<task-notification>` DN-006's gate
+  parses). The verifier independently confirmed commit 20a683f via `git show --stat`, re-derived every
+  Invariance-recheck claim from the real CONTEXT-KERNEL.md/CLAUDE.md text and the WQ-042 WORK-QUEUE.md
+  entry (not from the evidence artifact's prose), and confirmed both POL-002's structure and DR-002's
+  registration. Returned `PASS`; updated the evidence artifact's `Verifier-verdict:` field from its
+  PENDING placeholder to the real value, then moved WQ-020 to Done. Evidence at
+  `docs/agents/evidence/WQ-020.md`.
+- **ESC-001 note:** `subagent_type: "verifier"` spawned without issue again this session (5th consecutive
+  session, alongside HL-008/009/010/011) — left `open`, still Tony's call.
+
+**Decisions made:** DR-002 (Deployment quality gates: WCAG, canonical links, dark-mode pattern) —
+formalizes rules already in effect since early sessions; no new restriction, no change in practice, just
+a durable governance record where none existed.
+
+**CONTEXT-KERNEL change:** none — file not touched this session (confirmed via `git diff HEAD`); POL-002
+explicitly notes no wording change is needed there, since it already states the rules being formalized.
+
+**Harvest candidates:** none new this session — this was a straight repeat of the WQ-019/POL-001 pattern
+with no new lesson surfaced.
+
+**Open items carried forward:**
+- ESC-001 (open) — still needs Tony's direction; 5th consecutive session logged as a data point.
+- 13 items still "Implementation complete — Done-transition blocked (ESC-001)" — unchanged, still
+  candidates for batch Done-transition retry once Tony weighs in.
+- WQ-016 (WQ-009 overlap) and WQ-032 (`[PROPOSED]`/"Queued" status mismatch, cross-repo target file) —
+  both still need `/groom` judgment, untouched this session.
+- WQ-030 — still explicitly Tony-held.
+
+**Next owner:** any — under GL-028's ordering convention, the Claude-unblocked article/governance-adds
+group (WQ-030/018/019/020) is now fully closed except for the deliberately Tony-held WQ-030. The next
+clean pick requires either Tony's input (ESC-001, WQ-030, or WQ-016/WQ-032 groom judgment) or a fresh
+`/groom` pass to resolve WQ-016/WQ-032 and re-sequence the queue.
+
+---
+
 ## HL-011 — 2026-07-07 — WQ-019: POL-001-no-swizzle formalized
 
 **Session:** Claude (autonomous single-item run) — read CLAUDE.md, CONTEXT-KERNEL, WORK-QUEUE, and the

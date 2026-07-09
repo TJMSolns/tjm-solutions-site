@@ -4,6 +4,57 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-016 — 2026-07-09 — No unblocked item — 9th consecutive session, /groom needed
+
+**Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,
+`WORK-QUEUE.md`, and the last 3 HANDOFF-LEDGER entries (HL-015/014/013) per session orientation. Scanned
+the full Active table for a genuinely unblocked, Claude-executable item (Owner ≠ Tony, Depends On all
+Done, no judgment call implied).
+
+**What happened:**
+
+- No execution this session — confirmed via `git status`/`git log` that repo state is byte-identical to
+  what HL-015 left (working tree clean at session start, HEAD is HL-015's own commit `6b00ecc`). Rather
+  than trust HL-015's diagnosis verbatim, independently re-verified the two live ambiguous cases before
+  concluding the same:
+  - **WQ-016** — confirmed `src/pages/services/kcs-knowledge-base.tsx` already exists on disk (built by
+    WQ-009, per HL-006's flagged overlap). This is a real, present-tense duplicate, not a stale note —
+    executing WQ-016 "mechanically" would mean overwriting or duplicating an existing shipped page, which
+    is exactly the reconciliation judgment call `/groom` is for, not a clean pick.
+  - **WQ-032** — confirmed `/home/tjm/TJMSolns/Projects/claude-code-methodology.md` exists but sits
+    outside this repo's git history (`git rev-parse --show-toplevel` from that path returns "not a git
+    repository"). Writing to it produces no commit this repo's Done-transition or handoff discipline can
+    point to — cross-repo boundary issue confirmed, not assumed.
+  - Remaining exclusions unchanged from HL-012 through HL-015 (re-checked against current
+    `WORK-QUEUE.md`, no new rows): WQ-031/005/006/007/009/038/039/040/041/042/043/044 (12 items) still
+    "Implementation complete — Done-transition blocked (ESC-001)"; WQ-030 still explicit
+    "Tony: skip for now"; WQ-002 Owner Tony; WQ-017/WQ-022 genuinely dependency-blocked; WQ-025 still
+    "Proposed" not "Queued".
+  - Result: zero items meet "unblocked + Claude-executable + no judgment call" — 9th consecutive session
+    (HL-008 through HL-016) with this exact diagnosis.
+- Working tree was clean at session start and remains clean except for this ledger entry.
+
+**Decisions made:** none
+
+**CONTEXT-KERNEL change:** none — file not touched this session (`git diff HEAD -- docs/agents/CONTEXT-KERNEL.md` empty).
+
+**Harvest candidates:** none new — 9th repeat of the same diagnosis, no new lesson to generalize. No
+unresolved prior-session harvest candidates found in HL-015/014/013 (all show "none new").
+
+**Open items carried forward:**
+- ESC-001 (open) — still needs Tony's direction; 9th consecutive session with no `verifier` spawn issue
+  logged as a data point, still not itself sufficient to resolve it (Tony's call).
+- 12 items still "Implementation complete — Done-transition blocked (ESC-001)" — unchanged.
+- WQ-016 and WQ-032 — both independently re-confirmed this session as needing `/groom` judgment, not
+  mechanical execution.
+- WQ-030 — still explicitly Tony-held.
+
+**Next owner:** Tony — the Claude-executable, no-judgment lane is empty for the 9th consecutive session.
+A `/groom` pass to resolve WQ-016/WQ-032 (and/or a decision on ESC-001 / batch-retrying the 12 stuck
+Done-transitions / WQ-030) is what unblocks further autonomous `/next` progress.
+
+---
+
 ## HL-015 — 2026-07-09 — No unblocked item — 8th consecutive session, /groom needed
 
 **Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,

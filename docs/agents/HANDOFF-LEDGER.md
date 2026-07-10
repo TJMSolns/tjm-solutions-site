@@ -4,6 +4,65 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-020 — 2026-07-10 — No unblocked item — 13th consecutive session, post-GL-030
+
+**Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,
+`WORK-QUEUE.md`, and the last 3 HANDOFF-LEDGER entries (HL-019/018/017) per session orientation. Scanned
+the full Active table for a genuinely unblocked, Claude-executable item (Owner ≠ Tony, Depends On all
+Done, no judgment call implied). This session ran after GL-030 (the groom pass HL-019 called for), which
+had sequenced WQ-032 → WQ-016 → WQ-030 — re-checked whether that sequencing changed the underlying
+diagnosis rather than assuming it did.
+
+**What happened:**
+
+- No execution this session — independently re-verified rather than trusted GL-030's sequencing note:
+  - **WQ-032** (GL-030 Sequence 1 of 3, called "genuinely ready now" in the tie-break rationale) —
+    re-ran `git rev-parse --show-toplevel` from `/home/tjm/TJMSolns/Projects/`: still `fatal: not a git
+    repository`. The target artifact `claude-code-methodology.md` still sits outside this repo's git
+    history. GL-030's own row for WQ-032 explicitly states this caveat is "not resolved here" and that
+    Tony may want to re-home the item — the sequencing pass reordered the queue but did not resolve the
+    thing that made this a Tony-judgment item for 8 prior sessions (HL-012–HL-019). Still excluded.
+  - **WQ-016** (GL-030 Sequence 2 of 3) — re-confirmed `src/pages/services/kcs-knowledge-base.tsx` still
+    exists on disk. GL-030 itself already dispatched a real `verifier` (opus tier) against this exact
+    item on the merits and got VETO (see `docs/agents/evidence/WQ-016.md`) — the PDR-008 credibility
+    section is site-wide missing, reconciliation is Tony's call per new item WQ-045. Not a fresh pick;
+    already adjudicated this pass and correctly left Active.
+  - **WQ-030** (GL-030 Sequence 3 of 3) — still explicit "Tony: skip for now" (2026-07-05), reaffirmed by
+    GL-030's own tie-break rationale ("honoring that stated preference, not re-deriving it").
+  - Remaining exclusions unchanged: 13 items (WQ-031/005/006/007/009/003/038/039/040/041/042/043/044)
+    "Implementation complete — Done-transition blocked (ESC-001)"; WQ-002 Owner Tony; WQ-022 dependency-
+    blocked (Medium publication); WQ-025 still Proposed; WQ-045 Proposed + Owner Tony+Claude.
+  - Result: zero items meet "unblocked + Claude-executable + no judgment call" — 13th consecutive session
+    (HL-008 through HL-020) with this exact diagnosis. GL-030's sequencing pass changed queue ordering and
+    surfaced one real, valuable finding (the site-wide PDR-008 credibility-section gap, WQ-045) but did
+    not create a new clean pick — both of its top two sequence slots remain blocked on Tony-level
+    questions (cross-repo re-homing; PDR-008 reconciliation), and its third slot is Tony-deprioritized.
+- Working tree was clean at session start (`git status --short` empty, `HEAD` at GL-030's own commit
+  `a6e7dd5`) and remains clean except for this ledger entry.
+
+**Decisions made:** none
+
+**CONTEXT-KERNEL change:** none — file not touched this session (`git diff HEAD -- docs/agents/CONTEXT-KERNEL.md` empty).
+
+**Harvest candidates:** none new — same diagnosis as 8 consecutive prior sessions, no new lesson to
+generalize.
+
+**Open items carried forward:**
+- ESC-001 (open) — still needs Tony's direction; 13th consecutive session with no `verifier` spawn issue
+  logged as a data point, still not itself sufficient to resolve it (Tony's call).
+- 13 items still "Implementation complete — Done-transition blocked (ESC-001)" — unchanged.
+- WQ-032 — still needs Tony's call on re-homing the target artifact outside this repo's git history.
+- WQ-016 / WQ-045 — VETO'd this groom cycle on a real, currently-open PDR-008 finding (site-wide missing
+  offer-page credibility sections); needs Tony's reconciliation call, not further mechanical attempts.
+- WQ-030 — still explicitly Tony-held.
+
+**Next owner:** Tony — the Claude-executable, no-judgment lane is empty for the 13th consecutive session.
+Three concrete decisions would unblock further autonomous `/next` progress: (1) how WQ-032 should handle
+writing to a target outside this repo's git history; (2) WQ-045's PDR-008-vs-WQ-042 reconciliation; (3)
+whether/how to resolve ESC-001 for the 13 stuck Done-transitions.
+
+---
+
 ## HL-019 — 2026-07-10 — No unblocked item — 12th consecutive session, /groom needed
 
 **Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,

@@ -4,6 +4,68 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-038 — 2026-07-16 — No unblocked item — 31st consecutive session, post-GL-030
+
+**Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,
+`WORK-QUEUE.md`, and the last 3 HANDOFF-LEDGER entries (HL-037/036/035) per session orientation. Scanned
+the full Active table for a genuinely unblocked, Claude-executable item (Owner ≠ Tony, Depends On all
+Done, no judgment call implied).
+
+**What happened:**
+
+- No execution this session — independently re-verified each candidate rather than trusting HL-037's
+  diagnosis. `git status --short` clean at session start. `HEAD` had moved one commit past HL-037's own
+  (`d5f07f0`) via `3abfef2` ("docs: retire GIT-DURABILITY-DEFER — debt cleared, nothing left to defer"),
+  landed outside any HL-038 action and touching only `docs/agents/GIT-DURABILITY-DEFER.md`. Not a WQ
+  Active-table item and it does not unblock one.
+  - **WQ-032** (GL-030 Sequence 1 of 3) — re-ran `git -C /home/tjm/TJMSolns/Projects rev-parse
+    --show-toplevel`: still `fatal: not a git repository`. Still a Tony-judgment item — 26th consecutive
+    session (HL-012–HL-038) with this identical finding.
+  - **WQ-016** (GL-030 Sequence 2 of 3) — re-confirmed `grep -l -i credibility src/pages/services/*.tsx`
+    returns only `ai-adoption-roadmap.tsx`, against 22 offer pages total — the DT-2 page and 20 others
+    remain without the PDR-008 credibility section. Already adjudicated by GL-030's verifier VETO;
+    reconciliation is Tony's call per WQ-045. Not a fresh pick; correctly left Active.
+  - **WQ-030** — still explicit "Tony: skip for now" (2026-07-05), unchanged.
+  - The 5 `PROPAGATION-STALE` markers (flagged 2026-07-15) — re-checked directly against
+    `harness-evolution` this session rather than citing prior notes: all 5 still differ
+    (`pretooluse-done-gate.py` 46 changed lines, `stop-git-durability-gate.py` 128,
+    `.claude/skills/next/SKILL.md` 92, `.claude/skills/handoff/SKILL.md` 70, `.claude/settings.json` 71).
+    The review they call for still requires judging whether deviation of that size in safety-relevant
+    hooks/settings is intentional local customization or drift — a Tony-judgment call given the blast
+    radius (Done-transition gate, git-durability gate, settings.json permissions). Not this session's
+    pick, same reasoning as HL-036/037.
+  - Remaining exclusions unchanged: 13 items (WQ-031/005/006/007/009/003/038/039/040/041/042/043/044)
+    "Implementation complete — Done-transition blocked (ESC-001)"; WQ-002 Owner Tony; WQ-022 dependency-
+    blocked (Medium publication); WQ-025 still Proposed; WQ-045 Proposed + Owner Tony+Claude.
+  - Also re-read `docs/agents/ESCALATIONS.md`: ESC-001 still the only entry, `Status: open`, unchanged.
+  - Result: zero items meet "unblocked + Claude-executable + no judgment call" — 31st consecutive session
+    (HL-008 through HL-038) with this exact diagnosis.
+- Working tree was clean at session start and remains clean except for this ledger entry.
+
+**Decisions made:** none
+
+**CONTEXT-KERNEL change:** none — file not touched this session.
+
+**Harvest candidates:** none new — same diagnosis as 26 consecutive prior sessions, no new lesson to
+generalize.
+
+**Open items carried forward:**
+- ESC-001 (open) — still needs Tony's direction; unchanged.
+- 13 items still "Implementation complete — Done-transition blocked (ESC-001)" — unchanged.
+- WQ-032 — still needs Tony's call on re-homing the target artifact outside this repo's git history.
+- WQ-016 / WQ-045 — still needs Tony's PDR-008-vs-WQ-042 reconciliation call.
+- WQ-030 — still explicitly Tony-held.
+- 5 `PROPAGATION-STALE` markers (2026-07-15) — still need Tony's call on copy-over vs. merge; all 5
+  confirmed still divergent this session.
+
+**Next owner:** Tony — the Claude-executable, no-judgment lane is empty for the 31st consecutive session.
+The same four decisions would unblock further autonomous `/next` progress: (1) how WQ-032 should handle
+writing to a target outside this repo's git history; (2) WQ-045's PDR-008-vs-WQ-042 reconciliation; (3)
+whether/how to resolve ESC-001 for the 13 stuck Done-transitions; (4) how to resolve the 5
+`PROPAGATION-STALE` markers (copy-over vs. merge) for the safety-relevant hook/settings files.
+
+---
+
 ## HL-037 — 2026-07-16 — No unblocked item — 30th consecutive session, post-GL-030
 
 **Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,

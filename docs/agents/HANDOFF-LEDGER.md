@@ -4,6 +4,80 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-036 — 2026-07-16 — No unblocked item — 29th consecutive session, post-GL-030
+
+**Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,
+`WORK-QUEUE.md`, and the last 3 HANDOFF-LEDGER entries (HL-035/034/033) per session orientation. Scanned
+the full Active table for a genuinely unblocked, Claude-executable item (Owner ≠ Tony, Depends On all
+Done, no judgment call implied).
+
+**What happened:**
+
+- No execution this session — independently re-verified rather than trusted HL-035's diagnosis:
+  confirmed `git status --short` clean at session start. `HEAD` had moved past HL-035's own commit
+  (`a1b2adc`) via two commits Tony landed directly, outside any HL-036 action: `2254d16` ("GL: flag
+  propagation-staleness against harness-evolution rails" — added the 5 `PROPAGATION-STALE` advisory
+  markers now at the top of `WORK-QUEUE.md`, one each for `pretooluse-done-gate.py`,
+  `stop-git-durability-gate.py`, `.claude/skills/next/SKILL.md`, `.claude/skills/handoff/SKILL.md`,
+  `.claude/settings.json`) and `78df0ae` ("HE-058: propagate crontab/RemoteTrigger live-infra gate from
+  harness-evolution" — added `.claude/hooks/pretooluse-crontab-remotetrigger-gate.py` + a `settings.json`
+  PreToolUse wire-up, closing a live safety gap unrelated to the 5 pending propagation-staleness items).
+  Neither commit is a WQ Active-table item; both are infra propagation from harness-evolution. Considered
+  whether the `PROPAGATION-STALE` markers themselves constitute this session's one unblocked item: the
+  markers explicitly say "review ... as the first action next time this project is touched," but the
+  review itself ("copy over, or merge if this project has real local customization") requires judging
+  whether local deviation in safety-relevant hooks/settings is intentional customization or drift — that
+  judgment call is exactly the kind this session's protocol reserves for Tony, and these files gate
+  destructive/safety behavior (Done-transition gate, git-durability gate, settings.json permissions), so
+  a wrong "copy over" here has real blast radius. Treated as carried-forward context, not this session's
+  pick.
+  - **WQ-032** (GL-030 Sequence 1 of 3) — re-ran `git -C /home/tjm/TJMSolns/Projects rev-parse
+    --show-toplevel`: still `fatal: not a git repository`. Still a Tony-judgment item — 24th consecutive
+    session (HL-012–HL-036) with this identical finding.
+  - **WQ-016** (GL-030 Sequence 2 of 3) — re-confirmed `grep -l credibility src/pages/services/*.tsx`
+    still returns only `ai-adoption-roadmap.tsx` — the DT-2 page and 20 others remain without the PDR-008
+    credibility section. Already adjudicated by GL-030's verifier VETO; reconciliation is Tony's call per
+    WQ-045. Not a fresh pick; correctly left Active.
+  - **WQ-030** — still explicit "Tony: skip for now" (2026-07-05), unchanged.
+  - Remaining exclusions unchanged: 13 items (WQ-031/005/006/007/009/003/038/039/040/041/042/043/044)
+    "Implementation complete — Done-transition blocked (ESC-001)"; WQ-002 Owner Tony; WQ-022 dependency-
+    blocked (Medium publication); WQ-025 still Proposed; WQ-045 Proposed + Owner Tony+Claude.
+  - Also re-checked `docs/agents/ESCALATIONS.md`: ESC-001 still the only entry, `Status: open`, unchanged.
+  - Result: zero items meet "unblocked + Claude-executable + no judgment call" — 29th consecutive session
+    (HL-008 through HL-036) with this exact diagnosis.
+- Working tree was clean at session start and remains clean except for this ledger entry.
+
+**Decisions made:** none
+
+**CONTEXT-KERNEL change:** none — file not touched this session (`git diff HEAD -- docs/agents/CONTEXT-KERNEL.md` empty).
+
+**Harvest candidates:** none new — same diagnosis as 24 consecutive prior sessions, no new lesson to
+generalize.
+
+**Open items carried forward:**
+- ESC-001 (open) — still needs Tony's direction; 29th consecutive session with no `verifier` spawn issue
+  logged as a data point, still not itself sufficient to resolve it (Tony's call).
+- 13 items still "Implementation complete — Done-transition blocked (ESC-001)" — unchanged.
+- WQ-032 — still needs Tony's call on re-homing the target artifact outside this repo's git history.
+- WQ-016 / WQ-045 — still needs Tony's PDR-008-vs-WQ-042 reconciliation call.
+- WQ-030 — still explicitly Tony-held.
+- **New this session:** 5 `PROPAGATION-STALE` markers in `WORK-QUEUE.md` (flagged 2026-07-15, `GL:`
+  commit `2254d16`) covering `pretooluse-done-gate.py`, `stop-git-durability-gate.py`,
+  `.claude/skills/next/SKILL.md`, `.claude/skills/handoff/SKILL.md`, `.claude/settings.json` — need
+  Tony's call on copy-over vs. merge given these gate safety/destructive behavior. Also note `78df0ae`
+  (HE-058) landed a new `pretooluse-crontab-remotetrigger-gate.py` hook directly, closing an unrelated
+  live-infra gap (unauthorized crontab/RemoteTrigger writes) — not itself in question, just recorded for
+  context since it changed `.claude/settings.json` after this session's baseline read.
+
+**Next owner:** Tony — the Claude-executable, no-judgment lane is empty for the 29th consecutive session.
+The same three decisions would unblock further autonomous `/next` progress: (1) how WQ-032 should handle
+writing to a target outside this repo's git history; (2) WQ-045's PDR-008-vs-WQ-042 reconciliation; (3)
+whether/how to resolve ESC-001 for the 13 stuck Done-transitions. A fourth, newly surfaced: (4) how to
+resolve the 5 `PROPAGATION-STALE` markers (copy-over vs. merge) for the safety-relevant hook/settings
+files flagged 2026-07-15.
+
+---
+
 ## HL-035 — 2026-07-15 — No unblocked item — 28th consecutive session, post-GL-030
 
 **Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,

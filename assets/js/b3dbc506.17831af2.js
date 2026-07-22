@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunktjm_solutions_site=globalThis.webpackChunktjm_solutions_site||[]).push([[9578],{12002(t){t.exports=JSON.parse('{"metadata":{"permalink":"/articles","page":1,"postsPerPage":31,"totalPages":1,"totalCount":31,"blogDescription":"Thoughts on Digital Commerce, Architecture, and Technology Strategy","blogTitle":"Articles & Insights"}}')}}]);

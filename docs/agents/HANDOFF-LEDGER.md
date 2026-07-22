@@ -4,6 +4,45 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-065 — 2026-07-22 — Publish, parity, groom, sign-offs
+
+**Session:** Claude (interactive, Tony driving) — original task: convert two JobHunt résumés to PDF and
+publish them, and close the Medium-parity gap. Expanded into a `/groom` (GL-032), a walkthrough of the
+Done-transition backlog with live sign-offs, and a `/handoff`. First working session after 57
+consecutive no-op `/next` runs (HL-008–HL-064).
+
+**What happened:**
+
+- **Published 2 industry résumés** (Tony-approved 2026-07-21). Built from `JobHunt/resumes/moores-anthony-resume-{e,p}.md` via JobHunt's `build-pdf.sh`, both passing `check-pdf-layout.py`, no street address (public-résumé rule). Live: `/moores-anthony-resume-e.pdf` (ERP), `/moores-anthony-resume-p.pdf` (planning). Unlinked, matching `current-resume.pdf`.
+- **Closed the Medium-parity gap** (WQ-027 invariant). Diffed the Medium sitemap **+ profile page** against `blog/*.mdx` canonicals — 3 missing, one of which the sitemap did not list (profile-only). Added all 3 with canonical + JSON-LD + truncate: `2020-12-06-modeling-distribution-on-tracing-ideals.mdx`, `2026-07-11-name-the-dragon.mdx` (FP Part 19), `2026-07-18-the-most-dangerous-code-has-a-save-button.mdx` (FP Part 20). Parity re-verified empty. Commit `f5dc7fb`, deployed, all 6 URLs verified 200 live.
+- **Removed an orphaned PDF** — `static/anthony-moores-resume-20260.pdf` (typo'd duplicate, unreferenced) was deleted from the working tree by something other than this session; Tony chose "commit the deletion, don't redeploy yet." Repo and `gh-pages` intentionally diverge on that file until next deploy. Commit `0b3cd21`.
+- **`/groom` → GL-032.** Key finding: **ESC-001's stated cause no longer reproduces.** Spawned a `verifier` agent (haiku, infra probe only) — it launched successfully. The "Agent type 'verifier' not found" failure that blocked 13 Done-transitions across 57 sessions is gone in this environment. Added **WQ-048** (run the 14 backlogged verifications) at queue head. Refreshed CONTEXT-KERNEL (stale Status citing retired PDR-001; two dead Active Priorities; missing `agentic-commerce` tag). ESC-001 left `open` — immediate blocker gone but its policy question (infra-unavailability carve-out) unanswered. Commit `b6dc5ba`.
+- **Tony sign-offs during backlog walkthrough** (business approval only; DN-002 independent check still required, batched into WQ-048 — none self-certified):
+  - WQ-005/006/007 (3 service cards) — reviewed as one, signed off. Commit `2803661`.
+  - WQ-009 (22 offer detail pages) — signed off; credibility question **decoupled** ("websites are for merchandising"), explicitly *not* a ruling on WQ-045. Commit `e3435d3`.
+  - WQ-031 (featured-offer selection) — **held** for Tony's visual review; verifier deliberately not run (would only certify the site matches the June picks, the thing under review). Dev server started for preview. Commit `439ea51`.
+- **Corrected my own error:** claimed the homepage features "9 selected offers"; it lists all 22 (WQ-037 superseded the June selection). Fixed in-queue rather than left to mislead. Commits `03617ec`, `2803661`.
+- **Ran WCAG** (`npm run wcag`) at Tony's prompt — **flagged as a process miss:** POL-002 requires it *before* every deploy; this session deployed first. All 4 covered pages clean; the 3 new articles checked directly with pa11y, also clean. Link-check against the deployed site still outstanding (WQ-025, narrowed). Commit `7fa991a`.
+- **Queued 5 new items:** WQ-049 (homepage rework — 3-across cards, collapsible offer lists open by default, drop internal codes from prospect view); WQ-050 (spike — monthly Docusaurus-maintenance service go/no-go); WQ-051 (accessibility-gate coverage fixes — blocked on WQ-052); WQ-052 (spike — gate coverage strategy); WQ-053 (harvest — stale-blocker re-check rule). Commits `03617ec`, `f780324`, `068425e`, `04c0103`, plus this entry's harvest commit.
+
+**Decisions made:** none formally recorded (no DR this session). Two are pending Tony's `/decide`: WQ-045 (PDR-008 vs. WQ-042 credibility reconciliation — still open) and WQ-052's coverage-strategy outcome (likely a POL-002 amendment).
+
+**CONTEXT-KERNEL change:** substantive — Status line (retired PDR-001 gate corrected to reference the real live gates), Active Priorities (both stale entries replaced), Tag Taxonomy (`agentic-commerce` added). GL-032; no DR (corrections to already-decided state, not new decisions).
+
+**Harvest candidates:** (1) stale-blocker re-check rule → **WQ-053** (queued this session). (2) monthly Docusaurus-maintenance service as a packaged offer → **WQ-050** (queued). (3) accessibility-gate coverage strategy → **WQ-052** (queued). All three resolved with WQ IDs per POL-010.
+
+**Open items carried forward:**
+- **WQ-048** — run the 14 backlogged verifications; now genuinely unblocked. Highest leverage in the queue.
+- **WQ-031** — held for Tony's visual review of the featured offers (dev server was running at session end).
+- **WQ-045** — PDR-008 vs. WQ-042 credibility conflict; Tony's `/decide`. Decoupled from sign-offs but unresolved.
+- **WQ-032 / WQ-053** — both target `Projects/claude-code-methodology.md`, outside this repo's git history; Tony may re-home org-level.
+- The 5 `PROPAGATION-STALE` hook/settings markers — unchanged, still Tony's copy-over-vs-merge call.
+- **External-repo note:** the `stop-git-durability-gate.py` hook fired repeatedly this session on `/home/tjm/Projects/JobHunt`, whose working tree grew from 3 to 300+ dirty files under a concurrent process not this session. This session wrote only gitignored build artifacts there (the résumé PDFs/tex). Not committed — not this session's work. The same class of concurrent external change also deleted the orphaned PDF from *this* repo mid-session.
+
+**Next owner:** Tony / any. Run `/next` — **WQ-048** is the highest-leverage item (clears 14 Done-transitions now that the verifier spawns) and the queue finally has genuinely-actionable work after 57 no-op sessions. Then WQ-031 needs Tony's preview verdict, and WQ-045 needs his `/decide`.
+
+---
+
 ## HL-064 — 2026-07-18 — No unblocked item — 57th consecutive session
 
 **Session:** Claude (autonomous single-item run) — read `CLAUDE.md`, `CONTEXT-KERNEL.md`,

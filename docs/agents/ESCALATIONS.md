@@ -57,6 +57,20 @@ from a top-level session where custom agents are registered, or is there a diffe
 for `subagent_type: "verifier"` I'm missing?
 **Evidence artifact:** `docs/agents/evidence/WQ-031.md` (Verifier-verdict left as `PENDING` — no fabricated
 PASS/VETO written)
+
+**Re-check 2026-07-22 (GL-032) — the stated cause no longer reproduces.** A `verifier` agent was
+spawned in this session at haiku tier as a pure infrastructure probe (one `git log` command; no work
+item evaluated, no evidence artifact read, no verdict issued). It spawned successfully and returned.
+The `Agent type 'verifier' not found` failure recorded above therefore does NOT reproduce here: the
+custom `subagent_type: "verifier"` registration IS loaded in this environment.
+
+This narrows but does not by itself close the escalation. What is now known: a top-level session in
+this environment can satisfy the verifier gate. What remains Tony's call (the original question):
+whether the gate should carry a documented infra-unavailability carve-out for restricted sub-agent
+environments where the registration is genuinely absent, since that condition can recur. Status left
+`open` for that reason — the policy question is unanswered even though the immediate blocker is not
+currently present. WQ-048 queues the actual re-verification work this unblocks.
+
 **Resolved:**
 
 **Observation (2026-07-06, HL-008, not a resolution):** In a later session (executing WQ-036),

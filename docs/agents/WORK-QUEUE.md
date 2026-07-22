@@ -40,6 +40,13 @@ Updated 2026-07-10 (GL-030): Attempted to resolve the WQ-016/WQ-009 duplicate fl
 | WQ-025 | Verify site is current on live deployment — confirm all commits through HL-004 are live at www.tjm.solutions; run `npm run wcag` and link-check against deployed site; document result in HANDOFF-LEDGER. [PROPOSED] | Claude | Proposed | — |
 | WQ-045 | **[PROPOSED, GL-030, 2026-07-10; re-confirmed GL-031, 2026-07-18]** Reconcile WQ-042's site-wide offer-page credibility-section removal (commit 99feb28) against PDR-008's credibility-backing listability requirement — surfaced by an independent `verifier` VETO on a WQ-016 groom-pass closure attempt (see `docs/agents/evidence/WQ-016.md`): all 22 `/services/*` pages currently have no credibility section (re-checked GL-031: `grep -ril credibility src/pages/services/` still returns only 1 of 22 pages), but PDR-008 requires offers to be credibility-backed to be listable. Needs Tony's call: amend/waive PDR-008 in light of the legal-exposure rationale behind WQ-039/042, or restore credibility content in a legally-safe form. Rationale: real, currently-open compliance gap affecting every listed offer, not speculative future work. Unresolved for 8 days / 51 consecutive `/next` sessions (HL-008 through HL-058) since first surfaced. | Tony + Claude | Proposed | — |
 
+### Reported Bugs
+
+| ID | Item | Owner | Status | Depends On |
+|----|------|-------|--------|-----------|
+| WQ-046 | **P1 BUG** — `npm run typecheck` fails with 5 errors: `Property 'title' does not exist on type 'IntrinsicAttributes & Props'` for `<Layout>` in `src/pages/about.tsx:51`, `index.tsx:52`, `mdslides.tsx:46`, `projects.tsx:69`, `rates.tsx:87`. `npm run build` passes, so this is typecheck-only drift. Pre-existing; found incidentally during the 2026-07-22 publish session, not caused by it. Root cause undiagnosed. Diagnose + fix. | Claude | Active | — |
+| WQ-047 | **P1 BUG** — Published résumé `https://www.tjm.solutions/moores-anthony-resume-p.pdf` renders with a different header treatment than `-e.pdf`: the ERP source (`JobHunt/resumes/moores-anthony-resume-e.md`) carries `jobtitle:`/`positioning:` frontmatter and gets `build-pdf.sh`'s running-header/footer layout, while the planning source (`-p.md`) has no frontmatter and instead carries an inline contact table that wraps onto two lines — apparently violating the "one-line header" rule in `JobHunt/resumes/README.md`. Both PDFs pass `check-pdf-layout.py`, so the gate does not catch it. Cross-repo: source fix lands in `JobHunt`, artifact republished here. Root cause undiagnosed. Diagnose + fix. | Claude | Active | — |
+
 ---
 
 ## Done

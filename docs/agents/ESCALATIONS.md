@@ -71,6 +71,17 @@ environments where the registration is genuinely absent, since that condition ca
 `open` for that reason — the policy question is unanswered even though the immediate blocker is not
 currently present. WQ-048 queues the actual re-verification work this unblocks.
 
+**Backlog cleared 2026-07-22 (WQ-048 `/next` run):** all 13 items this escalation had blocked were
+independently re-verified (13 `verifier` PASSes, 0 VETOs, tiers drawn per item) and moved to Done —
+WQ-030/005/006/007/003/009/038/039/040/041/042/043/044. The operational impact of ESC-001 is therefore
+fully discharged: nothing remains blocked by it. **Status kept `open` for one reason only:** the
+escalation's actual Question for Tony — whether the Done-gate should carry a documented
+infra-unavailability carve-out for genuinely restricted sub-agent environments (where the registration
+is absent, as it was on 2026-07-05) — is a policy call only Tony can make, and he has not made it. That
+question is real and recurring (see also WQ-053, the stale-blocker re-check rule). Close this escalation
+once Tony answers the carve-out question; do not close it merely because this environment happened to
+work.
+
 **Resolved:**
 
 **Observation (2026-07-06, HL-008, not a resolution):** In a later session (executing WQ-036),

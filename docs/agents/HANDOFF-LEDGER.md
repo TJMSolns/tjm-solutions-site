@@ -4,6 +4,73 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-066 — 2026-07-22 — WQ-048: backlog cleared, 13 verifier PASSes
+
+**Session:** Claude (`/next`, autonomous) — continuation of HL-065's session; Tony invoked `/next`
+after the GL-032 groom. Drove WQ-048 (clear the Done-transition backlog now that the `verifier` agent
+type spawns again).
+
+**What happened:**
+
+- **Proved the DN-002 gate pipeline end-to-end on WQ-030 first** (my own COVID-article work from
+  earlier this session — the most important to have independently checked). Drew tier (opus), wrote the
+  evidence artifact with a PENDING verdict, committed the checkpoint, spawned a real
+  `subagent_type: "verifier"` Agent at the drawn tier, got PASS, recorded it, and moved the item to Done
+  through `pretooluse-done-gate.py`. **First successful Done-transition in this project since ESC-001 was
+  logged 2026-07-05** (58 sessions).
+- **Cleared 13 of 14 WQ-048 items — 13 independent `verifier` PASSes, 0 VETOs.** WQ-030 (opus),
+  WQ-005 (opus), WQ-006 (sonnet), WQ-007 (opus), WQ-003 (sonnet), WQ-009 (opus), WQ-038 (sonnet),
+  WQ-039 (sonnet), WQ-040 (opus), WQ-041 (opus), WQ-042 (opus), WQ-043 (sonnet), WQ-044 (opus). Every
+  tier drawn via `draw-verifier-tier.py P2 opus`; every verifier fresh-context, re-checking
+  independently (filesystem existence, self-rerun `npm run build`, re-derived WCAG contrast ratios,
+  built-HTML/CSS inspection). Commits: eb37ac6, b34b74c, 5193075, 18f58d6, edf512f, 190496b, 1338cb0,
+  4be3768, 73d4249.
+- **Corrected stale claims in older evidence artifacts before verifying** — this was the substantive
+  care, not a formality. WQ-005/006/007 claimed the June 3-offer-per-card selection; WQ-037 had expanded
+  every card to the full catalogue (CS 9 / DT 6 / EE 7), so a verifier reading current code would have
+  VETOed the stale claim. WQ-003 claimed a `repeat(3,1fr)` grid the WQ-039 redesign replaced with a
+  vertical flex layout. WQ-009 claimed per-page credibility sections that WQ-042 later removed. Each was
+  rewritten to current reality (deliverable satisfied; the changed detail explained) so the independent
+  check ran against what actually ships.
+- **WQ-031 deliberately NOT verified** — held for Tony's visual review of the featured-offer selection
+  (verifying it would certify the very thing under review). WQ-048 stays Active until that hold resolves.
+- **ESC-001 backlog fully discharged; escalation kept `open`** — all 13 items it blocked are now Done,
+  so nothing remains operationally blocked by it, but its actual Question for Tony (should the Done-gate
+  carry an infra-unavailability carve-out for genuinely restricted environments?) is a policy call only
+  Tony can make and is unanswered. Updated the ESC-001 entry to say so and to instruct: close only when
+  Tony answers the carve-out question, not because this environment happened to work.
+
+**Decisions made:** none formally recorded (13 verifier PASSes are evidence outcomes, not DRs).
+
+**CONTEXT-KERNEL change:** none — file untouched this `/next` run (GL-032 refreshed it earlier under
+HL-065).
+
+**Harvest candidates:** none new — the one general lesson from this run (verifier PASSes don't need a
+DR; and the stale-artifact-before-verify pattern) is already covered by WQ-053 (stale-blocker re-check
+rule, queued HL-065). No prior-session unresolved harvest lines outstanding (HL-062–065 checked).
+
+**Open items carried forward:**
+- **WQ-031** — held for Tony's preview verdict; the only remaining WQ-048 item.
+- **ESC-001** — open for the policy carve-out question only; operational impact resolved.
+- **WQ-049** (homepage rework) — unblocked but carries an open question I flagged for Tony: the directive
+  named the per-offer codes to remove; the category badge + "N OFFERS" count are the same class of
+  internal shorthand but weren't called out. Confirm before building.
+- **WQ-050 / WQ-052** — research spikes (maintenance-service go/no-go; accessibility-gate coverage
+  strategy). **WQ-051** blocked on WQ-052.
+- **WQ-053 / WQ-032** — both write to `Projects/claude-code-methodology.md`, outside this repo's git
+  history; Tony may re-home org-level.
+- **WQ-025** — narrowed to the outstanding link-check against the deployed site (small, Claude-doable).
+- **WQ-045** — PDR-008-vs-WQ-042 credibility reconciliation; Tony's `/decide`.
+- **WQ-046 / WQ-047** — the two bugs (typecheck `<Layout>` errors; `-p` résumé header).
+- The 5 `PROPAGATION-STALE` hook/settings markers — still Tony's copy-over-vs-merge call.
+
+**Next owner:** Tony / any. The 57-session logjam is broken — the Done table went from 26 to 39 items.
+Highest-value next moves that need Tony: (1) preview-verdict on WQ-031's featured offers to close
+WQ-048; (2) the WQ-049 badge/count question before that build; (3) `/decide` on WQ-045. Claude-doable
+without input: WQ-025 (link-check) and the WQ-050/WQ-052 spikes.
+
+---
+
 ## HL-065 — 2026-07-22 — Publish, parity, groom, sign-offs
 
 **Session:** Claude (interactive, Tony driving) — original task: convert two JobHunt résumés to PDF and

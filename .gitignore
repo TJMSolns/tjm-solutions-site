@@ -24,3 +24,6 @@ yarn-error.log*
 docs/agents/.work-queue.lock
 __pycache__/
 .work-queue.lock
+
+# Private strategy notes — never publish (repo is public)
+/*-recommendations.md

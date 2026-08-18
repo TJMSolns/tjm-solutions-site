@@ -81,10 +81,14 @@ to the incumbent gate because it checks 4 URLs, none containing code blocks.
 - **WQ-050's audit variant** — pursue or drop.
 - **WQ-055 résumés** — deferred at his direction until the 7 replacements are final.
 
-**Two findings worth carrying forward:** a CLI implementation of the accessibility gate that actually
-switches themes costs ~3.0s/page via pa11y's `actions` route, which would hit POL-003's 5-minute
-trigger at ~50 pages — below the present 74. The programmatic path (0.211s/page/theme) is not merely
-faster, it is the only route that keeps the policy satisfiable today. Separately, the upgrade
+**Two findings worth carrying forward:** both routes to theme-switching are viable for WQ-051. Measured
+at `-P 6` across all 74 pages, the pa11y CLI with `actions` costs **54.6s** against **50.2s** without —
+about **9%** overhead, so a dual-theme CLI sweep is ~109s and POL-003's 5-minute trigger lands near
+**~203 pages**. The programmatic path is faster still (0.211s/page/theme, ~3.5x) but is a preference,
+not a requirement. *(An intermediate revision of this entry claimed the CLI route would blow the trigger
+at ~50 pages. That was wrong — derived by dividing the budget by a ~3.0s serial single-page latency that
+is mostly browser-spawn cost and vanishes under parallelism. It was the mirror image of the earlier
+fabricated constraint, and a seventh VETO caught it.)* Separately, the upgrade
 equivalence claim is now reproducible rather than asserted: `docs/agents/evidence/WQ-upgrade-3.10.2-manifest.json`
 carries per-page SHA-256 hashes for both the 3.9.2 and 3.10.2 builds (84 pages, 84 identical).
 

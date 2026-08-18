@@ -7,7 +7,7 @@
  "differing": [],
  "only_in_before": [],
  "only_in_after": [],
- "note": "sha256(visible text) per page; <script>/<style>/<meta generator> stripped. Regenerate: build both refs and re-hash.",
+ "note": "Per-page hashes for both builds. The equality claim (84/84 identical) is re-derivable by any equivalent visible-text comparison; exact hash matching additionally requires the extraction steps recorded in the 'extraction' field.",
  "hashes_before": {
   "404.html": "ca94891ca46b4151",
   "about.html": "36dbfde729579f83",
@@ -179,5 +179,9 @@
   "services/reactive-systems-reliability-review.html": "f82a71ba0cbbcb84",
   "services/technical-roadmap-business-alignment.html": "301ee53ce10e6003",
   "tony.html": "a659e096a47a211b"
- }
+ },
+ "ref_before": "a23d55e",
+ "ref_after": "23411fc",
+ "hash": "sha256 of the extracted visible text, truncated to the leading 16 hex chars (64 bits)",
+ "extraction": "per HTML file: remove <script>...</script>, <style>...</style> and <meta name=\"generator\">; strip all remaining tags to spaces; HTML-unescape; collapse whitespace runs to single spaces; strip leading/trailing whitespace; then sha256 and truncate to 16 hex chars"
 }

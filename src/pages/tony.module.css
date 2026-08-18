@@ -75,31 +75,6 @@
   margin: 0 0 16px 0;
 }
 
-.competencyList {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 16px 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.competencyItem {
-  background: rgba(192, 0, 0, 0.08);
-  border: 1px solid rgba(192, 0, 0, 0.25);
-  color: var(--color-gray-900);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.9em;
-  font-weight: 500;
-}
-
-[data-theme='dark'] .competencyItem {
-  background: rgba(255, 77, 77, 0.12);
-  border-color: rgba(255, 100, 100, 0.3);
-  color: #ffffff;
-}
-
 .contactCard {
   background: transparent;
   padding: 32px;
@@ -171,6 +146,41 @@
 
 [data-theme='dark'] .positioning {
   color: var(--color-gray-300);
+}
+
+.citationList {
+  list-style: none;
+  padding: 16px 20px;
+  margin: 0 0 24px 0;
+  display: grid;
+  gap: 10px;
+  background: var(--paper-soft);
+  border-radius: 6px;
+  border-left: 3px solid var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .citationList {
+  background: var(--ink-soft);
+}
+
+.citationItem {
+  font-size: 0.88em;
+  line-height: 1.6;
+  color: var(--color-gray-700);
+}
+
+[data-theme='dark'] .citationItem {
+  color: var(--color-gray-300);
+}
+
+.citationItem a {
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.citationItem a:hover {
+  text-decoration: underline;
 }
 
 .writingList {

@@ -42,15 +42,15 @@ const DESCRIPTION =
 const practice = [
   {
     title: 'Commerce Strategy',
-    body: 'Evaluating platforms, search, and marketplace systems — for new builds, migrations, and the move to agentic commerce.',
+    body: 'Evaluating platforms, search, and marketplace systems, for new builds, migrations, and the move to agentic commerce.',
   },
   {
     title: 'Digital Transformation',
-    body: 'Modernizing architecture — microservices, headless/API-first systems, and AI-adjacent knowledge bases — without a rewrite.',
+    body: 'Modernizing architecture: microservices, headless/API-first systems, and AI-adjacent knowledge bases, without a rewrite.',
   },
   {
     title: 'Experience Engineering',
-    body: 'Architecture and tooling built around how your team and customers actually engage — not just what shipped out of the box.',
+    body: 'Architecture and tooling built around how your team and customers actually engage, not just what shipped out of the box.',
   },
 ];
 
@@ -63,7 +63,7 @@ export default function About(): ReactNode {
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions/about" />
         <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
-        <meta property="og:image:alt" content="TJM Solutions — Technology Advisory and Consulting" />
+        <meta property="og:image:alt" content="TJM Solutions, Technology Advisory and Consulting" />
         <meta property="og:image:width" content="576" />
         <meta property="og:image:height" content="571" />
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
@@ -96,9 +96,9 @@ export default function About(): ReactNode {
 
               <p>
                 The work is deliberately narrow. It is architecture and advisory rather than staffing
-                or delivery — assessments, reviews, roadmaps, and strategy engagements that produce a
+                or delivery, assessments, reviews, roadmaps, and strategy engagements that produce a
                 decision and the reasoning behind it. Engagements are led personally by{' '}
-                <Link to="/tony">Tony Moores</Link>, who brings 20+ years across enterprise commerce,
+                <Link to="/tony">Tony Moores</Link>, who brings nearly three decades across enterprise commerce,
                 distributed systems, and AI-adjacent product development.
               </p>
 

@@ -50,6 +50,7 @@ Updated 2026-08-18 (GL-033): post-merge groom after PR #1. **Reordered** to lead
 
 | ID | Item | Owner | Status | Depends On |
 |----|------|-------|--------|-----------|
+| WQ-063 | **P1 BUG:** Light-theme link-color contrast failures, sitewide, distinct from WQ-056 (which is about syntax-highlight tokens, not link color). Found 2026-08-18 running an ad hoc pa11y pass against `/tony` in forced light theme, while checking new content did not introduce anything, per the same theme-toggle technique WQ-052/WQ-051 established. `--ifm-color-primary` and its light-theme link uses fall under 4.5:1 in several contexts: 3.01:1 on `.writingItem a`/`.contactInfo a` on `/tony` (20 errors), 3.54:1 on `/about`'s contact links (14 errors), 7 errors on `/`, 49 errors on `/rates`. `/projects` came back clean. Not checked beyond these 5 pages; likely present on more. Root cause undiagnosed, but the pattern (link text at the theme's red primary color, on light backgrounds, under 4.5:1) suggests a single shared token needs a darker light-theme value, not a per-page fix. Confirmed pre-existing, not introduced by this session's `/tony`/`/about` edits: reproduces on `/` and `/rates`, neither touched this session. Diagnose + fix. | Claude | Active | — |
 
 ---
 

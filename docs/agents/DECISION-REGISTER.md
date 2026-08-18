@@ -4,8 +4,29 @@ Append-only. New entries at the top.
 
 | DR-ID | Date | Title | Type | Status |
 |-------|------|-------|------|--------|
+| DR-003 | 2026-08-18 | Accessibility gate coverage strategy (full sweep, both themes) | POL | Active |
 | DR-002 | 2026-07-08 | Deployment quality gates (WCAG, canonical links, dark-mode pattern) | POL | Active |
 | DR-001 | 2026-07-07 | No Docusaurus swizzle | POL | Active |
+
+---
+
+## DR-003 — 2026-08-18 — Accessibility gate coverage strategy (full sweep, both themes)
+**Decision:** The accessibility gate checks **every** page, in **both** themes, on every run — no
+caching, no sampling, no rotation. Targets are enumerated from the built `sitemap.xml` rather than a
+hardcoded list; the runner must print what it covered *and* what it skipped; CI is the enforcing gate.
+Revisit trigger: if the full dual-theme sweep exceeds 5 minutes wall-clock, reopen and adopt the
+nav-pages + changed-pages + one-representative-per-template design instead.
+**Rationale:** WQ-052 tabled three strategies (per-page timestamp cache, random 10% sample, combination)
+all aimed at keeping the gate fast. None had been measured. Measurement showed the full sweep takes
+**60 seconds for 74 pages** (`xargs -P 6`, 8 cores), so both themes is roughly 2 minutes — removing the
+constraint the three options existed to work around. Full coverage is the only option with no
+false-negative class: it cannot mis-key a cache, miss an undrawn page, or report a stale pass. The
+timestamp-cache option was already known unsound (WQ-042's shared-token bug broke pages without editing
+them), and random sampling makes failures irreproducible. The first full sweep immediately found a live
+production WCAG2AA violation the 4-URL gate could never reach (WQ-056, comment tokens at 3.03:1).
+**Type:** POL
+**Ref:** docs/governance/POL/POL-003-accessibility-gate-coverage.md
+**Status:** Active
 
 ---
 

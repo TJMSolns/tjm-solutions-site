@@ -7,7 +7,9 @@
 
 POL-002 gate 1 requires WCAG AA compliance, in **both** themes, before every deploy. The
 implementation has never satisfied it. `npm run wcag:check` checks exactly four hardcoded URLs
-(`/`, `/about`, `/rates`, `/articles`) in light theme only. Against a 74-page site that is **5%
+(`/`, `/about`, `/rates`, `/articles`) in **dark** theme only — the site sets
+`colorMode.defaultMode: 'dark'` with `respectPrefersColorScheme: true`, so an unconfigured pa11y run
+renders dark, a fact nobody had checked. Against a 74-page site that is **5%
 page coverage and 50% theme coverage**, and it includes not one article page and not one offer
 page — the two page types that grow.
 
@@ -17,11 +19,12 @@ checked-timestamps with incremental re-checks, (b) all nav pages plus a 10% rand
 (c) a combination of nav pages, changed pages, and one representative per template.
 
 All three are answers to a question that turns out to be false. Nobody had measured the full
-sweep. Measured 2026-08-18 on this site (8 cores, `xargs -P 6`, pa11y WCAG2AA against a served
-production build): **74 pages in 60 seconds**, about 1.03s per page wall-clock. Both themes is
-148 runs, roughly **2 minutes**.
+sweep. Measured 2026-08-18 on this site (8 cores, pa11y WCAG2AA against a served production build):
+**74 pages in 60.3s** via the pa11y CLI at `xargs -P 6` (fresh browser per page), and **74 pages in
+15.6s** via the programmatic pa11y API with a shared Puppeteer browser at concurrency 6. Both themes
+on the faster path is about **31 seconds**; the CLI path's 148 runs would be roughly **2 minutes**.
 
-Two minutes is not a gate anyone needs to optimise. Every sampling and caching scheme proposed
+Neither figure is a gate anyone needs to optimise. Every sampling and caching scheme proposed
 exists to avoid a cost that does not exist, while adding failure modes that do:
 
 - **Option (a) is unsound and was already known to be.** A page's accessibility depends on shared
@@ -64,7 +67,8 @@ affected page — nondeterministically, possibly months later.
 **Revisit trigger.** This decision rests on a measurement, so it expires when the measurement does.
 If the full dual-theme sweep exceeds **5 minutes** wall-clock, reopen this policy and adopt option
 (c) — nav pages, changed pages, and one representative per template — which remains the correct
-fallback design. At the current per-page rate that threshold is roughly 145 pages, about double the
+fallback design. At the measured shared-browser rate the threshold is well over a thousand pages; on
+the slower CLI path it is roughly 145 pages, about double the
 present site.
 
 ## Rationale
@@ -86,9 +90,14 @@ policy degrades deliberately instead of by neglect.
   sweep, honest coverage reporting.
 - **Enables:** systemic, shared-CSS defects to be caught, which is the class that actually occurs
   here (WQ-042's token bug, WQ-056's comment-token contrast).
-- **Constrains:** roughly 2 minutes added to CI per run at present size.
-- **Constrains:** POL-002 gate 1 becomes genuinely enforceable rather than nominally so. Expect the
-  gate to fail on first full enablement, because WQ-056 is a real live violation and the dark-theme
-  half has never been checked at all.
+- **Constrains:** roughly 31 seconds added to CI per run at present size on the programmatic path
+  (about 2 minutes on the CLI path).
+- **Constrains:** POL-002 gate 1 becomes genuinely enforceable rather than nominally so. **Expect the
+  gate to fail loudly on first full enablement: 7 pages / 233 errors in light theme, 3 pages / 5 errors
+  in dark, 238 total (WQ-056).** That is the gate working, not the gate broken.
+- **Constrains:** the theme must be driven via the **programmatic pa11y API** with a supplied Puppeteer
+  `page`. pa11y 9.0.1's CLI has no `--actions` flag and no `beforeScript`, and the config-file
+  `actions` route (clicking the colour-mode toggle) fails on this site — the toggle reports as not
+  clickable, then times out at ~32s per page, roughly 40x slower than the measured path.
 - **Obligation:** if the sweep crosses 5 minutes, this policy must be reopened rather than the gate
   narrowed ad hoc.

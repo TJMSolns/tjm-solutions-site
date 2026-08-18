@@ -25,8 +25,8 @@ session surfaced it*:
 | 1 | Branch-push deploy failed **silently** — no diagnostic anywhere | ~1 month | WQ-038 |
 | 2 | Link-check job raced the deploy and 404'd on a mid-publish site | recurring | WQ-038 |
 | 3 | CI permanently red from external-host 403s, masking real breakage | 1+ month | WQ-054 |
-| 4 | Accessibility gate covered 4 of 74 pages (5%), light theme only | since inception | WQ-051 |
-| 5 | A **live** WCAG2AA violation on production, structurally unreachable by that gate | unknown | WQ-056 |
+| 4 | Accessibility gate covered 4 of 74 pages (5%), one theme only — and not the theme anyone believed | since inception | WQ-051 |
+| 5 | **238 live** WCAG2AA violations on production across 8 pages, structurally unreachable by that gate | unknown | WQ-056 |
 | 6 | Medium parity drift — 3 articles missing, 1 invisible to the sitemap | ~4 weeks | WQ-027 |
 | 7 | `npm run typecheck` broken at HEAD | ~1 month | WQ-046 |
 

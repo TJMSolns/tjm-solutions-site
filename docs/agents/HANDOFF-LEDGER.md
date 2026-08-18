@@ -49,13 +49,16 @@ per DN-002.
 8 pages: 233 in light theme (4 prism tokens), 5 in dark (1 token). Both themes user-reachable. Invisible
 to the incumbent gate because it checks 4 URLs, none containing code blocks.
 
-**Lessons — five verifier VETOes, and they earned their keep:**
+**Lessons — six verifier VETOes, and they earned their keep:**
 
-1. **Four VETOes on WQ-054 were all the same defect**: a number asserted rather than computed, and each
-   correction pass fixed only the occurrence in front of me (141→122 in `ci.yml`, then missing
-   `WORK-QUEUE.md`, then missing the artifact's own check (2), then "six" when it was five). The fix
-   that finally worked was to *enumerate every site of a claim before editing any of them*. Worth
-   codifying: a correction is not complete until `git grep` says so.
+1. **Five VETOes were the same defect**: a number asserted rather than computed, and each correction
+   pass fixing only the occurrence in front of me. Four on WQ-054 (141→122 in `ci.yml`, then missing
+   `WORK-QUEUE.md`, then missing the artifact's own check (2), then "six" when it was five) and one on
+   WQ-052 (corrected `~145` in POL-003, wrote a commit message asserting the correction was complete,
+   left the same figure in the evidence artifact — the sole evidence *for* POL-003). Worth codifying:
+   **a correction is not complete until `git grep` says so, and claiming completeness without running
+   that grep is how five of six VETOes happened.** The recurrence after I had explicitly named the
+   pattern is the point — naming a failure mode does not fix it; a mechanical check does.
 2. **The WQ-052 VETO caught something far worse than a typo.** I reported the accessibility sweep as
    light theme. It was **dark** — `colorMode.defaultMode: 'dark'` with `respectPrefersColorScheme:
    true`, and headless Chrome reports dark. The untested half carried 233 of the 238 errors. My own
@@ -77,6 +80,13 @@ to the incumbent gate because it checks 4 URLs, none containing code blocks.
 - **WQ-031** — homepage offer cards await his visual review.
 - **WQ-050's audit variant** — pursue or drop.
 - **WQ-055 résumés** — deferred at his direction until the 7 replacements are final.
+
+**Two findings worth carrying forward:** a CLI implementation of the accessibility gate that actually
+switches themes costs ~3.0s/page via pa11y's `actions` route, which would hit POL-003's 5-minute
+trigger at ~50 pages — below the present 74. The programmatic path (0.211s/page/theme) is not merely
+faster, it is the only route that keeps the policy satisfiable today. Separately, the upgrade
+equivalence claim is now reproducible rather than asserted: `docs/agents/evidence/WQ-upgrade-3.10.2-manifest.json`
+carries per-page SHA-256 hashes for both the 3.9.2 and 3.10.2 builds (84 pages, 84 identical).
 
 **Also flagged, not actioned:** `docusaurus.config.ts.orig` is tracked in git (leftover merge
 artifact); the Done-gate hook resolves its script path relative to the edited file's directory, so it

@@ -18,12 +18,15 @@ Revisit trigger: if the full dual-theme sweep exceeds 5 minutes wall-clock, reop
 nav-pages + changed-pages + one-representative-per-template design instead.
 **Rationale:** WQ-052 tabled three strategies (per-page timestamp cache, random 10% sample, combination)
 all aimed at keeping the gate fast. None had been measured. Measurement showed the full sweep takes
-**60 seconds for 74 pages** (`xargs -P 6`, 8 cores), so both themes is roughly 2 minutes — removing the
+**15.6 seconds for 74 pages** via the programmatic pa11y API with a shared Puppeteer browser (60.3s via
+the pa11y CLI spawning a browser per page), so both themes is roughly **31 seconds** — removing the
 constraint the three options existed to work around. Full coverage is the only option with no
 false-negative class: it cannot mis-key a cache, miss an undrawn page, or report a stale pass. The
 timestamp-cache option was already known unsound (WQ-042's shared-token bug broke pages without editing
-them), and random sampling makes failures irreproducible. The first full sweep immediately found a live
-production WCAG2AA violation the 4-URL gate could never reach (WQ-056, comment tokens at 3.03:1).
+them), and random sampling makes failures irreproducible. The first full sweep immediately found live production WCAG2AA
+violations the 4-URL gate could never reach: **238 errors across 8 pages** (WQ-056) — 233 in light
+theme across 4 prism tokens, 5 in dark. It also exposed that the site's default render is **dark**
+(`colorMode.defaultMode: 'dark'`), so the light half had never been checked by anything.
 **Type:** POL
 **Ref:** docs/governance/POL/POL-003-accessibility-gate-coverage.md
 **Status:** Active

@@ -67,9 +67,10 @@ affected page — nondeterministically, possibly months later.
 **Revisit trigger.** This decision rests on a measurement, so it expires when the measurement does.
 If the full dual-theme sweep exceeds **5 minutes** wall-clock, reopen this policy and adopt option
 (c) — nav pages, changed pages, and one representative per template — which remains the correct
-fallback design. At the measured shared-browser rate the threshold is well over a thousand pages; on
-the slower CLI path it is roughly 145 pages, about double the
-present site.
+fallback design. Derived from the measured rates: the shared-browser path runs 15.6s / 74 pages =
+0.211s per page per theme, so 0.422s per page dual-theme, and 300 / 0.422 = **~712 pages**. The CLI
+path runs 60.3s / 74 = 0.815s per page per theme, so 1.63s dual-theme, and 300 / 1.63 = **~184
+pages**. Either way the present 74-page site has substantial headroom.
 
 ## Rationale
 
@@ -95,9 +96,14 @@ policy degrades deliberately instead of by neglect.
 - **Constrains:** POL-002 gate 1 becomes genuinely enforceable rather than nominally so. **Expect the
   gate to fail loudly on first full enablement: 7 pages / 233 errors in light theme, 3 pages / 5 errors
   in dark, 238 total (WQ-056).** That is the gate working, not the gate broken.
-- **Constrains:** the theme must be driven via the **programmatic pa11y API** with a supplied Puppeteer
-  `page`. pa11y 9.0.1's CLI has no `--actions` flag and no `beforeScript`, and the config-file
-  `actions` route (clicking the colour-mode toggle) fails on this site — the toggle reports as not
-  clickable, then times out at ~32s per page, roughly 40x slower than the measured path.
+- **Constrains:** the theme must be driven explicitly. Two routes both work: the **programmatic pa11y
+  API** with a supplied Puppeteer `page` (fastest — 15.6s for 74 pages), or the **config-file `actions`
+  route** via `pa11y -c <config>`, which completes a page in ~3.0s. pa11y 9.0.1's CLI has no
+  `--actions` flag and no `beforeScript`, but `lib/pa11y.js` does implement `options.actions`, reachable
+  through a config file. **Correction:** an earlier version of this policy declared the `actions` route
+  broken on the basis of a ~32s timeout. That timeout was a faulty experiment, not a tool limitation —
+  it waited for `html[data-theme='dark']` after clicking the toggle, on a site that *starts* dark and
+  becomes light on click. With the correct predicate (`data-theme='light'`) the same command returns in
+  3.0s. WQ-051 may use either route.
 - **Obligation:** if the sweep crosses 5 minutes, this policy must be reopened rather than the gate
   narrowed ad hoc.

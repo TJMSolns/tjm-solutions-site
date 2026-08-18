@@ -1,15 +1,20 @@
 import type { ReactNode } from 'react';
 import Head from '@docusaurus/Head';
+import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import styles from './about.module.css';
 
-const personSchema = {
+const organizationSchema = {
   '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: 'Tony Moores',
-  jobTitle: 'Chief Technology Officer',
-  worksFor: { '@type': 'Organization', name: 'RETISIO Inc.' },
+  '@type': 'Organization',
+  name: 'TJM Solutions LLC',
+  alternateName: 'TJM Solutions',
   url: 'https://www.tjm.solutions/about',
+  logo: 'https://www.tjm.solutions/img/tjm-solutions-logo.png',
+  description:
+    'Technology advisory practice specialising in platform strategy, enterprise architecture, digital commerce, and AI-adjacent product development.',
+  foundingDate: '2017',
+  founder: { '@type': 'Person', name: 'Tony Moores', url: 'https://www.tjm.solutions/tony' },
   email: 'tony@tjm.solutions',
   telephone: '+16037382122',
   address: {
@@ -18,32 +23,35 @@ const personSchema = {
     addressRegion: 'NH',
     addressCountry: 'US',
   },
-  alumniOf: { '@type': 'EducationalOrganization', name: 'Clarkson University' },
   knowsAbout: [
-    'Digital Commerce', 'Platform Strategy', 'Enterprise Architecture',
-    'Distributed Systems', 'Functional Programming', 'AI',
+    'Platform strategy', 'Enterprise architecture', 'Composable commerce',
+    'Agentic commerce', 'API-first architecture', 'Marketplace platforms',
+    'Digital transformation',
   ],
   sameAs: [
     'https://linkedin.com/in/tony-moores/',
     'https://tmoores.medium.com',
+    'https://github.com/TJMSolns',
   ],
 };
 
-const TITLE = 'About Tony Moores | TJM Solutions';
+const TITLE = 'About TJM Solutions | Architecture, Engineering, and Advisory';
 const DESCRIPTION =
-  'Tony Moores is a senior technology executive and principal consultant with 20+ years spanning platform strategy, digital commerce, enterprise architecture, and AI-adjacent product development.';
+  'TJM Solutions LLC is a technology advisory practice covering platform strategy, enterprise architecture, digital commerce, and AI-adjacent product development. Founded 2017 in Manchester, New Hampshire.';
 
-const competencies = [
-  'Technology Strategy & Platform Direction',
-  'Product Strategy & Road Map Development',
-  'Enterprise & Solution Architecture',
-  'Customer/Executive-facing Technical Leadership',
-  'Digital Transformation — Modernization, Automation, Intelligence',
-  'Technical Sales Support & Strategic Deal Support',
-  'Solution Evangelism & Partner Enablement',
-  'Reactive Distributed Systems',
-  'Digital Commerce & Marketplace Platforms',
-  'AI-Adjacent Product Evolution',
+const practice = [
+  {
+    title: 'Commerce Strategy',
+    body: 'Evaluating platforms, search, and marketplace systems — for new builds, migrations, and the move to agentic commerce.',
+  },
+  {
+    title: 'Digital Transformation',
+    body: 'Modernizing architecture — microservices, headless/API-first systems, and AI-adjacent knowledge bases — without a rewrite.',
+  },
+  {
+    title: 'Experience Engineering',
+    body: 'Architecture and tooling built around how your team and customers actually engage — not just what shipped out of the box.',
+  },
 ];
 
 export default function About(): ReactNode {
@@ -58,14 +66,18 @@ export default function About(): ReactNode {
         <meta property="og:image:alt" content="TJM Solutions — Technology Advisory and Consulting" />
         <meta property="og:image:width" content="576" />
         <meta property="og:image:height" content="571" />
-        <script type="application/ld+json">{JSON.stringify(personSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
       </Head>
       <div className={styles.aboutContainer}>
         <section className={styles.hero}>
           <div className="container">
-            <h1>About Tony Moores</h1>
+            <h1>About TJM Solutions</h1>
             <p className={styles.subtitle}>
-              Senior Technology Executive &amp; Principal Consultant
+              Architecture, Engineering, and Advisory
+            </p>
+            <p className={styles.personBanner}>
+              Looking for the person rather than the practice?{' '}
+              <Link to="/tony">About Tony Moores →</Link>
             </p>
           </div>
         </section>
@@ -73,77 +85,74 @@ export default function About(): ReactNode {
         <main className="container">
           <section className={styles.bioSection}>
             <div className={styles.bioContent}>
-              <h2>Tony Moores</h2>
-              <h3 style={{ marginTop: '8px' }}>
-                Founder &amp; Principal Consultant, TJM Solutions · CTO, RETISIO Inc.
-              </h3>
+              <h2>The Practice</h2>
 
               <p>
-                Tony is a senior technology executive with more than 20 years of experience spanning
-                platform strategy, product direction, enterprise architecture, customer-facing technical
-                leadership, consulting, and software modernization. He operates at the intersection of
-                product, platform, solutions, and executive communication — translating customer and
-                market needs into practical technical direction, and connecting architectural decisions
-                to business outcomes.
+                TJM Solutions LLC is a technology advisory practice founded in 2017 and based in
+                Manchester, New Hampshire. It advises software vendors, services organizations, and
+                enterprise teams on platform strategy, architecture, and the technical decisions that
+                carry commercial consequences.
               </p>
 
               <p>
-                His background spans enterprise software, digital commerce, B2B/B2B marketplaces,
-                API-first platforms, distributed systems, and modernization initiatives — with deep
-                experience in AI-adjacent product evolution and reactive microservice architecture.
-                He is comfortable operating across engineering, product, sales, partnerships, support,
-                and executive stakeholders.
+                The work is deliberately narrow. It is architecture and advisory rather than staffing
+                or delivery — assessments, reviews, roadmaps, and strategy engagements that produce a
+                decision and the reasoning behind it. Engagements are led personally by{' '}
+                <Link to="/tony">Tony Moores</Link>, who brings 20+ years across enterprise commerce,
+                distributed systems, and AI-adjacent product development.
               </p>
 
-              <h3>Core Competencies</h3>
-              <ul className={styles.competencyList}>
-                {competencies.map((c) => (
-                  <li key={c} className={styles.competencyItem}>{c}</li>
+              <h3>What We Do</h3>
+
+              <ul className={styles.practiceList}>
+                {practice.map((p) => (
+                  <li key={p.title} className={styles.practiceItem}>
+                    <h4>{p.title}</h4>
+                    <p>{p.body}</p>
+                  </li>
                 ))}
               </ul>
 
-              <h3>Career Background</h3>
-
               <p>
-                Tony's career began at Art Technology Group (ATG), where he spent a decade in technical
-                training and solution engineering — building deep expertise in enterprise commerce,
-                search, and knowledge management, and helping close significant deals across the
-                Americas and Europe. When Oracle acquired ATG, he moved into a Master Principal Sales
-                Consultant role supporting strategic enterprise opportunities across Oracle's CX
-                commerce, marketing, and service platforms.
+                These three areas cover 22 packaged offers, each scoped to a defined deliverable.
+                The full catalogue, with what each engagement produces, is on the{' '}
+                <Link to="/">home page</Link>.
               </p>
 
+              <h3>Typical Engagements</h3>
+
               <p>
-                He subsequently served as CTO at Professional Access, a Java development and systems
-                integration firm focused on enterprise commerce, where he expanded the firm's practice
-                into Magento, commercetools, and custom microservices. A stint as Principal Solutions
-                Consultant at Mirakl followed, where he led enterprise marketplace consulting across
-                implementation strategy, integration design, and customer success.
+                Most work falls into one of three shapes. An <strong>assessment</strong> examines a
+                platform, architecture, or capability against where the business intends to go, and
+                reports what holds and what does not. A <strong>roadmap</strong> takes an agreed
+                destination and sequences the work to reach it, with the trade-offs made explicit.
+                An <strong>advisory retainer</strong> puts architectural judgement alongside a team
+                continuously, for organizations making a series of connected decisions rather than
+                one.
               </p>
 
-              <p>
-                Tony founded TJM Solutions in 2017, advising software and services organizations on
-                platform strategy, microservice architecture, go-to-market alignment, and
-                technical-business communication. He simultaneously held a Director of Product
-                Management role at Oracle Americas, leading product management and developer
-                evangelism for CX Commerce across the Americas.
-              </p>
+              <h3>How to Start</h3>
 
-              <h3>Today</h3>
+              <ol className={styles.stepList}>
+                <li>
+                  <strong>A conversation.</strong> Thirty minutes on what you are trying to decide
+                  and whether this practice is the right instrument for it. No charge, and no
+                  obligation to continue.
+                </li>
+                <li>
+                  <strong>A scoped proposal.</strong> If there is a fit, you get the deliverable,
+                  the timeline, and the price in writing before any work begins.
+                </li>
+                <li>
+                  <strong>The engagement.</strong> Delivered against that scope, with the reasoning
+                  documented so the decision survives the people who made it.
+                </li>
+              </ol>
 
               <p>
-                Tony currently serves as Chief Technology Officer at RETISIO Inc., leading technology
-                strategy, product direction, and architectural evolution for a digital commerce
-                platform provider. He owns long-term platform direction across composable, API-first,
-                and multi-tenant architecture, guides product evolution toward enterprise-grade
-                scalability and agent-driven systems, and supports strategic customer opportunities
-                through executive-level solution architecture.
-              </p>
-
-              <p>
-                Through TJM Solutions, he continues to advise clients on platform strategy,
-                microservice architecture, functional programming, and AI-adjacent product
-                development — helping organizations connect technical direction to business outcomes.
+                Day and weekly rates, along with retainer structures, are published on the{' '}
+                <Link to="/rates">Rates</Link> page. Publishing them means you can judge fit before
+                spending a call finding out.
               </p>
 
               <div className={styles.contactCard}>
@@ -154,10 +163,9 @@ export default function About(): ReactNode {
                   <p><strong>Phone:</strong> <a href="tel:+16037382122">+1 603.738.2122</a></p>
                   <p><strong>Location:</strong> Manchester, New Hampshire, USA</p>
                   <p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/tony-moores/" target="_blank" rel="noopener noreferrer">linkedin.com/in/tony-moores</a></p>
-                  <p><strong>Writing:</strong> <a href="https://tmoores.medium.com" target="_blank" rel="noopener noreferrer">tmoores.medium.com</a></p>
                 </div>
                 <a href="https://calendly.com/tjm-solns/" target="_blank" rel="noopener noreferrer" className={styles.ctaButton}>
-                  Schedule a Consultation
+                  Schedule a Call
                 </a>
               </div>
             </div>

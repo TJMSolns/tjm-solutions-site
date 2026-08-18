@@ -151,6 +151,10 @@ const config: Config = {
               to: '/about',
             },
             {
+              label: 'Tony Moores',
+              to: '/tony',
+            },
+            {
               label: 'Rates',
               to: '/rates',
             },

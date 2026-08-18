@@ -161,59 +161,47 @@
   }
 }
 
-.personBanner {
-  margin: 24px 0 0 0;
-  padding: 14px 18px;
-  border-left: 4px solid var(--ifm-color-primary);
-  background: var(--paper-soft);
-  border-radius: 4px;
-  font-size: 1em;
+.positioning {
+  margin: 12px 0 0 0;
+  font-size: 1.05em;
+  line-height: 1.6;
+  max-width: 46em;
+  color: var(--color-gray-700);
 }
 
-[data-theme='dark'] .personBanner {
-  background: var(--ink-soft);
+[data-theme='dark'] .positioning {
+  color: var(--color-gray-300);
 }
 
-.personBanner a {
-  font-weight: 700;
-  color: var(--ifm-color-primary);
-  text-decoration: none;
-}
-
-.personBanner a:hover {
-  text-decoration: underline;
-}
-
-.practiceList {
+.writingList {
   list-style: none;
   padding: 0;
-  margin: 0 0 24px 0;
+  margin: 0;
   display: grid;
   gap: 20px;
 }
 
-.practiceItem {
+.writingItem {
   padding-left: 16px;
   border-left: 3px solid var(--ifm-color-primary);
 }
 
-.practiceItem h4 {
-  margin: 0 0 6px 0;
-  font-size: 1.1em;
-  color: var(--ifm-color-primary);
+.writingItem a {
   font-weight: 700;
+  font-size: 1.05em;
+  color: var(--ifm-color-primary);
+  text-decoration: none;
 }
 
-.practiceItem p {
-  margin: 0;
+.writingItem a:hover {
+  text-decoration: underline;
 }
 
-.stepList {
-  margin: 0 0 16px 0;
-  padding-left: 22px;
+.writingItem p {
+  margin: 6px 0 0 0;
+  color: var(--color-gray-700);
 }
 
-.stepList li {
-  margin-bottom: 10px;
-  line-height: 1.7;
+[data-theme='dark'] .writingItem p {
+  color: var(--color-gray-300);
 }

@@ -1,0 +1,223 @@
+---
+title: "Great Martinis & Algorithms are DRY"
+description: "Clustering, cohorting, and ranking are the same algorithm wearing different domain clothes -- why parameterizing calculation over its variation beats writing it once per department."
+date: 2026-08-16
+authors: [tony]
+tags: [functional-programming, architecture, digital-commerce]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 23
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/great-martinis-algorithms-are-dry-28b58c64bbfa" />
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2026-08-16T00:00:00Z" />
+  <meta property="article:author" content="Tony Moores" />
+  <script type="application/ld+json">{`{"@context":"https://schema.org","@type":"BlogPosting","headline":"Great Martinis & Algorithms are DRY","description":"Clustering, cohorting, and ranking are the same algorithm wearing different domain clothes -- why parameterizing calculation over its variation beats writing it once per department.","datePublished":"2026-08-16","author":{"@type":"Person","name":"Tony Moores","url":"https://www.tjm.solutions/about"},"publisher":{"@type":"Organization","name":"TJM Solutions","url":"https://www.tjm.solutions"},"url":"https://www.tjm.solutions/articles/2026/08/16/great-martinis-and-algorithms-are-dry","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.tjm.solutions/articles/2026/08/16/great-martinis-and-algorithms-are-dry"}}`}</script>
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 23*
+
+Many years ago early in the Fall, I was in a bar. The only other patron was the bartender's classmate. They were taking a numerical methods class and they were scratching their heads over an assignment that involved (among other things) shuffling a deck of cards and dealing them over an arbitrary number of players in C. While they were debating using FFT (Really?!?) to perform the shuffle. I grabbed a pen and the cocktail napkin under my martini and wrote a function that returned the difference of two random numbers, slipped it to the bartender and told him he could quick sort his cards using stdlib and a pointer to my silly function. For the rest of the semester he got A's and I got very generous pours...
+
+... 30 years later marketing asks for customer clustering. Reasonable enough. We have customers. We have orders. We can calculate recency, frequency, spend, promotion sensitivity, return behavior, channel preference, whatever matters to the business, hand the resulting vectors to a clustering algorithm and give marketing some segments... Then merchandising wants product clustering. Different Jira ticket. Different inputs. Different business owner. Products have attributes instead of demographics, attach rates instead of purchase histories, markdown sensitivity instead of lifetime value. So we build product clustering... Then somebody wants to group promotions by the customers and products for which they actually perform. Content wants something similar for campaigns and experiences. Marketplace wants it for sellers. Operations wants it for orders, fulfillment patterns and returns.
+
+Somewhere along the way we have accidentally written five versions of substantially the same calculation. The usual response is to extract common code once the duplication becomes embarrassing. I think that starts one question too late. The useful question was available before the first line of customer clustering was written: What part of the clustering algorithm actually knows what a customer is?
+
+<!-- truncate -->
+
+Very little, if we design it well. A clustering algorithm needs observations and some meaning of similarity. It does not need a loyalty number, email address, shipping address or lifetime-value field.
+
+The first version might naturally emerge as:
+
+```scala
+def clusterCustomers(
+  customers: Vector[Customer],
+  orders: Vector[Order]
+): Vector[CustomerCluster]
+```
+
+It works, but the signature has already confused the problem with one application of the problem. What we are really doing should look more like:
+
+```scala
+def cluster[A](
+  population: Vector[A],
+  features: A => FeatureVector,
+  distance: (
+    FeatureVector,
+    FeatureVector
+  ) => Double,
+  strategy: ClusteringStrategy
+): Clusters[A]
+```
+
+Now the clustering algorithm knows A. It does not know Customer. Commerce supplies the meaning:
+
+```scala
+val customerBehavior:
+  Customer => FeatureVector =
+  customer =>
+    ...
+```
+
+and then:
+
+```scala
+cluster(
+  customers,
+  customerBehavior,
+  cosineDistance,
+  kMeans
+)
+```
+
+...Everyone else can use the same algorithm:
+
+```scala
+cluster(
+  promotions,
+  promotionPerformance,
+  euclideanDistance,
+  hierarchical
+)
+```
+
+The reusable thing is no longer "customer clustering." It is clustering plus a supplied definition of what the observations mean.
+
+That is the beginning of what I mean by designing a meta-algorithm: an algorithm whose operands include other algorithms to accomodate arbitrary models. Consider that features is a computation, as is distance. The clustering strategy may itself be supplied as a computation. The higher-level algorithm coordinates them without having to understand the commerce semantics they encode.
+
+Anyone thinking that this is the strategy pattern wearing better syntax is at least half right. Java has had `Function<A,B>` for over a decade and Comparator for far longer, and a disciplined team can pass behavior into a generic clustering routine without writing a line of Scala. I havn't told you anything you hadn't known in 2004.
+
+The half that is not the strategy pattern shows up later, when the things being passed start carrying laws. A comparator is a function you supply. A monoid is a function you supply with a promise: that combining is associative, and that there is an identity element. It is the promise, not the function, that lets execution machinery split a cohort calculation across five machines without asking anyone's permission. Java can express the function perfectly well. Expressing the promise, and having anything at all check it, is where the two stop being the same conversation.
+
+That separation is much more valuable than simply putting duplicated code into a shared library.
+
+Alice and Bob might buy the same categories at roughly the same frequency and average order value. By purchasing behavior, they are close. But Alice buys almost exclusively when a promotion is running and Bob rarely bothers with coupons so, by promotion sensitivity, they are far apart.
+
+A customer cluster is not some intrinsic property of the customer record waiting for SQL to reveal it. We may construct a meaning of similarity:
+
+```scala
+Customer => FeatureVector
+```
+
+and supplied a way to compare those observations:
+
+```scala
+(FeatureVector, FeatureVector) => Distance
+```
+
+Only after making those decisions does clustering have anything useful to say... And that is precisely the kind of business meaning I want explicit in code.
+
+```scala
+val purchaseSimilarity =
+  cluster(
+    customers,
+    purchasingFeatures,
+    cosineDistance,
+    kMeans
+  )
+
+val promotionSimilarity =
+  cluster(
+    customers,
+    promotionFeatures,
+    cosineDistance,
+    kMeans
+  )
+
+val returnSimilarity =
+  cluster(
+    customers,
+    returnFeatures,
+    cosineDistance,
+    kMeans
+  )
+```
+
+We did not add three modes to CustomerClusterService. We composed three programs.
+
+Suppose I want to know how customers acquired during different months behave after acquisition. That is cohort analysis and still is when
+
+- Merchandising wants to compare product families across subsequent orders.
+- Marketing wants to compare promotion families across customer segments.
+- Marketplace wants to compare seller cohorts by cancellation, return and fulfillment behavior.
+- Operations wants to compare fulfillment centers by order outcome.
+
+The nouns change, but the calculation has a suspiciously familiar shape. We have some X. We use X to determine cohort membership. We have some Y. We relate observations of Y to members of X. Then we measure something. A deliberately generic version might look like:
+
+```scala
+// M = CohortStats  CohortStats  FulfillmentStats  RedemptionStats
+// X = Customer     Product      Seller            Promotion
+// Y = Order        Order        Fulfillment       Redemption
+// K = YearMonth    Category     SellerTier        PromotionFamily
+def cohort[X, Y, K, M](
+  xs: Iterable[X],
+  ys: Iterable[Y]
+)(
+  cohortOf: X => K,
+  relates: (X, Y) => Boolean,
+  measure: Y => M
+)(using M: Monoid[M]): Map[K, M]
+
+def cohort[X, Y, K, M](
+```
+
+The algorithm describes the relationship among cohort membership, observation and measurement. Commerce supplies what each of those things means and so a new analytical question can be a new composition instead of another bespoke service.
+
+Pricing systems are another place where we tend to write today's use case directly into the machinery. A pricing function grows quickly from its initial, and perhaps overly specific, implementation, until B2B arrives, Contract pricing appears, Marketplace seller rules emerge... Regional pricing, Loyalty tiers, Employee discounts appear, Subscriptions, A/B pricing... Someone inevitably produces another four hundred lines of conditions inside calculatePrice. But there may be two different things mixed together. One is the invariant act of evaluating pricing rules against a commerce context. The other is the set of rules that happen to apply today. The pricing engine coordinates rules. The rules contain commerce meaning. And the distinction becomes particularly valuable when rules themselves can be composed, selected or evaluated differently without rewriting the engine that governs them. That is again meta-algorithmic design.
+
+Promotions routinely collapse eligibility, calculation, prioritization, exclusivity, stacking, budget constraints and application into one giant subsystem. My point? The difference between *Verbb*ing this noun and that can be externalized and composed on the fly... especially if you factor out CRUD... Fetch (via file, db, stream, API, Kafka, etc) all nouns without getting bogged down in the particulars of R.
+
+This is also where some of the mathematical aspects of FP becomes useful in very practical ways.
+
+Suppose our cohort calculation produces:
+
+```scala
+final case class CohortStats(
+  orders: Long,
+  units: Long,
+  revenue: Money
+)
+```
+
+Two independently calculated values can be combined:
+
+```scala
+CohortStats(
+  a.orders + b.orders,
+  a.units + b.units,
+  a.revenue + b.revenue
+)
+```
+
+There is an obvious empty value:
+
+```scala
+CohortStats(
+  0,
+  0,
+  Money.zero
+)
+```
+
+and combination is associative... A + (B + (C + D)) = (A + B) + (C + D) ...which means we can partition the data to be evaluated sequentially, concurrently or on different machines and then combined without changing the meaning of the calculation. The business algorithm did not need to learn how to parallelize. The commerce model did not need a DistributedCohortStatsService. We preserved a law, and the law gave execution machinery permission to reorganize the work. That is a recurring theme:
+
+- Associativity gives us permission to regroup.
+- Identity gives us a representation for no contribution.
+- Commutativity, when it is actually true, gives us permission to reorder.
+- Idempotence, when it is actually true, gives us useful freedom around repetition and duplicate processing.
+- Purity gives us permission to evaluate a calculation without wondering what else we changed by observing it.
+
+There is an enormous difference in handling "new questions" by developing a new service in a new repo, with a new orchestration and a new implementation than extending an existing model to include a new projection, metric, policy, then calling an existing algorithm... The first accumulates software, the second system accumulates vocabulary.
+
+That distinction matters in commerce because the combinations of possible questions grows much faster than the number of underlying computational forms. If each relationship becomes its own application, architecture expands combinatorially with the business but If common computational structures remain generic and commerce supplies the meaning, a large portion of that expansion becomes composition instead.
+
+Commerce is full of distinctions that matter, and pretending those distinctions are all instances of one universal abstraction is another way to make a system incomprehensible. So the goal is to separate what is genuinely invariant from what carries the particular business meaning. Meta-algorthms give us a pattern for doing just that:
+
+- Design algorithms so they can become operands.
+- Keep calculation separate from the machinery that retrieves and stores its inputs and outputs.
+- Make variation explicit as functions, policies and values.
+- Preserve truthful algebraic properties that give other programs freedom to compose or execute the calculation differently.
+
+Then, when the next commerce question arrives, we have a better chance of writing only the part that is actually new. Remember, the clustering algorithm does not need to know what a customer is and neither should a surprising amount of the rest of the machinery.

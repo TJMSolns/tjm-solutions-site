@@ -1,0 +1,161 @@
+---
+title: "COMMERCE: (n.) A sequence of verbs often mistaken for a set of nouns."
+description: "Returns are not orders run backwards -- why modeling commerce as a sequence of events and explicit dispositions beats reversing rows in a mutable state table."
+date: 2026-07-25
+authors: [tony]
+tags: [functional-programming, architecture, digital-commerce]
+image: /img/funcprog-1.jpg
+series: "Functional Programming Isn't Just for Academics"
+series_part: 21
+---
+
+<head>
+  <link rel="canonical" href="https://tmoores.medium.com/commerce-n-a-sequence-of-verbs-often-mistaken-for-a-set-of-nouns-a44471c68fa8" />
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2026-07-25T00:00:00Z" />
+  <meta property="article:author" content="Tony Moores" />
+  <script type="application/ld+json">{`{"@context":"https://schema.org","@type":"BlogPosting","headline":"COMMERCE: (n.) A sequence of verbs often mistaken for a set of nouns.","description":"Returns are not orders run backwards -- why modeling commerce as a sequence of events and explicit dispositions beats reversing rows in a mutable state table.","datePublished":"2026-07-25","author":{"@type":"Person","name":"Tony Moores","url":"https://www.tjm.solutions/about"},"publisher":{"@type":"Organization","name":"TJM Solutions","url":"https://www.tjm.solutions"},"url":"https://www.tjm.solutions/articles/2026/07/25/commerce-a-sequence-of-verbs","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.tjm.solutions/articles/2026/07/25/commerce-a-sequence-of-verbs"}}`}</script>
+</head>
+
+*Functional Programming Isn't Just for Academics — Part 21*
+
+A customer wants to send something back. The instinct, encoded in a thousand systems, is to treat that as running the order backwards. Find the row. Reverse it. Refund the card. Put the item back on the shelf. The mental model is arithmetic: an order adds something, a return subtracts it, and if the books balance, the job is done.
+
+The model is wrong, and it costs money in a way that is structural, not occasional:
+
+- You cannot restock a perishable. The order shipped a case of fresh berries; the return arrived four days later. Reversing the row says "inventory plus one." Reality says "inventory plus zero, and now I am holding a liability I have to dispose of." The subtraction is a lie.
+- You should not refund a fraud return. The same gesture, item comes back, money goes out, is exactly what an organized refund-fraud ring is counting on. If "return" means "refund," you have built the fraudster's happy path into your data model.
+- An exchange is not a refund plus a new order. Treat it that way and you have charged the customer's card a second time, held two authorizations, and turned a goodwill gesture into a dispute. The customer experienced one moment. Your books recorded three.
+- And a destroyed item still costs. Some returns are never resold: the product comes back damaged, or it is a hazmat item that cannot legally re-enter inventory, or the cost of inspecting and refurbishing it exceeds its resale value. The order said "I gave you this." The return does not erase that. The item exists. Someone has to decide what happens to it, and "subtract one from inventory" is not a decision. It is an evasion of one.
+
+Reversing a row assumes a return has one shape. But has many, and none of the eight or so real ones is "the order, undone." We have spent forty years modeling commerce with nouns instead of verbs, despite adopting REST. Widen the lens past returns for a moment, because the same failure shows up on the order itself, with nobody touching a return at all...
+
+<!-- truncate -->
+
+A dispute landed ninety days after the box was delivered. The cardholder's bank wants to know what was agreed: the price, the currency, whether the customer authorized the second shipment, whether the partial refund the customer claims never arrived was in fact issued. You open the order. The record says status = 'refunded', total = 0.00, updated_at = last Tuesday. Every field is true. Not one of them answers the question, because the question was never what is this order now. It was what did you promise, and when, and a status column only ever knew the present.
+
+Put the return case and the dispute case side by side and the shared defect is obvious. Both treat commerce as if it produced nouns: an order, a return, each a thing with attributes, each a row you update as the world changes. Neither is a noun. Both are the residue of a sequence of decisions someone made, at a moment, for a reason: authorize this charge, capture these funds, ship these lines, deny this return, restock this item, refund that one, destroy this other one, approve this exception. A row can hold exactly one of those decisions at a time, whichever happened most recently, and it calls that the order. Everything upstream of the latest UPDATE is gone, not archived, not softened, gone, because the row was never a place where decisions could accumulate. It was a place they overwrote each other.
+
+This is why "reverse the row" and "read off the status column" are the same mistake wearing two different names. Both ask a "cell of state" to answer a question about history, and a cell of state, by construction, does not have one. Record the decisions themselves, as a closed, named vocabulary, and let the "order" and the "return" be nothing more than what those decisions add up to.
+
+```scala
+enum OrderEvent:
+  def at: Instant
+  case Placed(at: Instant, lines: List[(Sku, Int)], customer: CustomerId)
+  case Priced(at: Instant, lineTotals: Map[Sku, Money], grand: Money)
+  case PaymentAuthorized(at: Instant, processorRef: String, amount: Money)
+  case PaymentCaptured(at: Instant, amount: Money)
+  case Shipped(at: Instant, lines: List[(Sku, Int)], carrier: String)
+  case ReturnRequested(at: Instant, line: LineItem, reason: ReturnReason)
+  case ItemInspected(at: Instant, sku: Sku, condition: ItemCondition)
+  case DispositionDecided(at: Instant, line: LineItem, decision: ReturnDecision)
+  case RefundIssued(at: Instant, amount: Money, to: PaymentMethod)
+  case ItemRestocked(at: Instant, sku: Sku, condition: ItemCondition)
+  case ItemDestroyed(at: Instant, sku: Sku, reason: DestroyReason)
+```
+
+Every case is a verb, not a field: something a person or a process decided, at a specific time. Notice that the return does not get its own table or its own object: *ReturnRequested*, *ItemInspected*, *DispositionDecided*, *ItemRestocked*, and *ItemDestroyed* sit in the same list as *Placed* and *Shipped*. A return was never a different kind of thing from an order. It is more decisions in the same sequence.
+
+Notice, too, what none of those verbs belong to. *Ship*, *RefundIssued*, *ItemDestroyed*: not one is a method reaching into an order and mutating its own field. Each is something the business does, using the order as its reference, never as its actor. An order does not ship itself any more than a tax rate applies itself. That is the deeper reason CRUD was always the wrong frame: create, read, update, delete describe what a database does to a record, and no business runs on those four verbs. It runs on authorize, capture, ship, inspect, decide, refund, restock, destroy, each one a capability the business exercises, not an operation a table exposes. Named that way, the vocabulary stops describing storage and starts describing the business.
+
+Returns are the case that makes the naming exercise unavoidable, because the naive model wants exactly one verb, refund, and reality has at least eight. Stop thinking about reversal and start thinking about disposition: what, concretely, is going to happen to the money, the item, and the relationship.
+
+```scala
+enum Disposition:
+  case Refund(amount: Money, to: PaymentMethod)
+  case Exchange(forItem: Sku, priceDelta: Money)
+  case StoreCredit(amount: Money)
+  case Restock(condition: ItemCondition)
+  case Refurbish(estimatedCost: Money)
+  case Destroy(reason: DestroyReason)
+  case WarrantyReplace(claim: WarrantyClaim)
+  case Goodwill(gesture: Gesture)        // keep the item, refund anyway
+```
+
+A refund is one member of this family. It is the most visible member, which is why teams mistake it for the whole. But restocking an item without refunding the recycled packaging, letting the customer keep a four-dollar item and crediting them rather than paying twelve dollars to ship it back, destroying a returned mattress for hygiene law and eating the cost, replacing under warranty without any money moving at all: these are not edge cases bolted onto refund. They are siblings. Refund has no special claim to be the default; it is just the one the naive model could express. The instant the family becomes a sum type, the compiler starts working for you. Add *WarrantyReplace* and every place that decides a disposition has to say what it does with that case. There is no silent fall-through to "refund the card," which is precisely the fall-through that pays the fraud ring and double-charges the exchange.
+
+The disposition is not read off the item. It is computed, from what the customer is asking, what policy permits, and what condition the goods actually came back in.
+
+```scala
+final case class ReturnRequest(
+  order:  OrderRef,
+  line:   LineItem,
+  reason: ReturnReason,
+  requestedRemedy: Option[Disposition]   // what the customer asked for
+)
+
+final case class ItemContext(
+  condition:          ItemCondition,     // Sellable, Damaged, Perishable, Hazmat...
+  daysSinceDelivery:  Int,
+  resaleValue:        Money,
+  returnShippingCost: Money
+)
+
+def decideDisposition(
+  req:    ReturnRequest,
+  ctx:    ItemContext,
+  policy: ReturnPolicy
+): ReturnDecision
+```
+
+That function changes nothing in the world. It does not refund a card or move inventory. It reads three inputs and returns a value, which means you can run it a thousand times for free: on every line of a basket, on a what-if for customer service, on last year's returns to see what a policy change would have done. None of those calls touch money or stock. The dangerous part, the part that actually refunds and restocks, happens later, once, against a decision already made.
+
+The naive model has exactly two endings: the return succeeds and the money goes out, or something throws. The most expensive return bugs live in the gap between those two.
+
+```scala
+enum ReturnDecision:
+  case Resolve(disposition: Disposition)
+  case Deny(reason: PolicyReason)
+  case RequireInspection(then: InspectionId)   // decide after we see it
+  case RequireApproval(by: Role, because: String)
+  case Quote(options: List[Disposition])       // let the customer choose
+```
+
+Deny is the fraud guard made explicit: a return outside the window, on a final-sale item, with a reason that does not qualify. The honest answer is "no," and "no" must be a value the system can return without anyone treating it as an error to be smoothed over. *RequireInspection* is the perishable and the damage case: you cannot decide the disposition of a thing you have not seen, and the model has to be able to say "the answer depends on the item's condition, and I do not yet know it," rather than guess *Restock* and be wrong. *RequireApproval* is the high-value and policy-exception case: a forty-dollar goodwill credit, automatic; a four-thousand-dollar one, a human signs off. The threshold is policy; the shape, that some decisions route to a person, is structure. *Quote* is the exchange and the store-credit fork, where the right outcome is not one disposition but a small menu the customer picks from.
+
+Every caller of *decideDisposition* has to pattern-match all five. The refund path and the deny path and the not-yet-known path cannot quietly collapse into each other, because the compiler will not let a RequireInspection be spent as if it were a Resolve(Refund(...)). That collapse, treating "we should look at this first" as "refund it now," is exactly the bug the naive arithmetic model cannot even see, because it never named the case in the first place.
+
+State is what you fold, not what you store. Once decisions are named, instead of nouns updated:
+
+```scala
+final case class OrderState(
+  id:         OrderId,
+  status:     Status,
+  priced:     Option[Money],
+  authorized: Option[Money],
+  captured:   Money,
+  refunded:   Money,
+  shipped:    Map[Sku, Int],
+  returned:   Map[Sku, Int]
+)
+enum Status:
+  case Draft, Priced, Authorized, Captured, Shipped, Closed
+def apply(s: OrderState, e: OrderEvent): OrderState = e match
+  case OrderEvent.Priced(_, _, grand) =>
+    s.copy(status = Status.Priced, priced = Some(grand))
+  case OrderEvent.PaymentCaptured(_, amt) =>
+    s.copy(status = Status.Captured, captured = add(s.captured, amt))
+  case OrderEvent.Shipped(_, lines, _) =>
+    s.copy(status = Status.Shipped, shipped = merge(s.shipped, lines))
+  case OrderEvent.DispositionDecided(_, line, ReturnDecision.Resolve(Disposition.Restock(_))) =>
+    s.copy(returned = bump(s.returned, line.sku, line.qty))
+  case OrderEvent.RefundIssued(_, amt, _) =>
+    s.copy(refunded = add(s.refunded, amt))
+  case _ => s // the remaining cases follow the same shape
+def project(id: OrderId, history: List[OrderEvent]): OrderState =
+  history.sortBy(_.at).foldLeft(OrderState.empty(id))(apply)
+```
+
+The status column you used to UPDATE is now a value you recompute from decisions you never destroyed. "What is this order now" is just "fold all of them," and there is no separate question of how to keep the history, because the history is the only thing stored. apply is one small, pure function: read a state and one decision, compute the consequence.
+
+The type in that snippet was named *OrderEvent*, and there is a reason for the word. A decision recorded this way, immutable, timestamped, appended and never edited, is what most engineers call an event, and the discipline of deriving state by replaying them is called event sourcing. The name is not the point. The point is what naming the decisions bought before the vocabulary ever came up: a history nothing could overwrite.
+
+The dispute stops being a forensic exercise across four systems and becomes a filter over one list: the price you quoted, the moment the card was authorized, the exact amount and timestamp of the partial refund are decisions sitting in order, because they were never anything else, and there is only one account of them, not a live row with a worried audit copy kept beside it.
+
+The return decision becomes reproducible for the same reason. *decideDisposition* reads a projected *OrderState* and an *ItemContext*; if both are folds of decisions up to the moment it ran, feeding it the same history produces the same answer today, in a test, in front of an auditor, that it produced in production. A decision made against a mutable row cannot be reproduced, because its inputs no longer exist. Time travel is the same fold, cut earlier: the order's state at any past instant is the decisions up to that instant, which turns "what did this look like the night before the chargeback" from unanswerable into a change to where the sequence gets cut.
+
+None of this means folding the entire history on every page load. Keep a projection, the current *OrderState*, cached and updated as each decision lands, so reads stay cheap. Only the source of truth changes: the cache is disposable, the sequence is not, and if the cache is ever wrong you rebuild it by folding again.
+
+What a return adds to the sequence, request, inspection, decision, refund, never rewrites what came before it. That is what makes the hard dispositions tractable. Destroy is not "inventory minus one and forget it." It is a decision that records a cost, a reason, and often a legal obligation. Goodwill is "refund issued, no item restocked, on purpose," a deliberate asymmetry the books need to see, not a discrepancy to be reconciled away at month end. Modeled as decisions in a sequence that only ever grows, both are ordinary entries. Modeled as subtraction from a row, both are errors, because subtraction cannot represent "we paid and got nothing back, and that was the right call."
+
+Commerce was never a set of nouns. It happens in verbs, authorize, capture, ship, request, inspect, decide, refund, restock, destroy, replace, approve, deny, each one a decision made at a moment, each one true forever after it is made. A row can hold the residue of one of those decisions at a time, whichever happened last, and call that the order. It cannot hold the decisions themselves, which is exactly what a dispute, an audit, or a customer swearing they were never refunded needs back.

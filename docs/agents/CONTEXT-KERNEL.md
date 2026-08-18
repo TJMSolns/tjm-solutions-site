@@ -2,7 +2,7 @@
 
 ## Status
 
-**Dormancy decision (POL-009):** active — 2026-05-28, restated GL-032 (2026-07-22). The original gate cited here (PDR-001's "≥3 battle-tested offers per card") was **retired by PDR-008 / DR-034 on 2026-06-26** — offers are listable when complete AND credibility-backed. WQ-005/006/007 are implementation-complete. The live gate on this queue is no longer offer-readiness but the Done-transition backlog (see WQ-048) and WQ-045's PDR-008-vs-WQ-042 reconciliation.
+**Dormancy decision (POL-009):** active — 2026-05-28, restated GL-032 (2026-07-22). The original gate cited here (PDR-001's "≥3 battle-tested offers per card") was **retired by PDR-008 / DR-034 on 2026-06-26** — offers are listable when complete AND credibility-backed. WQ-005/006/007 are implementation-complete. **Refreshed GL-033 (2026-08-18):** the Done-transition backlog is no longer the live gate — WQ-048 is 13/14 complete, with only WQ-031 outstanding and that only because it is held for Tony's visual review. The live gates are now (a) **WQ-056**, a live WCAG AA breach on production, which contradicts a stated non-negotiable, and (b) **WQ-045's PDR-008-vs-WQ-042 reconciliation**, unchanged and still Tony's call.
 
 ---
 
@@ -40,12 +40,25 @@ thought leadership channel.
 
 ## Active Priorities
 
-_Refreshed GL-032 (2026-07-22) — the two prior entries were stale: "fill in 4 stub pre-2026 articles" closed as WQ-001 on 2026-05-16, and the FP series is at Part 20, not "Parts 2–11 in progress"._
+_Refreshed GL-033 (2026-08-18). The prior list led with WQ-048, which is now 13/14 done, and described the
+FP series as being at Part 20 — it is at Part 23._
 
-1. **Clear the Done-transition backlog (WQ-048)** — 14 implementation-complete items are stuck behind ESC-001. The `verifier` agent type spawned successfully on 2026-07-22, so the blocker's stated cause no longer holds in this environment.
-2. **Resolve WQ-045** (Tony) — PDR-008 credibility-backing vs. WQ-042's site-wide removal. Root blocker under WQ-016; open 51+ sessions.
-3. **Hold Medium parity** — restored 2026-07-22 (3 gap articles added). Re-check every parity-relevant session per the non-negotiable below.
-4. Continue "Functional Programming Isn't Just for Academics" — Part 20 is the latest on-site; new parts land via the Medium-parity check.
+1. **Fix WQ-056 — 238 live WCAG2AA failures on production.** Syntax-highlight token contrast, 233 in light
+   theme and 5 in dark, across 8 pages, all from four shared Prism tokens. Confirmed against the live site
+   2026-08-18. This directly breaches the WCAG AA non-negotiable below and POL-002, and it is the only open
+   item actively affecting visitors. Pre-existing (content unchanged since 2026-05-16), not a regression.
+2. **Close WQ-051 behind it** — the accessibility gate covers 4 of 74 pages in one theme, which is why
+   WQ-056 went unseen. Strategy decided in POL-003/DR-003; **note POL-003's evidence is still
+   `Verifier-verdict: PENDING` and Tony has not ratified it.**
+3. **Resolve WQ-045** (Tony) — PDR-008 credibility-backing vs WQ-042's site-wide removal. Open 51+ sessions.
+   21 of 22 live offer pages currently carry no credibility content while PDR-008 says they must to be
+   listable. Unchanged from the previous list; still the longest-standing open decision.
+4. **Hold Medium parity** — restored 2026-08-18 (Parts 21–23 added). **Procedure correction: the Medium
+   sitemap alone is insufficient.** Part 21 was three weeks old and absent from `sitemap.xml`; only the RSS
+   feed carried it. Article and profile pages return 403 to automated fetch, but `/feed` returns 200 with
+   full `content:encoded` bodies. Check **sitemap ∪ RSS**.
+5. **Close out the implementation-complete items** — WQ-046 (typecheck fixed, shipped) and WQ-053 (Rule 4
+   added to org methodology) both need evidence artifacts and verifier PASSes before they can move to Done.
 
 ## Tag Taxonomy (use exactly)
 

@@ -68,6 +68,14 @@ jobs:
         with:
           name: build
           path: build/
+      # medium.com is excluded because it returns 403 to every automated
+      # request regardless of user-agent (verified 2026-08-18: default UA,
+      # browser UA, and HEAD all 403). Every article canonical and the
+      # site-wide footer link point at tmoores.medium.com, so without the
+      # exclusion this job fails on every run -- 141 errors in run
+      # 32103981632, all of them Medium 403s, none a real broken link.
+      # Canonical correctness is covered by the Medium-parity check
+      # (WQ-027 non-negotiable), not by this job.
       - uses: lycheeverse/lychee-action@v2
         with:
           args: >-
@@ -76,5 +84,6 @@ jobs:
             --exclude 'linkedin\.com'
             --exclude 'twitter\.com'
             --exclude 'x\.com'
+            --exclude 'medium\.com'
             './build/**/*.html'
           fail: true

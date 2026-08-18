@@ -4,6 +4,101 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-067 — 2026-08-18 — Articles parity, /about split, unblocked sweep
+
+**Session:** Claude, interactive then autonomous. Tony asked for the site recommendations doc to be
+read, then redirected to `/articles` parity, then the `/about` split, then authorised an autonomous
+sweep of the unblocked queue while he slept — **branch only, nothing deploys**, verifiers authorised
+per DN-002.
+
+**Shipped to production** (`main`, deployed via CI):
+
+- **Medium parity restored (3 articles).** FP series Parts 21–23 — Part 21 (2026-07-25), 22
+  (2026-08-10), 23 (2026-08-16). Commit ab61544. **Finding worth keeping: the Medium sitemap is not a
+  sufficient index.** Part 21 was three weeks old and absent from `sitemap.xml` entirely; only the RSS
+  feed had it. Article pages and the profile page 403 to automated fetch, but `/feed` returns 200 with
+  full `content:encoded` bodies, so ingestion needs no scraping. The WQ-027 procedure should say
+  sitemap ∪ RSS, not sitemap + profile page.
+- **`/about` split into firm and executive pages.** Commit 41c1a70. `/about` is now About TJM
+  Solutions (Organization schema); `/tony` is new (Person schema, merged not replaced — the
+  recommendation doc's proposed block would have dropped `email`, `telephone`, `alumniOf`, `address`).
+  Soft positioning line added; Rates link and consultation CTA removed from `/tony`.
+
+**Branch `maintenance/2026-08-18-unblocked-sweep` — NOT merged, awaiting Tony's review:**
+
+- **WQ-054 → Done.** Excluded `medium.com` from the lychee link check; CI had been red on every run
+  for over a month, all 122 errors in run 32103981632 being Medium 403s. Verifier PASS on the **5th**
+  pass (see Lessons below).
+- **WQ-025 → Done.** Live-site link check: 390 total, 365 OK, **0 errors**. Verifier PASS on 2nd pass.
+- **WQ-052 → decided, POL-003 / DR-003.** Accessibility gate checks every page, both themes, every
+  run; no caching, sampling or rotation. The three tabled options all optimised a cost nobody had
+  measured — the full sweep is 15.6s for 74 pages. Verification still open at session end.
+- **WQ-050 → complete, recommendation NO-GO.** The recurring maintenance offer is occupied at half
+  TJM's hourly floor (TechDocs Studio: $350/mo entry, $110/hr custom dev, vs TJM's $250/hr floor and
+  $3,000 smallest retainer). Counter-proposal: a one-off fixed-price Documentation Site Health Audit.
+- **WQ-046 → fixed.** Typecheck went 7 errors → 0 via `src/globals.d.ts` carrying the theme type
+  references. The props were always real; tsc was just never told the classic theme's types exist.
+  Build output byte-identical (0 of 84 pages differ).
+- **WQ-053 → done.** Rule 4 (environmental blockers are re-tested, not re-cited) added to org
+  methodology. Cross-repo, Dropbox-backed, so no commit hash — as the item predicted.
+- **Docusaurus 3.9.2 → 3.10.2** plus lockfile. Validated in an isolated worktree: typecheck 0, build
+  SUCCESS, **all 84 pages identical in visible text**, accessibility results identical. Vulnerabilities
+  67 → 57.
+
+**New bug filed: WQ-056 — 238 live WCAG2AA failures on production.** Syntax-highlight tokens across
+8 pages: 233 in light theme (4 prism tokens), 5 in dark (1 token). Both themes user-reachable. Invisible
+to the incumbent gate because it checks 4 URLs, none containing code blocks.
+
+**Lessons — six verifier VETOes, and they earned their keep:**
+
+1. **Five VETOes were the same defect**: a number asserted rather than computed, and each correction
+   pass fixing only the occurrence in front of me. Four on WQ-054 (141→122 in `ci.yml`, then missing
+   `WORK-QUEUE.md`, then missing the artifact's own check (2), then "six" when it was five) and one on
+   WQ-052 (corrected `~145` in POL-003, wrote a commit message asserting the correction was complete,
+   left the same figure in the evidence artifact — the sole evidence *for* POL-003). Worth codifying:
+   **a correction is not complete until `git grep` says so, and claiming completeness without running
+   that grep is how five of six VETOes happened.** The recurrence after I had explicitly named the
+   pattern is the point — naming a failure mode does not fix it; a mechanical check does.
+2. **The WQ-052 VETO caught something far worse than a typo.** I reported the accessibility sweep as
+   light theme. It was **dark** — `colorMode.defaultMode: 'dark'` with `respectPrefersColorScheme:
+   true`, and headless Chrome reports dark. The untested half carried 233 of the 238 errors. My own
+   evidence had corroborated the inversion unnoticed: `rgb(98,114,164)` is Dracula's comment colour, and
+   pa11y's `#fefeff` remedy only makes sense on a dark background. **Anything in this repo asserting a
+   pa11y run was "light theme" should be treated as suspect** — including HL-007-era claims, which used
+   a localStorage injection to force dark and therefore may have tested dark twice and light never.
+3. **I recorded a fabricated constraint in an Active POL.** I declared pa11y's config-file `actions`
+   route broken (~32s timeout) when the timeout was my own wait predicate — waiting for
+   `data-theme='dark'` after clicking a toggle on a site that starts dark. Correct predicate: 3.0s.
+   WQ-051 would have inherited a false constraint from a governance document. A failed experiment is not
+   a tool limitation until you have checked your own setup.
+
+**Open for Tony:**
+
+- **Review and merge the branch** (or not) — 12 commits, nothing deployed.
+- **WQ-045** — PDR-008 vs WQ-042 credibility reconciliation. Open 51+ sessions, still his call, and the
+  site is currently live with 21 of 22 offer pages violating the policy.
+- **WQ-031** — homepage offer cards await his visual review.
+- **WQ-050's audit variant** — pursue or drop.
+- **WQ-055 résumés** — deferred at his direction until the 7 replacements are final.
+
+**Two findings worth carrying forward:** both routes to theme-switching are viable for WQ-051. Measured
+at `-P 6` across all 74 pages, the pa11y CLI with `actions` costs **54.6s** against **50.2s** without —
+about **9%** overhead, so a dual-theme CLI sweep is ~109s and POL-003's 5-minute trigger lands near
+**~203 pages**. The programmatic path is faster still (0.211s/page/theme, ~3.5x) but is a preference,
+not a requirement. *(An intermediate revision of this entry claimed the CLI route would blow the trigger
+at ~50 pages. That was wrong — derived by dividing the budget by a ~3.0s serial single-page latency that
+is mostly browser-spawn cost and vanishes under parallelism. It was the mirror image of the earlier
+fabricated constraint, and a seventh VETO caught it.)* Separately, the upgrade
+equivalence claim is now reproducible rather than asserted: `docs/agents/evidence/WQ-upgrade-3.10.2-manifest.json`
+carries per-page SHA-256 hashes for both the 3.9.2 and 3.10.2 builds (84 pages, 84 identical).
+
+**Also flagged, not actioned:** `docusaurus.config.ts.orig` is tracked in git (leftover merge
+artifact); the Done-gate hook resolves its script path relative to the edited file's directory, so it
+errors on any cross-repo edit; five PROPAGATION-STALE notices at the top of WORK-QUEUE.md remain
+unaddressed since 2026-07-15.
+
+---
+
 ## HL-066 — 2026-07-22 — WQ-048: backlog cleared, 13 verifier PASSes
 
 **Session:** Claude (`/next`, autonomous) — continuation of HL-065's session; Tony invoked `/next`

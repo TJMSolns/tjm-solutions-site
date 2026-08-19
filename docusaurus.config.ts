@@ -1,7 +1,7 @@
-import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import { lightCodeTheme, darkCodeTheme } from './src/prismTheme';
 
 const config: Config = {
   title: 'TJM Solutions',
@@ -199,8 +199,8 @@ const config: Config = {
     },
 
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: lightCodeTheme,
+      darkTheme: darkCodeTheme,
     },
   },
 

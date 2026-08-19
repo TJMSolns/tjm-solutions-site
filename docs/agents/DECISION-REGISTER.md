@@ -4,11 +4,25 @@ Append-only. New entries at the top.
 
 | DR-ID | Date | Title | Type | Status |
 |-------|------|-------|------|--------|
+| DR-004 | 2026-08-19 | Credibility sections not required on offer pages | POL | Active |
 | DR-003 | 2026-08-18 | Accessibility gate coverage strategy (full sweep, both themes) | POL | Active |
 | DR-002 | 2026-07-08 | Deployment quality gates (WCAG, canonical links, dark-mode pattern) | POL | Active |
 | DR-001 | 2026-07-07 | No Docusaurus swizzle | POL | Active |
 
 ---
+
+## DR-004 — 2026-08-19 — Credibility sections not required on offer pages
+**Decision:** Offer pages do not require a credibility section to be listable, effectively superseding
+PDR-008's credibility-backing condition for this site's `/services/*` pages. The 20 remaining offer
+pages stay as-is, no credibility content, matching how the site has run since WQ-042 removed those
+sections in July.
+**Rationale:** The site has run a month with 21 of 22 offer pages carrying no credibility content, no
+adverse effect observed; Tony's own 2026-07-22 rationale ("websites are for merchandising") already
+pointed this direction, this closes the month-long gap between that stated view and PDR-008's literal
+text.
+**Type:** POL
+**Ref:** docs/governance/POL/POL-004-credibility-sections-not-required-on-offer-pages.md
+**Status:** Active
 
 ## DR-003 — 2026-08-18 — Accessibility gate coverage strategy (full sweep, both themes)
 **Decision:** The accessibility gate checks **every** page, in **both** themes, on every run — no

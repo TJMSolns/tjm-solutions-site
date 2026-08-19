@@ -206,6 +206,33 @@ const config: Config = {
         sidebarPath: undefined,
       },
     ],
+    [
+      '@docusaurus/plugin-pwa',
+      {
+        debug: false,
+        // WQ-064: manifest-only, no offline caching (Tony's call, 2026-08-19)
+        // -- this site updates often and a stale offline cache is worse than
+        // no offline support. The plugin's schema rejects an empty array
+        // here (Joi requires at least one strategy), so 'queryString' is
+        // the least-intrusive option that satisfies it: offline mode only
+        // ever activates if a specific query string is present in the URL,
+        // never automatically for a normal visitor or on install. The
+        // service worker still installs and activates (satisfying
+        // installability), it just never turns on its `offlineMode` flag
+        // in practice, so its fetch handler never intercepts a request or
+        // caches anything. See node_modules/@docusaurus/plugin-pwa/lib/sw.js
+        // for the gating.
+        offlineModeActivationStrategies: ['queryString'],
+        pwaHead: [
+          { tagName: 'link', rel: 'manifest', href: '/manifest.json' },
+          { tagName: 'meta', name: 'theme-color', content: '#c00000' },
+          { tagName: 'link', rel: 'apple-touch-icon', href: '/img/pwa-icon-192.png' },
+          { tagName: 'meta', name: 'apple-mobile-web-app-capable', content: 'yes' },
+          { tagName: 'meta', name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+          { tagName: 'meta', name: 'apple-mobile-web-app-title', content: 'TJM Solutions' },
+        ],
+      },
+    ],
   ],
 
   // === Additional Themes ===

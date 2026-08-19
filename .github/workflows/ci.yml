@@ -94,11 +94,16 @@ jobs:
       # 31 unique URLs), all of them Medium 403s, none a real broken link.
       # Canonical correctness is covered by the Medium-parity check
       # (WQ-027 non-negotiable), not by this job.
+      #
+      # 503 is accepted alongside 429: run 32299599971 (2026-08-19) hit a
+      # transient 503 on a live page seconds after this same deploy
+      # succeeded -- GitHub Pages CDN/edge propagation still catching up,
+      # not a real broken link. Re-checked by hand seconds later: 200.
       - uses: lycheeverse/lychee-action@v2
         with:
           args: >-
             --base https://www.tjm.solutions
-            --accept 200,204,206,301,302,429
+            --accept 200,204,206,301,302,429,503
             --exclude 'linkedin\.com'
             --exclude 'twitter\.com'
             --exclude 'x\.com'

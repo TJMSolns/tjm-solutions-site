@@ -22,7 +22,9 @@
   --deep-red: #c00000;
   --deep-red-dim: #8b0000;
   --deep-blue: #1d5c9e;
-  --deep-green: #1e7a4a;
+  /* Darkened from #1e7a4a (2026-08-19): the homepage category cards now sit on --paper-soft,
+     and pa11y measured EE-category text at 4.36:1 there, short of the 4.5:1 AA floor. */
+  --deep-green: #1d7648;
   --neutral-gray: #86847e;
   --neutral-line: #dcdad4;
 

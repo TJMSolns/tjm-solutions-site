@@ -47,7 +47,6 @@ const FeatureList: FeatureItem[] = [
     ),
     offers: [
       {id: 'DT-1', label: 'AI Adoption Roadmap', href: '/services/ai-adoption-roadmap'},
-      {id: 'DT-2', label: 'KCS Knowledge Base Implementation', href: '/services/kcs-knowledge-base'},
       {id: 'DT-3', label: 'Microservices Modernization Assessment', href: '/services/microservices-modernization-assessment'},
       {id: 'DT-4', label: 'Data Readiness for AI', href: '/services/data-readiness-for-ai'},
       {id: 'DT-5', label: 'Reactive Systems & Reliability Review', href: '/services/reactive-systems-reliability-review'},

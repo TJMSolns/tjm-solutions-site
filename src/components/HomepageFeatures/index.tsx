@@ -76,31 +76,31 @@ const FeatureList: FeatureItem[] = [
 function Feature({code, title, description, offers}: FeatureItem) {
   return (
     <div className={styles.categoryRow} id={code === 'CS' ? 'commerce-strategy' : code === 'DT' ? 'digital-transformation' : 'experience-engineering'}>
-      <div className={styles.categoryIcon}>
-        <CategoryIcon category={code} size={26} />
-      </div>
-      <div className={styles.categoryContent}>
+      <div className={styles.categoryTopRow}>
+        <div className={styles.categoryIcon}>
+          <CategoryIcon category={code} size={26} />
+        </div>
         <div className={styles.categoryHeader}>
           <span className={`${styles.categoryCode} cat-${code.toLowerCase()}`}>{code}</span>
           <h3 className={styles.categoryName}>{title}</h3>
           <span className={styles.categoryCount}>{offers.length} OFFERS</span>
         </div>
-        <p className={styles.categoryDescription}>{description}</p>
-        <ul className={styles.offerChips}>
-          {offers.map((offer) => (
-            <li key={offer.id}>
-              <Link
-                to={offer.href}
-                className={styles.offerChip}
-                style={{borderColor: `var(--cat-${code.toLowerCase()})`}}
-              >
-                <span className={`${styles.offerChipCode} cat-${code.toLowerCase()}`}>{offer.id}</span>
-                <span className={styles.offerChipName}>{offer.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
       </div>
+      <p className={styles.categoryDescription}>{description}</p>
+      <ul className={styles.offerChips}>
+        {offers.map((offer) => (
+          <li key={offer.id}>
+            <Link
+              to={offer.href}
+              className={styles.offerChip}
+              style={{borderColor: `var(--cat-${code.toLowerCase()})`}}
+            >
+              <span className={`${styles.offerChipCode} cat-${code.toLowerCase()}`}>{offer.id}</span>
+              <span className={styles.offerChipName}>{offer.label}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

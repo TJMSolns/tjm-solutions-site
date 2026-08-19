@@ -19,8 +19,8 @@
 
 .categoryRow {
   display: flex;
-  gap: 22px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 16px;
   padding: 28px;
   border: 1px solid var(--color-gray-200);
   border-radius: 10px;
@@ -30,6 +30,12 @@
 [data-theme='dark'] .categoryRow {
   border-color: var(--color-gray-700);
   background: var(--ink-soft);
+}
+
+.categoryTopRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .categoryIcon {
@@ -43,17 +49,13 @@
   background: var(--color-gray-100);
 }
 
-.categoryContent {
-  flex: 1;
-  min-width: 0;
-}
-
 .categoryHeader {
   display: flex;
   align-items: baseline;
   gap: 14px;
   flex-wrap: wrap;
-  margin-bottom: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
 .categoryCode {
@@ -96,12 +98,13 @@
   padding: 0;
   margin: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
 }
 
 .offerChip {
-  display: inline-flex;
+  display: flex;
+  width: 100%;
   align-items: baseline;
   gap: 6px;
   padding: 5px 12px;
@@ -132,9 +135,18 @@
 
 @media (max-width: 768px) {
   .categoryRow {
-    flex-direction: column;
     gap: 14px;
     padding: 24px;
+  }
+
+  .categoryTopRow {
+    align-items: flex-start;
+  }
+
+  .categoryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 
   .categoryCount {

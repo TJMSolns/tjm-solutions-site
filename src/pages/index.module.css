@@ -64,6 +64,22 @@
   color: var(--color-gray-400);
 }
 
+.introSection {
+  padding: 8px 0 12px;
+}
+
+.introSection p {
+  max-width: 68ch;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-gray-700);
+  margin: 0 0 16px 0;
+}
+
+[data-theme='dark'] .introSection p {
+  color: var(--color-gray-300);
+}
+
 .buttons {
   display: flex;
   justify-content: flex-start;

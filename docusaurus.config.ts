@@ -113,11 +113,6 @@ const config: Config = {
       },
       items: [
         {
-          to: '/about',
-          label: 'About',
-          position: 'left',
-        },
-        {
           to: '/rates',
           label: 'Rates',
           position: 'left',
@@ -147,10 +142,6 @@ const config: Config = {
           title: 'Company',
           items: [
             {
-              label: 'About',
-              to: '/about',
-            },
-            {
               label: 'Tony Moores',
               to: '/tony',
             },
@@ -171,6 +162,10 @@ const config: Config = {
               label: 'Medium',
               href: 'https://tmoores.medium.com/',
             },
+            {
+              label: 'GitHub',
+              href: 'https://github.com/TJMSolns',
+            },
           ],
         },
         {
@@ -187,10 +182,6 @@ const config: Config = {
             {
               label: 'Schedule a Call',
               href: 'https://calendly.com/tjm-solns/',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/TJMSolns',
             },
           ],
         },

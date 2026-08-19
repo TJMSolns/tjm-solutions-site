@@ -10,16 +10,27 @@ import styles from './index.module.css';
 const orgSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'TJM Solutions',
+  name: 'TJM Solutions LLC',
+  alternateName: 'TJM Solutions',
   url: 'https://www.tjm.solutions',
   logo: 'https://www.tjm.solutions/img/tjm-solutions-logo.png',
+  description:
+    'Technology advisory practice specializing in platform strategy, enterprise architecture, digital commerce, and AI-adjacent product development.',
   foundingDate: '2017',
-  founder: { '@type': 'Person', name: 'Tony Moores' },
-  contactPoint: {
-    '@type': 'ContactPoint',
-    email: 'tony@tjm.solutions',
-    contactType: 'customer service',
+  founder: { '@type': 'Person', name: 'Tony Moores', url: 'https://www.tjm.solutions/tony' },
+  email: 'tony@tjm.solutions',
+  telephone: '+16037382122',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Manchester',
+    addressRegion: 'NH',
+    addressCountry: 'US',
   },
+  knowsAbout: [
+    'Platform strategy', 'Enterprise architecture', 'Composable commerce',
+    'Agentic commerce', 'API-first architecture', 'Marketplace platforms',
+    'Digital transformation',
+  ],
   sameAs: [
     'https://linkedin.com/in/tony-moores/',
     'https://tmoores.medium.com',
@@ -28,7 +39,7 @@ const orgSchema = {
 };
 
 const DESCRIPTION =
-  'Senior technology advisory, platform strategy, and enterprise architecture consulting — led by Tony Moores, 20+ years in digital commerce, distributed systems, and AI-adjacent product development.';
+  'Senior technology advisory, platform strategy, and enterprise architecture consulting, led by Tony Moores, nearly three decades in digital commerce, distributed systems, and AI-adjacent product development.';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
@@ -57,7 +68,7 @@ export default function Home(): ReactNode {
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions" />
         <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
-        <meta property="og:image:alt" content="TJM Solutions — Technology Advisory and Consulting" />
+        <meta property="og:image:alt" content="TJM Solutions, Technology Advisory and Consulting" />
         <meta property="og:image:width" content="576" />
         <meta property="og:image:height" content="571" />
         <meta property="og:type" content="website" />
@@ -65,6 +76,23 @@ export default function Home(): ReactNode {
       </Head>
       <HomepageHeader />
       <main>
+        <section className={styles.introSection}>
+          <div className="container">
+            <p>
+              TJM Solutions is an advisory practice, founded in 2017, based in Manchester, New
+              Hampshire. It advises software vendors, services organizations, and enterprise teams
+              on platform strategy and architecture, the decisions that are expensive to get wrong
+              and hard to undo once shipped.
+            </p>
+            <p>
+              The work is narrow on purpose. It is architecture and advisory, not staffing or
+              delivery: an assessment, a roadmap, a decision with the reasoning documented, rather
+              than a team embedded for a year. Engagements are led personally by{' '}
+              <Link to="/tony">Tony Moores</Link>, who brings nearly three decades across
+              enterprise commerce, distributed systems, and AI-adjacent product development.
+            </p>
+          </div>
+        </section>
         <HomepageFeatures />
       </main>
     </Layout>

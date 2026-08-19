@@ -114,7 +114,7 @@ export default function About(): ReactNode {
               </ul>
 
               <p>
-                These three areas cover 22 packaged offers, each scoped to a defined deliverable.
+                These three areas cover 21 packaged offers, each scoped to a defined deliverable.
                 The full catalogue, with what each engagement produces, is on the{' '}
                 <Link to="/">home page</Link>.
               </p>

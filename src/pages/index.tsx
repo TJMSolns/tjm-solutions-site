@@ -46,7 +46,6 @@ function HomepageHeader() {
   return (
     <header className={styles.heroBanner}>
       <div className="container">
-        <p className={styles.heroEyebrow}>TJM Solutions · Advisory</p>
         <h1 className={styles.heroTitle}>
           {siteConfig.title}
         </h1>
@@ -64,7 +63,7 @@ export default function Home(): ReactNode {
       description={DESCRIPTION}>
       <Head>
         <link rel="canonical" href="https://www.tjm.solutions" />
-        <meta property="og:title" content="TJM Solutions | Architecture, Engineering, and Advisory" />
+        <meta property="og:title" content="TJM Solutions | Architecture, Engineering, and Advisory Services" />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions" />
         <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
@@ -78,19 +77,23 @@ export default function Home(): ReactNode {
       <main>
         <section className={styles.introSection}>
           <div className="container">
-            <p>
-              TJM Solutions is an advisory practice, founded in 2017, based in Manchester, New
-              Hampshire. It advises software vendors, services organizations, and enterprise teams
-              on platform strategy and architecture, the decisions that are expensive to get wrong
-              and hard to undo once shipped.
-            </p>
-            <p>
-              The work is narrow on purpose. It is architecture and advisory, not staffing or
-              delivery: an assessment, a roadmap, a decision with the reasoning documented, rather
-              than a team embedded for a year. Engagements are led personally by{' '}
-              <Link to="/tony">Tony Moores</Link>, who brings nearly three decades across
-              enterprise commerce, distributed systems, and AI-adjacent product development.
-            </p>
+            <div className={styles.introGrid}>
+              <p>
+                TJM Solutions is an advisory practice, founded in 2017, based in Manchester, New
+                Hampshire. It advises software vendors, services organizations, and enterprise
+                teams on platform strategy and architecture, the decisions that are expensive to
+                get wrong and hard to undo once shipped.
+              </p>
+              <p>
+                The work is narrow on purpose: architecture and advisory, not staffing or
+                delivery. You get a specific answer, not an embedded team: an assessment that
+                says plainly what holds and what doesn't, a roadmap with the trade-offs made
+                explicit, a decision with the reasoning written down.{' '}
+                <Link to="/tony">Tony Moores</Link> leads every engagement personally, nearly
+                three decades spent making exactly these calls, so you're not the first platform
+                decision he's had to get right.
+              </p>
+            </div>
           </div>
         </section>
         <HomepageFeatures />

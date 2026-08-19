@@ -5,7 +5,7 @@ import { lightCodeTheme, darkCodeTheme } from './src/prismTheme';
 
 const config: Config = {
   title: 'TJM Solutions',
-  tagline: 'Architecture, Engineering, and Advisory',
+  tagline: 'Architecture, Engineering, and Advisory Services',
   favicon: 'img/tjm-solutions-logo.png',
 
   // === Site URL configuration ===

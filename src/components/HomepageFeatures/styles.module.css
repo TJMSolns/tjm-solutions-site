@@ -105,7 +105,8 @@
 .offerChip {
   display: flex;
   width: 100%;
-  align-items: baseline;
+  min-height: 48px;
+  align-items: center;
   gap: 6px;
   padding: 5px 12px;
   border-radius: 6px;
@@ -123,6 +124,8 @@
 .offerChipCode {
   font-family: var(--font-mono);
   font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .offerChipName {

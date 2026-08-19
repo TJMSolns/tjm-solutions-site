@@ -12,7 +12,7 @@ const organizationSchema = {
   url: 'https://www.tjm.solutions/about',
   logo: 'https://www.tjm.solutions/img/tjm-solutions-logo.png',
   description:
-    'Technology advisory practice specialising in platform strategy, enterprise architecture, digital commerce, and AI-adjacent product development.',
+    'Technology advisory practice specializing in platform strategy, enterprise architecture, digital commerce, and AI-adjacent product development.',
   foundingDate: '2017',
   founder: { '@type': 'Person', name: 'Tony Moores', url: 'https://www.tjm.solutions/tony' },
   email: 'tony@tjm.solutions',

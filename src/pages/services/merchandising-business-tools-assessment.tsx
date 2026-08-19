@@ -25,7 +25,7 @@ const offer: OfferPageData = {
     'what\'s fixable through configuration and training from what genuinely requires investment — so ' +
     'quick wins ship immediately and the roadmap for everything else is grounded in evidence.',
   methodSummary: [
-    'Tool Inventory — every tool in the merchandising stack (commerce platform, PIM, CMS, promotion engine, A/B testing) catalogued with ownership and dependencies.',
+    'Tool Inventory: every tool in the merchandising stack (commerce platform, PIM, CMS, promotion engine, A/B testing) cataloged with ownership and dependencies.',
     'OOB Utilization & Workflow Mapping — platform capability assessed against actual usage, and 5–8 common merchandising workflows walked with business users to find where they hit IT dependency.',
     'Gap Analysis & Roadmap — each gap root-caused as configuration, training, integration, or genuine product limitation, then sequenced into a prioritized roadmap by effort and impact.',
   ],

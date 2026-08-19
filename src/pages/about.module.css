@@ -161,29 +161,6 @@
   }
 }
 
-.personBanner {
-  margin: 24px 0 0 0;
-  padding: 14px 18px;
-  border-left: 4px solid var(--ifm-color-primary);
-  background: var(--paper-soft);
-  border-radius: 4px;
-  font-size: 1em;
-}
-
-[data-theme='dark'] .personBanner {
-  background: var(--ink-soft);
-}
-
-.personBanner a {
-  font-weight: 700;
-  color: var(--ifm-color-primary);
-  text-decoration: none;
-}
-
-.personBanner a:hover {
-  text-decoration: underline;
-}
-
 .practiceList {
   list-style: none;
   padding: 0;

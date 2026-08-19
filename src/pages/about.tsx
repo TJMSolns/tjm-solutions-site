@@ -75,10 +75,6 @@ export default function About(): ReactNode {
             <p className={styles.subtitle}>
               Architecture, Engineering, and Advisory
             </p>
-            <p className={styles.personBanner}>
-              Looking for the person rather than the practice?{' '}
-              <Link to="/tony">About Tony Moores →</Link>
-            </p>
           </div>
         </section>
 

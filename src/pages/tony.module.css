@@ -148,41 +148,6 @@
   color: var(--color-gray-300);
 }
 
-.citationList {
-  list-style: none;
-  padding: 16px 20px;
-  margin: 0 0 24px 0;
-  display: grid;
-  gap: 10px;
-  background: var(--paper-soft);
-  border-radius: 6px;
-  border-left: 3px solid var(--ifm-color-primary);
-}
-
-[data-theme='dark'] .citationList {
-  background: var(--ink-soft);
-}
-
-.citationItem {
-  font-size: 0.88em;
-  line-height: 1.6;
-  color: var(--color-gray-700);
-}
-
-[data-theme='dark'] .citationItem {
-  color: var(--color-gray-300);
-}
-
-.citationItem a {
-  color: var(--ifm-color-primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.citationItem a:hover {
-  text-decoration: underline;
-}
-
 .writingList {
   list-style: none;
   padding: 0;

@@ -39,37 +39,6 @@ const TITLE = 'Tony Moores | Chief Technology Officer, Platform Strategy';
 const DESCRIPTION =
   'Tony Moores is a Chief Technology Officer and senior technology executive with nearly three decades in platform strategy, digital commerce, enterprise architecture, and AI-adjacent product development.';
 
-const citations = [
-  {
-    authors: 'Lavine, B.K., Moores, A., Helfend, L.K.',
-    title: 'A genetic algorithm for pattern recognition analysis of pyrolysis gas chromatographic data',
-    journal: 'Journal of Analytical and Applied Pyrolysis',
-    year: '1999',
-    doi: 'https://doi.org/10.1016/S0165-2370(99)00002-9',
-  },
-  {
-    authors: 'Lavine, B.K., Moores, A.J.',
-    title: 'Genetic algorithms for pattern recognition analysis and fusion of sensor data',
-    journal: 'Proceedings of SPIE 3854',
-    year: '1999',
-    doi: 'https://doi.org/10.1117/12.372891',
-  },
-  {
-    authors: 'Lavine, B.K., Ritter, J., Moores, A.J., Wilson, M., Faruque, A., Mayfield, H.T.',
-    title: 'Source Identification of Underground Fuel Spills by Solid-Phase Microextraction/High-Resolution Gas Chromatography/Genetic Algorithms',
-    journal: 'Analytical Chemistry',
-    year: '2000',
-    doi: 'https://doi.org/10.1021/ac9904967',
-  },
-  {
-    authors: 'Lavine, B.K., Davidson, C.E., Moores, A.J., Griffiths, P.R.',
-    title: 'Raman Spectroscopy and Genetic Algorithms for the Classification of Wood Types',
-    journal: 'Applied Spectroscopy',
-    year: '2001',
-    doi: 'https://doi.org/10.1366/0003702011953108',
-  },
-];
-
 const writing = [
   {
     href: '/articles/2026/04/09/the-invisible-buyer-has-arrived',
@@ -135,15 +104,6 @@ export default function Tony(): ReactNode {
                 undergraduate thesis was chemical pattern recognition by genetic algorithm, but I
                 couldn't graduate without taking so many credits from the business school.
               </p>
-
-              <ul className={styles.citationList}>
-                {citations.map((c) => (
-                  <li key={c.doi} className={styles.citationItem}>
-                    {c.authors} ({c.year}). "{c.title}." <em>{c.journal}</em>.{' '}
-                    <a href={c.doi} target="_blank" rel="noopener noreferrer">DOI</a>
-                  </li>
-                ))}
-              </ul>
 
               <p>
                 Fortunately, I was able to fill that requirement working for ICG, Clarkson's

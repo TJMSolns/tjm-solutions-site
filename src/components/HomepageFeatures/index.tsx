@@ -51,6 +51,7 @@ const FeatureList: FeatureItem[] = [
       {id: 'DT-4', label: 'Data Readiness for AI', href: '/services/data-readiness-for-ai'},
       {id: 'DT-5', label: 'Reactive Systems & Reliability Review', href: '/services/reactive-systems-reliability-review'},
       {id: 'DT-6', label: 'Technical Roadmap & Business Alignment', href: '/services/technical-roadmap-business-alignment'},
+      {id: 'DT-7', label: 'Secure Remote Development', href: '/services/secure-remote-development'},
     ],
   },
   {

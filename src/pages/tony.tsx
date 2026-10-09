@@ -9,8 +9,8 @@ const personSchema = {
   '@type': 'Person',
   name: 'Anthony (Tony) Moores',
   alternateName: 'Tony Moores',
-  jobTitle: 'Chief Technology Officer',
-  worksFor: { '@type': 'Organization', name: 'RETISIO Inc.' },
+  jobTitle: 'Solution Architect',
+  worksFor: { '@type': 'Organization', name: 'McFadyen Digital' },
   affiliation: { '@type': 'Organization', name: 'TJM Solutions LLC' },
   url: 'https://www.tjm.solutions/tony',
   email: 'tony@tjm.solutions',
@@ -35,9 +35,9 @@ const personSchema = {
   ],
 };
 
-const TITLE = 'Tony Moores | Chief Technology Officer, Platform Strategy';
+const TITLE = 'Tony Moores | Platform Strategy';
 const DESCRIPTION =
-  'Tony Moores is a Chief Technology Officer and senior technology executive with nearly three decades in platform strategy, digital commerce, enterprise architecture, and AI-adjacent product development.';
+  'Tony Moores is a senior technology executive with nearly three decades in platform strategy, digital commerce, enterprise architecture, and AI-adjacent product development.';
 
 const writing = [
   {
@@ -69,7 +69,7 @@ export default function Tony(): ReactNode {
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:url" content="https://www.tjm.solutions/tony" />
         <meta property="og:image" content="https://www.tjm.solutions/img/tjm-solutions-logo.png" />
-        <meta property="og:image:alt" content="Tony Moores, Chief Technology Officer" />
+        <meta property="og:image:alt" content="Tony Moores" />
         <meta property="og:image:width" content="576" />
         <meta property="og:image:height" content="571" />
         <script type="application/ld+json">{JSON.stringify(personSchema)}</script>
@@ -77,7 +77,7 @@ export default function Tony(): ReactNode {
       <div className={styles.aboutContainer}>
         <section className={styles.hero}>
           <div className="container">
-            <h1>Tony Moores, Chief Technology Officer</h1>
+            <h1>Tony Moores</h1>
             <p className={styles.subtitle}>
               Platform Strategy · Enterprise Architecture · Digital Commerce
             </p>
@@ -92,7 +92,7 @@ export default function Tony(): ReactNode {
             <div className={styles.bioContent}>
               <h2>Tony Moores</h2>
               <h3 style={{ marginTop: '8px' }}>
-                CTO, RETISIO Inc. · Founder, TJM Solutions LLC
+                Founder, TJM Solutions LLC
               </h3>
 
               <p>
@@ -152,7 +152,7 @@ export default function Tony(): ReactNode {
                 opportunistically. A gig turned into a short-term position with Mirakl, where I
                 couldn't help but smile to think that the solutions we were hacking at to make
                 MarketStreetMall.com work turned into a domain in its own right. Today I'm back on
-                the product side, serving as CTO for RETISIO.
+                the service side, serving as a Solution Architect for McFadyen Digital.
               </p>
 
               <h3>Selected Writing</h3>

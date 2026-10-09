@@ -4,6 +4,22 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-068 — 2026-10-09 — /tony update, DT-7 page, groom
+
+**Session:** Tony + Claude, run from the org root (companion entry per POL-022; org HL-074 is the full record).
+**What happened:**
+- **WQ-068 (deployed):** `/tony` no longer mentions RETISIO or CTO. The bio heading is now "Founder, TJM Solutions LLC" and the closing sentence names Tony's new role as Solution Architect at McFadyen Digital. The JSON-LD now has `jobTitle`/`worksFor` = Solution Architect / McFadyen Digital. New DT-7 offer page `/services/secure-remote-development` plus a homepage DT card link. Tony previewed it locally and approved; commit `d0469a0`; the CI deploy passed and the change was verified live. Evidence: `docs/agents/evidence/WQ-068.md`. Status: implementation complete, needs a verifier.
+- **WQ-069 (queued, P1):** published résumé PDFs (`current-resume.pdf` and all 7 `lens*.pdf`) still list "CTO, RETISIO … Present". Commit `1577cff`. Tony agreed it's the top priority; the content is his call.
+- **GL-032 org `/groom-all` pass:** this queue was groomed (commit `f7f752b`). Added a PROPAGATION-STALE marker for `.claude/settings.json`, [PROPOSED] WQ-070 (verifier sweep) and WQ-071 (remove `.orig`), and recommended WQ-046 for closure because typecheck now passes.
+
+**Decisions made:** none recorded via `/decide`. Tony's choices on DT-7 (name, cost figures excluded, no diagrams on the page) are captured in the WQ-068 evidence.
+**Open items carried forward:**
+- WQ-069: résumé PDFs. Needs Tony's new résumé content, then a re-export.
+- ESC-001 and the verifier backlog (13 items) are still open.
+**Next owner:** Tony — WQ-069 résumé content; then any session at this root for WQ-069 and the verifier sweep.
+
+---
+
 ## HL-067 — 2026-08-18 — Articles parity, /about split, unblocked sweep
 
 **Session:** Claude, interactive then autonomous. Tony asked for the site recommendations doc to be

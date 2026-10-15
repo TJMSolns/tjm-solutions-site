@@ -4,6 +4,18 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-069 — 2026-10-15 — Published "Modern Commerce Discovery: Revisiting Search"
+
+**Session:** Tony + Claude, run from the org root. This is the companion entry required by POL-022; the org initiative record is PDR-012 / WQ-P4-171.
+**What happened:**
+- **WQ-072 (published):** the new scholarly article went live at `/articles/2026/10/15/modern-commerce-discovery-revisiting-search`, with downloadable figures and tables under `static/papers/modern-commerce-discovery/`. Before publishing, Tony confirmed the McFadyen terms and chose to keep the vendor names. Evidence: `docs/agents/evidence/WQ-072.md`.
+
+**Decisions made:** none here. The canonical-by-genre rule (TJM is canonical for scholarly work, Medium for blogs) is Tony's 2026-10-16 direction, recorded in the org notes.
+**Open items carried forward:** WQ-072 needs a verifier pass (same backlog as WQ-070).
+**Next owner:** any session at this root for the verifier sweep.
+
+---
+
 ## HL-068 — 2026-10-09 — /tony update, DT-7 page, groom
 
 **Session:** Tony + Claude, run from the org root (companion entry per POL-022; org HL-074 is the full record).

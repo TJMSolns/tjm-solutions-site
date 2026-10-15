@@ -1,0 +1,17 @@
+# Table 6
+
+Buy or own: a classification of components. A judgment, not a measurement.
+
+| Component | Classification | Why |
+|---|---|---|
+| Retrieval engines (hosted or open source) | Buy | Mature, broadly staffed, and the hardest part to build well |
+| Merchandising console | Buy | Rule authoring, schedules and approvals are sold and supported |
+| Product-information and content systems | Buy | Typed attributes and taxonomies ship off the shelf |
+| Conversational front end | Buy, if grounded in the catalog | Language is not the differentiator; grounding is |
+| Policy engine with decision logs | Buy | Evaluation and logging are solved; the policies are not |
+| Protocol adapters (tool servers, feeds, checkout) | Buy | The protocols change monthly; vendors track them |
+| Concept registry and typed relation vocabulary | Own as data, hosted in a bought product-information or taxonomy system | Meaning must outlive any one vendor |
+| Content-typing schema and the map of systems of record | Own as data | They define what counts as evidence and where each fact comes from |
+| Declarative strategy stacks | Own as data, compiled into engine rules where the placement test allows | The strategy is the business's; its execution may be the vendor's |
+| Result-set contract, assembly and rendering of the canonical answer | Own as code | No single product can sell the agreement between products |
+| Label joins, gates that must replay, cross-vendor decision records | Own as code | Replay must survive a change of vendor |

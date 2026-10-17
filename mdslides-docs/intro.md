@@ -7,7 +7,7 @@ title: Introduction
 
 **Markdown to HTML presentations — structured, validated, and speaker-ready.**
 
-MD-Slides converts structured Markdown files into self-contained HTML presentations with keyboard navigation, speaker view, syntax-highlighted code blocks, and a flexible theme system. Write slides in plain text; present anywhere a browser runs.
+MD-Slides converts structured Markdown files into self-contained HTML presentations with keyboard, clicker, and touch navigation, speaker view, syntax-highlighted code blocks, and a flexible theme system. Write slides in plain text; present anywhere a browser runs, including a phone or tablet.
 
 ## Quick start
 
@@ -40,7 +40,8 @@ java -jar md-slides.jar render my-talk --theme light
 - **Six templates** — `title`, `content`, `section-title`, `two-column`, `diagram`, `closing` — each with enforced layout and density constraints
 - **Validated** — all structure, density, and accessibility errors collected and reported together in one pass
 - **Speaker-ready** — synchronized speaker view with notes, next-slide preview, and elapsed timer
-- **Full keyboard navigation** — arrows, break mode, goto, history, timer controls
+- **Keyboard, clicker, and touch navigation** — arrows, Page Up/Down, swipe and tap, break mode, goto, history, timer controls, and `#N` links to any slide
+- **Fits any screen** — slides scale to fit laptops, projectors, phones, and tablets; wide tables re-wrap instead of overflowing
 - **Session analytics** — `display` logs every navigation event; `report` shows per-slide timing and path
 - **Themeable** — built-in light and dark themes; custom themes via JSON with per-template configuration
 - **Self-contained output** — one directory, works without a server; share by zip, deploy to GitHub Pages, or print to PDF

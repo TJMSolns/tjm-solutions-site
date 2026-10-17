@@ -26,7 +26,7 @@ const projects: Project[] = [
     name: 'MD-Slides',
     tagline: 'Markdown to HTML presentations',
     description:
-      'A CLI tool that converts structured Markdown into self-contained HTML presentations. Speaker view, keyboard navigation, density validation, and a JSON theme system are all built in. Plain-text input makes it naturally scriptable — generate slide content with an LLM, a build pipeline, or a shell script, then render with a single command. One JAR, Java 11+.',
+      'A CLI tool that converts structured Markdown into self-contained HTML presentations. Speaker view, keyboard, clicker and touch navigation, fit-to-screen scaling for phones and tablets, density validation, and a JSON theme system are all built in. Plain-text input makes it naturally scriptable — generate slide content with an LLM, a build pipeline, or a shell script, then render with a single command. One JAR, Java 11+.',
     tags: ['Scala 3', 'Mill', 'CLI', 'MIT'],
     status: 'Released',
     to: '/mdslides',

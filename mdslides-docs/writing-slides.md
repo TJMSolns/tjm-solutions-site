@@ -227,6 +227,8 @@ Alt text is required — missing alt text is a WCAG 2.1 validation error.
 
 Column alignment: `|:---:|` center · `|---:|` right.
 
+**Wide content** — you don't need to size tables, diagrams, code, or images for a particular screen. When you present, a slide that overruns the screen is scaled to fit, and wide tables re-wrap. See [Fit to the screen](./navigation#fit-to-the-screen). Density limits still apply: fitting makes a crowded slide smaller, not easier to read.
+
 ## Speaker notes
 
 Add notes to any slide with an HTML comment — they appear only in speaker view:

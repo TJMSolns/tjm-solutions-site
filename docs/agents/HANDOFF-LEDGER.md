@@ -4,6 +4,19 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-070 — 2026-10-17 — MD-Slides v1.1.0 documented (WQ-074)
+
+**Session:** Tony + Claude, run from the org root. Companion to mdslides HL-067 (v1.1.0 release, MS-025).
+**What happened:**
+- **WQ-074:** `/projects`, `/mdslides` and five MD-Slides doc pages updated for v1.1.0: touch, clicker and fullscreen controls, fit-to-the-screen scaling, `#N` slide links, and speaker view on a phone. Two pre-existing inaccuracies corrected while there (speaker-view shortcut claim, "current slide preview"). Typecheck, build and pa11y in both themes all clean. Evidence: `docs/agents/evidence/WQ-074.md`.
+- Deployed by pushing to `main` (CI deploy job). The Link check job is still expected to fail under WQ-073.
+
+**Decisions made:** none.
+**Open items carried forward:** WQ-074 needs a verifier pass (same backlog as WQ-070). The intro's `feature-tour.md` download link depends on that asset being attached to each MD-Slides release; handled on the mdslides side.
+**Next owner:** any session at this root for the verifier sweep.
+
+---
+
 ## HL-069 — 2026-10-15 — Published "Modern Commerce Discovery: Revisiting Search"
 
 **Session:** Tony + Claude, run from the org root. This is the companion entry required by POL-022; the org initiative record is PDR-012 / WQ-P4-171.

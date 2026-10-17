@@ -11,7 +11,7 @@ Press `S` during any presentation to open a synchronized speaker window.
 
 The speaker view shows:
 
-- **Current slide** — small preview of what the audience sees
+- **Slide counter** — which slide the audience is on, out of the total
 - **Next slide heading** — so you can bridge transitions smoothly
 - **Speaker notes** — your notes for the current slide, or "No notes for this slide"
 - **Elapsed timer** — starts on first navigation, HH:MM:SS format
@@ -27,6 +27,25 @@ When you render a deck, MD-Slides generates three files:
 | `my-talk/sync.js` | Synchronization module (required by both) |
 
 Both windows stay synchronized: navigate from either and the other follows.
+
+Synchronization uses the browser's BroadcastChannel API. It connects windows and tabs of the same browser on the same device. A speaker view open on your phone doesn't follow a presentation running on a laptop.
+
+## Navigating from speaker view
+
+| Input | Action |
+|-------|--------|
+| `→` / `↓` / `Space` / `Enter` / `Page Down` | Next slide |
+| `←` / `↑` / `Page Up` | Previous slide |
+| `Home` / `End` | First / last slide |
+| `‹` / `›` buttons | Previous / next slide |
+| Swipe left / right | Next / previous slide |
+| `Esc` | Close speaker view (when it was opened with `S`) |
+
+Break mode, goto, history, and the timer keys work in the main window. See [Navigation](./navigation).
+
+## On a phone or tablet
+
+On screens narrower than 700px, speaker view switches to a single column: the header and timer at the top, your notes in the middle with most of the room, and the next-slide preview below them. The `‹` `›` buttons and swipe gestures work here too, and the layout keeps clear of the notch and rounded corners.
 
 ## Adding notes
 
@@ -51,6 +70,8 @@ Notes are stripped from the audience view and appear only in `speaker.html`.
 |-----|--------|
 | `T` | Pause / resume timer |
 | `R` | Reset to 00:00:00 |
+
+Press these in the main window.
 
 The timer starts on your first navigation, not on page load. Use `{{timer}}` in a `header:` or `footer:` frontmatter key to show the live value on slides.
 

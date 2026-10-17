@@ -25,6 +25,11 @@ const features = [
     body: 'Synchronized speaker view with your notes, next-slide preview, and elapsed timer. Press S during any presentation.',
   },
   {
+    icon: '📱',
+    title: 'Any screen',
+    body: 'Present from a laptop, phone, or tablet. Swipe, tap, or use a clicker. Slides scale to fit, and wide tables re-wrap.',
+  },
+  {
     icon: '📦',
     title: 'Zero friction',
     body: 'One JAR, Java 11+. Download and run. No account, no cloud, no framework to install.',

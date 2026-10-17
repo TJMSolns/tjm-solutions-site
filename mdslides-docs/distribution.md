@@ -33,6 +33,8 @@ scp -r my-talk/ user@server:/var/www/html/
 
 **GitHub Pages** — put the output in a `docs/` folder or push to a `gh-pages` branch.
 
+**Presenting from a phone or tablet** — host the output on GitHub Pages or a web server, then open the URL on the device. Add `#N` to the URL to open a specific slide, for example `https://example.com/my-talk/#5`. See [Navigation](./navigation#touch-screens-phones-and-tablets) for touch controls.
+
 **Local HTTP server** (also resolves speaker view popup-blocker issues):
 
 ```bash

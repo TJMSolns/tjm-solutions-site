@@ -81,6 +81,9 @@ jobs:
       needs.build.result == 'success' &&
       (github.event_name == 'schedule' || (github.event_name == 'push' && needs.deploy.result == 'success'))
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
       - uses: actions/download-artifact@v4
         with:
           name: build
@@ -99,14 +102,29 @@ jobs:
       # transient 503 on a live page seconds after this same deploy
       # succeeded -- GitHub Pages CDN/edge propagation still catching up,
       # not a real broken link. Re-checked by hand seconds later: 200.
+      #
+      # WQ-073 (2026-10-17): scholarly reference lists broke this job. doi.org
+      # redirects to publishers that answer bots with 403 (ACM, Wiley, Emerald,
+      # Biometrika, World Scientific) or 202 (IEEE), so DOIs are excluded here
+      # and checked by scripts/check-dois.sh against the DOI registry instead
+      # (it still fails on a DOI that doesn't exist). 202 Accepted is accepted:
+      # EUR-Lex ELI links answer 202, and it isn't an error. iso.org and
+      # ofcom.org.uk block bots with 403; mckinsey.com fails lychee's HTTP/2.
+      # Those three were verified by hand when the article was drafted.
       - uses: lycheeverse/lychee-action@v2
         with:
           args: >-
             --base https://www.tjm.solutions
-            --accept 200,204,206,301,302,429,503
+            --accept 200,202,204,206,301,302,429,503
             --exclude 'linkedin\.com'
             --exclude 'twitter\.com'
             --exclude 'x\.com'
             --exclude 'medium\.com'
+            --exclude 'doi\.org'
+            --exclude 'iso\.org'
+            --exclude 'ofcom\.org\.uk'
+            --exclude 'mckinsey\.com'
             './build/**/*.html'
           fail: true
+      - name: DOIs exist (DOI registry)
+        run: scripts/check-dois.sh build

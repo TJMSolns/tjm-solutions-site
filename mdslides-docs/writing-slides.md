@@ -124,7 +124,7 @@ Right column: output, comparison, commentary.
 
 Renders a Mermaid chart to SVG at build time. Requires `mmdc` (mermaid-cli) installed.
 
-```markdown
+````markdown
 ---
 template: diagram
 caption: Optional caption below the chart
@@ -136,9 +136,9 @@ caption: Optional caption below the chart
 graph LR
     A[Input] --> B[Parser] --> C[Output]
 ```
-```
+````
 
-`mmdc` converts the Mermaid block to an embedded SVG — no client-side Mermaid.js needed.
+`mmdc` converts the Mermaid block to an embedded SVG — no client-side Mermaid.js needed. Without `mmdc`, the render still succeeds and the diagram source is shown instead (the render output says so).
 
 ### `closing`
 
@@ -168,6 +168,8 @@ Every slide opens with a frontmatter block. Available keys:
 | `vertical-align:` | no | `top` · `center` (default) · `bottom` |
 | `background:` | no | Per-slide background image path (overrides theme) |
 | `caption:` | no | Caption below diagram (`diagram` template only) |
+| `title:` | no | Overrides the slide's title text |
+| `notes:` | no | Speaker notes (alternative to an HTML comment) |
 
 ### Header and footer tokens
 
@@ -177,8 +179,9 @@ Every slide opens with a frontmatter block. Available keys:
 |-------|-------------|
 | `{{pageNumber}}` | Current slide number |
 | `{{totalPages}}` | Total slide count |
-| `{{timer}}` | Elapsed presentation time |
-| `{{date}}` | Current date |
+| `{{timer}}` | Elapsed presentation time (updates every second) |
+| `{{title}}` | The deck title (from the first `title` slide) |
+| `{{date}}` | Today's date, `YYYY-MM-DD` |
 
 Example:
 
@@ -189,7 +192,7 @@ header: My Talk — Slide {{pageNumber}} of {{totalPages}}
 ---
 ```
 
-Per-slide `header:` / `footer:` overrides the theme default for that one slide. Set deck-wide headers in your theme JSON or project config.
+Per-slide `header:` / `footer:` overrides the theme default for that one slide. Set deck-wide headers and footers with `header` / `footer` in your [project config](./configuration), or per template with `templateConfig` in a [theme](./themes#per-template-configuration).
 
 ## Content types
 

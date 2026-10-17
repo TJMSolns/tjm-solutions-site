@@ -5,23 +5,35 @@ title: Validation
 
 # Validation
 
-MD-Slides validates every slide before rendering. All errors are collected and reported together — you see every problem in one pass, not one at a time. No output is written until every slide passes.
+MD-Slides checks every slide before it writes anything, and reports every problem in one pass — you see them all at once, not one per render.
+
+Problems come in two kinds:
+
+- **Errors** stop the render. Fix them and render again.
+- **Warnings** are reported, and the presentation is still written.
 
 ```
 ✗ Validation failed:
-  - Slide 3: body exceeds max 12 lines (has 17)
-  - Slide 5: heading exceeds max 80 characters (has 94)
-  - Slide 7: image is missing alt text
-  - Slide 12: two-column left exceeds max 10 lines (has 13)
+  - Slide 3: Structure Error - Required slot 'heading' is missing
+  - Slide 3: Structure Error - Required slot 'body' is missing
 ```
 
-Fix them all, then re-render.
+```
+✓ Validation passed with 1 warning(s):
+  - Slide 2: Density Warning in 'body' slot - Content exceeds recommended line limit (actual: 17, guidance: reduce to 12 lines for readability)
+```
 
-## What gets validated
+## Errors
 
-**Structure:** required slots present, template declared, frontmatter well-formed, `two-column` has exactly one `---column---`.
+- A required slot is missing (for example a `content` slide with no `##` heading)
+- An unknown template name
+- A `two-column` slide without exactly one `---column---` line
+- An image without alt text — `![](photo.png)` is reported with its slide and path; write `![what the photo shows](photo.png)`
+- An image file that doesn't exist
 
-**Density:**
+## Warnings
+
+**Density** — guidance for what an audience can read:
 
 | Template | Heading | Body |
 |----------|---------|------|
@@ -31,24 +43,24 @@ Fix them all, then re-render.
 | `two-column` | ≤ 80 chars | Each column ≤ 10 lines, ≤ 75 words |
 | `closing` | ≤ 80 chars | ≤ 12 lines, ≤ 150 words |
 
-**Accessibility (WCAG 2.1 AA):**
-- Images must have alt text
-- Text/background contrast ratios must meet 4.5:1 minimum
+Code blocks don't count toward the 12-line body limit.
+
+**Theme contrast (WCAG 2.1 AA)** — the theme's text, heading, link and accent colours must reach 4.5:1 against its background. All built-in themes pass. A custom theme that doesn't is reported, and the presentation is still written.
 
 ## Accessibility flags
 
 ```bash
-# Skip WCAG contrast checks (structural and density validation still runs)
+# Skip the theme contrast check (structure, density and alt-text checks still run)
 java -jar md-slides.jar render my-talk --skip-accessibility
 
-# Write validation results to a JSON file (useful in CI)
+# Write the accessibility results to a JSON file (useful in CI)
 java -jar md-slides.jar render my-talk --accessibility-report report.json
 ```
 
-## Why all errors at once?
+## Why all problems at once?
 
-Stopping at the first error means a loop: fix, render, find next error, fix, render. Showing everything at once respects your time. The domain model uses `Either[NonEmptyList[ValidationError], SlideDeck]` — errors accumulate rather than short-circuit. An empty error list is a type-level impossibility.
+Stopping at the first problem means a loop: fix, render, find the next one, fix, render. Showing everything at once respects your time. The domain model uses `Either[NonEmptyList[ValidationError], SlideDeck]` — errors accumulate rather than short-circuit.
 
-## Why density limits?
+## Why density guidance?
 
-Dense slides are the most common presentation failure mode — content that looks fine in an editor is unreadable on a projector. MD-Slides enforces limits at render time so you catch the problem before you're standing in front of an audience. If you find yourself fighting the limits, that's usually a signal to split the slide.
+Dense slides are the most common presentation failure — content that looks fine in an editor is unreadable on a projector. MD-Slides flags them at render time so you catch the problem before you're in front of an audience. On screens where a slide still doesn't fit, it is [scaled to fit](./navigation#fit-to-the-screen). If you keep hitting the guidance, that's usually a signal to split the slide.

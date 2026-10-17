@@ -30,7 +30,7 @@ mill cli.assembly
 
 ## Architecture
 
-MD-Slides is a three-module Mill project. Dependencies flow in one direction only: `cli → infrastructure → domain`.
+MD-Slides is a three-module Mill project, plus an `mcp` module that wraps `infrastructure` as an MCP server. Dependencies flow in one direction only: `cli → infrastructure → domain`.
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -82,3 +82,14 @@ MD-Slides is a three-module Mill project. Dependencies flow in one direction onl
 - Wrap all external library types behind domain-facing interfaces in the infrastructure layer.
 - New templates and themes should follow existing patterns; see `docs/decisions/` for the design rationale.
 - Read [CONTRIBUTING.md](https://github.com/TJMSolns/MD-Slides/blob/main/CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](https://github.com/TJMSolns/MD-Slides/blob/main/CODE_OF_CONDUCT.md) before opening a PR.
+
+## When a change is done
+
+A feature or fix isn't done until:
+
+- its tests pass (`mill __.test`),
+- the feature tour (`examples/feature-tour.md`) shows it, with a **Try it** step,
+- its row in [`docs/FEATURES.md`](https://github.com/TJMSolns/MD-Slides/blob/main/docs/FEATURES.md) is up to date, and
+- these docs describe it.
+
+The feature tour is the tutorial, the acceptance test and the [live demo](https://www.tjm.solutions/mdslides/demo/). See [CONTRIBUTING.md](https://github.com/TJMSolns/MD-Slides/blob/main/CONTRIBUTING.md) for the full guide.

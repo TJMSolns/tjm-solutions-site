@@ -12,7 +12,7 @@ const features = [
   {
     icon: '📐',
     title: 'Structured by design',
-    body: 'Templates enforce slide layout. Density constraints mean your audience can actually read what you write.',
+    body: 'Templates enforce slide layout. Density guidance keeps slides readable, and every slide is checked for accessibility.',
   },
   {
     icon: '✓',
@@ -22,12 +22,12 @@ const features = [
   {
     icon: '🎤',
     title: 'Speaker-ready',
-    body: 'Synchronized speaker view with your notes, next-slide preview, and elapsed timer. Press S during any presentation.',
+    body: 'Speaker view with your notes, the next slide\'s heading and an elapsed timer, in step with the presentation. Press S during any presentation.',
   },
   {
     icon: '📱',
     title: 'Any screen',
-    body: 'Present from a laptop, phone, or tablet. Swipe, tap, or use a clicker. Slides scale to fit, and wide tables re-wrap.',
+    body: 'Present from a laptop, phone, or tablet. Swipe, tap, or use a clicker. Slides scale to fit, and wide tables re-wrap. Open the live demo on your phone to try it.',
   },
   {
     icon: '📦',
@@ -37,7 +37,7 @@ const features = [
   {
     icon: '🎨',
     title: 'Themeable',
-    body: 'Built-in light and dark themes, plus a JSON schema for fully custom themes with per-template backgrounds.',
+    body: 'Built-in light, dark and corporate themes, plus theme folders with per-template backgrounds, headers and footers.',
   },
   {
     icon: '⚙️',
@@ -73,6 +73,10 @@ export default function MDSlides(): ReactNode {
             <Link to="/mdslides/docs/intro" className={styles.ctaPrimary}>
               Get Started
             </Link>
+            {/* Static page outside the Docusaurus router: plain link, full page load */}
+            <a href="/mdslides/demo/" className={styles.ctaSecondary}>
+              Try the live demo
+            </a>
             <a
               href="https://github.com/TJMSolns/MD-Slides"
               target="_blank"

@@ -131,8 +131,21 @@
 .cardFooter {
   padding: 1rem 1.5rem 1.5rem;
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   border-top: 1px solid var(--ifm-color-emphasis-100);
+}
+
+/* Narrow screens: buttons wrap two per row instead of overflowing the card */
+.cardFooter > a {
+  white-space: nowrap;
+  min-width: calc(50% - 0.375rem);
+}
+
+@media (min-width: 600px) {
+  .cardFooter > a {
+    min-width: 0;
+  }
 }
 
 .linkPrimary {

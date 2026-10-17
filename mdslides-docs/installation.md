@@ -44,10 +44,11 @@ java -jar C:\path\to\md-slides.jar %*
 ## Verify the installation
 
 ```bash
-mdslides --help
+java -jar md-slides.jar --version
+java -jar md-slides.jar --help
 ```
 
-You should see the command list. Then test with a render:
+You should see the version and the command list. Then test with a render:
 
 ```bash
 java -jar md-slides.jar render my-talk --theme light
@@ -55,7 +56,7 @@ java -jar md-slides.jar render my-talk --theme light
 
 ## Upgrading
 
-Download the new JAR and replace the old one. Check [CHANGELOG.md](https://github.com/TJMSolns/MD-Slides/blob/main/CHANGELOG.md) for breaking changes before upgrading.
+Download the new JAR and replace the old one, then render your decks again — fixes to the presentation itself (navigation, speaker view, layout) only reach a deck when it is re-rendered. Check [CHANGELOG.md](https://github.com/TJMSolns/MD-Slides/blob/main/CHANGELOG.md) for what changed.
 
 ## Uninstalling
 

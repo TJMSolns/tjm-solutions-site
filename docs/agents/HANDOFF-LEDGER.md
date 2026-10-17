@@ -4,6 +4,23 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-071 — 2026-10-17 — MD-Slides live demo; MD-Slides docs corrected against v1.1.1 (WQ-075)
+
+**Session:** Tony + Claude, run from the org root. Companion to MD-Slides HL-070 (v1.1.1).
+**What happened:**
+- Tony asked whether the docs had been updated diligently. They had not: HL-070's WQ-074 covered only what v1.1.0
+  changed. A verification of every documented claim against the released jar found wrong docs and broken features;
+  MD-Slides v1.1.1 fixes the features, and every MD-Slides docs page here was corrected against it.
+- New live demo at `/mdslides/demo/` (the feature tour, rendered from the release by `scripts/build-mdslides-demo.sh`),
+  with calls to action on `/projects`, `/mdslides` and the docs intro. `scripts/verify-mdslides-demo.mjs` is the
+  browser check MD-Slides' release procedure now requires. Evidence: `docs/agents/evidence/WQ-075.md`.
+
+**Decisions made:** none (Tony's directives).
+**Open items carried forward:** WQ-074/WQ-075 need a verifier pass; Tony's real-phone test of the demo.
+**Next owner:** Tony (phone test), then any session at this root for the verifier sweep.
+
+---
+
 ## HL-070 — 2026-10-17 — MD-Slides v1.1.0 documented (WQ-074)
 
 **Session:** Tony + Claude, run from the org root. Companion to mdslides HL-067 (v1.1.0 release, MS-025).

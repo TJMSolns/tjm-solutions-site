@@ -18,17 +18,11 @@ The speaker view shows:
 
 ## Output files
 
-When you render a deck, MD-Slides generates three files:
-
-| File | Purpose |
-|------|---------|
-| `my-talk/index.html` | Main presentation — show this to your audience |
-| `my-talk/speaker.html` | Speaker view — open on your laptop |
-| `my-talk/sync.js` | Synchronization module (required by both) |
+`my-talk/index.html` is the presentation for your audience, and `my-talk/speaker.html` is speaker view for your laptop. Both load `sync.js`, which keeps them in step. See [Distribution](./distribution#self-contained-output) for the full output folder.
 
 Both windows stay synchronized: navigate from either and the other follows.
 
-Synchronization uses the browser's BroadcastChannel API. It connects windows and tabs of the same browser on the same device. A speaker view open on your phone doesn't follow a presentation running on a laptop.
+Synchronization uses the browser's local storage events, which connect windows and tabs of the same browser on the same device. A speaker view open on your phone doesn't follow a presentation running on a laptop.
 
 ## Navigating from speaker view
 
@@ -97,4 +91,4 @@ python3 -m http.server 8080
 # then open http://localhost:8080/my-talk/
 ```
 
-Alternatively, allow popups for the `file://` origin in your browser settings. Chrome and Firefox both support the BroadcastChannel API required for speaker view sync.
+Alternatively, allow pop-ups for the page in your browser settings.

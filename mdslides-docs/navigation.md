@@ -18,11 +18,12 @@ MD-Slides works with a keyboard, a presentation clicker, a mouse, or a touch scr
 | `F` | Toggle fullscreen |
 | `S` | Open speaker view |
 | `B` | Toggle break mode |
-| `G` | Goto: type a slide number, press Enter |
+| `G` | Goto: type a slide number, press Enter (or tap the slide counter) |
 | `P` | History back |
 | `N` | History forward (or next slide if no forward history) |
 | `T` | Pause / resume timer |
 | `R` | Reset timer to 00:00:00 |
+| `L` | Save the session log (see [Session analytics](./distribution#session-analytics)) |
 
 Shortcuts are ignored while you type in a field, while the goto dialog is open, or while Ctrl, Cmd, or Alt is held, so browser shortcuts keep working.
 
@@ -62,23 +63,23 @@ Press `B` to hide the presentation from your audience while you take a break. Th
 
 While break mode is active you still see your current slide and notes in speaker view.
 
-Configure a custom break screen image in your theme JSON:
-
-```json
-{
-  "breakScreen": "images/break.png"
-}
-```
-
-Or pass it at render time:
+Set a custom break screen image when you render:
 
 ```bash
 java -jar md-slides.jar render my-talk --break-screen ./images/break.png
 ```
 
+Or set it once in your project config (`.mdslides/config.json`, see [Configuration](./configuration)):
+
+```json
+{ "breakScreen": "images/break.png" }
+```
+
+The path is relative to your deck (or the folder you run the command in), and the image is copied into the output.
+
 ## Goto
 
-Press `G`, type a slide number (1-indexed, matching the slide counter), then press `Enter`. Jumps directly to that slide — useful during Q&A when someone asks to revisit a specific slide.
+Press `G` (or tap the slide counter), type a slide number, then press `Enter`. Or pick the slide from the list of titles. Useful during Q&A when someone asks to revisit a specific slide. The timer pauses while goto is open, and goto is unavailable during break mode.
 
 ## History navigation
 
@@ -107,4 +108,4 @@ Press `F`, or use the fullscreen button beside the slide counter. Your browser's
 
 All MD-Slides shortcuts continue to work in fullscreen mode. The fullscreen button is hidden where the browser doesn't support fullscreen, as on iPhone.
 
-**Recommended browsers:** Chrome or Firefox — both support the BroadcastChannel API required for speaker view synchronization.
+**Browsers:** tested in desktop Chrome and in Chrome's phone emulation. Speaker view sync needs both windows in the same browser.

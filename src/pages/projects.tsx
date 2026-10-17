@@ -17,6 +17,7 @@ interface Project {
   status: string;
   to: string;
   docsTo: string;
+  demo?: string;
   github?: string;
 }
 
@@ -31,6 +32,7 @@ const projects: Project[] = [
     status: 'Released',
     to: '/mdslides',
     docsTo: '/mdslides/docs/intro',
+    demo: '/mdslides/demo/',
     github: 'https://github.com/TJMSolns/MD-Slides',
   },
 ];
@@ -55,6 +57,10 @@ function ProjectCard({ project }: { project: Project }) {
       </div>
       <div className={styles.cardFooter}>
         <Link to={project.to} className={styles.linkPrimary}>Overview</Link>
+        {project.demo && (
+          // Static page outside the Docusaurus router: plain link, full page load
+          <a href={project.demo} className={styles.linkSecondary}>Live demo</a>
+        )}
         <Link to={project.docsTo} className={styles.linkSecondary}>Docs</Link>
         {project.github && (
           <a href={project.github} target="_blank" rel="noopener noreferrer" className={styles.linkSecondary}>GitHub</a>

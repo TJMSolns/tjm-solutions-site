@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Speaker View - MDSlides</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #1a1a1a;
+      color: #ffffff;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-text-size-adjust: 100%;
+      touch-action: manipulation;
+    }
+
+    .speaker-view {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 1rem;
+      padding: 1rem;
+      padding-top: max(1rem, env(safe-area-inset-top));
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    .header {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: #2a2a2a;
+      border-radius: 8px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .nav-btn {
+      min-width: 44px;
+      min-height: 44px;
+      border: none;
+      border-radius: 8px;
+      background: #3a3a3a;
+      color: #ffffff;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .slide-counter {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .timer {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      color: #4ade80;
+    }
+
+    .notes-panel {
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .notes-panel h2 {
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+      color: #a3a3a3;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .notes-area {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .notes-area.empty {
+      color: #737373;
+      font-style: italic;
+    }
+
+    .preview-panel {
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .preview-panel h2 {
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+      color: #a3a3a3;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-area {
+      font-size: 1.5rem;
+      line-height: 1.5;
+      color: #d4d4d4;
+    }
+
+    .preview-area.end {
+      color: #737373;
+      font-style: italic;
+    }
+
+    /* Phones and narrow windows: single column, notes get the flexible row */
+    @media (max-width: 700px) {
+      .speaker-view {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        padding-top: max(0.5rem, env(safe-area-inset-top));
+        padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+        padding-left: max(0.5rem, env(safe-area-inset-left));
+        padding-right: max(0.5rem, env(safe-area-inset-right));
+      }
+      .header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .timer { font-size: 1.5rem; }
+      .notes-panel { padding: 1rem; min-height: 0; }
+      .notes-area { font-size: 1rem; line-height: 1.6; }
+      .preview-panel { padding: 0.75rem 1rem; max-height: 25vh; }
+      .preview-panel h2, .notes-panel h2 { font-size: 0.9rem; margin-bottom: 0.5rem; }
+      .preview-area { font-size: 1.125rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="speaker-view">
+    <div class="header">
+      <div id="slide-counter" class="slide-counter">Slide 1 / 51</div>
+      <div class="nav-buttons">
+        <button type="button" id="speaker-prev" class="nav-btn" aria-label="Previous slide">&#8249;</button>
+        <button type="button" id="speaker-next" class="nav-btn" aria-label="Next slide">&#8250;</button>
+      </div>
+      <div id="timer" class="timer">00:00</div>
+    </div>
+
+    <div class="notes-panel">
+      <h2>Speaker Notes</h2>
+      <div id="notes-area" class="notes-area">
+        <!-- Notes will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <div class="preview-panel">
+      <h2>Next Slide</h2>
+      <div id="preview-area" class="preview-area">
+        <!-- Preview will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded slide data -->
+  <script id="slide-data" type="application/json">
+{
+  "totalSlides" : 51,
+  "slides" : [
+    {
+      "notes" : "This tour covers every feature in MD-Slides: all six templates, every content type, keyboard navigation, speaker view, CLI commands, themes, configuration, and validation. Two-column slides show the markdown you type on the left and what it renders on the right. Open examples/feature-tour.md alongside this presentation to see exactly what produced each slide.",
+      "title" : "Presenting with MD-Slides",
+      "heading" : ""
+    },
+    {
+      "notes" : "The two-column convention is central to the tour. Left column shows what you type; right column shows only what that produces. Try-it lines turn the tour into a checklist: walk through them on a laptop and a phone before every release. The escaping note matters because the parser splits slides on --- before Markdown processing.",
+      "title" : "",
+      "heading" : "How to read this tour"
+    },
+    {
+      "notes" : "Every slide declares its template in frontmatter. The template determines layout, available slots, and what constraints apply. The surrounding --- that opens and closes frontmatter is the same token that separates slides — there is no separate frontmatter fence syntax.",
+      "title" : "",
+      "heading" : "Templates"
+    },
+    {
+      "notes" : "The title template is used once — for the opening slide. H1 is visually dominant; using it anywhere else would conflict with H2 headings on content slides. The author slot expects bold text rather than a heading. The first slide in any deck must be the title template.",
+      "title" : "",
+      "heading" : "title template"
+    },
+    {
+      "notes" : "The density limits exist to protect your audience. A slide that exceeds 12 lines typically needs to be split. The 150-word limit prevents walls of text. Both limits are checked together with all violations across all slides reported at once using Either[NonEmptyList[ValidationError], SlideDeck].",
+      "title" : "",
+      "heading" : "content template"
+    },
+    {
+      "notes" : "The section-title and closing templates parse identically to content, but themes can give each a very different visual appearance — a full-bleed background image, a contrasting color, a large centered title. This is done via templateConfigurations in the theme JSON, not in the slide frontmatter.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "Everything before ---column--- is the left column; everything after is the right column. This content slide safely shows ---column--- in a code block because the parser only splits on bare --- lines. The ---column--- delimiter is a content-level token processed after the slide is parsed.",
+      "title" : "",
+      "heading" : "two-column template"
+    },
+    {
+      "notes" : "This is a live two-column slide. The before/after comparison is the most common use case for two-column — sequential vs. parallel, bad vs. good, input vs. output. Both columns have code blocks, body text, and bold headings.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "mmdc (mermaid-cli) must be installed. During render, mmdc converts each mermaid block to an SVG embedded directly in the HTML output. No client-side Mermaid.js is needed. The 4-backtick outer fence above safely contains the inner 3-backtick mermaid fence — this is how to show nested fences in code examples.",
+      "title" : "",
+      "heading" : "diagram template"
+    },
+    {
+      "notes" : "This is a live diagram template slide. The flowchart was rendered server-side by mmdc during the render pass and is embedded as SVG. The caption below the diagram came from the caption: frontmatter key. Diagram colours follow the deck theme: dark text on light shapes for light themes, light on dark for dark themes. Custom style directives work too, but check their contrast.",
+      "title" : "",
+      "heading" : "Mermaid diagram: live render"
+    },
+    {
+      "notes" : "The frontmatter block is enclosed in two --- markers — the same --- that separates slides. The first --- is both the slide separator and the frontmatter open; the second --- closes the frontmatter. Keys are case-sensitive and appear one per line with no quotes around values.",
+      "title" : "",
+      "heading" : "Frontmatter: complete key reference"
+    },
+    {
+      "notes" : "This section demonstrates every content type. All standard CommonMark inline elements work in any template body or column. Block elements include code blocks with syntax highlighting, ordered and unordered lists with nesting, images by path or data URL, and markdown tables.",
+      "title" : "",
+      "heading" : "Content"
+    },
+    {
+      "notes" : "All standard CommonMark inline elements are supported. The same formatting works in title subtitles, content bodies, column content, and speaker notes. The right column is the literal rendered output of the left column's markdown — nothing added or changed.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "Lists support up to 3 levels of nesting. Ordered and unordered lists can be mixed at nested levels. The right column is the rendered output of the left column's markdown.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "This code block is the demonstration — you're looking at syntax-highlighted Scala 3. The language identifier after the opening fence selects the highlighter. highlight.js runs client-side and supports Scala, Java, Python, JavaScript, TypeScript, Bash, SQL, JSON, YAML, and 190+ others. Code blocks auto-scale to fit slide width.",
+      "title" : "",
+      "heading" : "Code blocks: syntax highlighting"
+    },
+    {
+      "notes" : "Any language supported by highlight.js works — just use the correct identifier after the opening fence. Python and Bash are shown here side by side because they appear frequently in presentations about tools and algorithms. Both columns are purely code — no added explanatory text.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "This block is deliberately long. MD-Slides scales the font of code blocks longer than 20 lines, and fit-to-slide makes sure the whole slide still fits the screen.",
+      "title" : "",
+      "heading" : "Long code listings"
+    },
+    {
+      "notes" : "Local images are copied to the output directory during render. Base64 data URLs are embedded inline — this feature-tour.md is fully self-contained because the logo uses a data URL. The right column shows only the rendered image — the exact output of the markdown on the left. Alt text is validated against WCAG 2.1.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "Tables render as semantic HTML with thead and tbody. Inline code, bold, and links all work inside cells. Tables count against body density limits. The right column is the exact rendered output of the table markdown on the left — nothing added.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "This slide's background is a small SVG pattern encoded as a data URL, so feature-tour.md works on its own. The pattern is translucent, so text keeps the theme's contrast in both light and dark themes; a solid dark image would make dark-theme-light text fine but break the light theme. Per-slide backgrounds override only this slide.",
+      "title" : "",
+      "heading" : "Per-slide background image"
+    },
+    {
+      "notes" : "Speaker view opens in a separate window synchronized to the main presentation via BroadcastChannel. The speaker window shows: current slide (small preview), next slide heading, speaker notes for the current slide, and an elapsed timer. Navigation in either window keeps both in sync.",
+      "title" : "",
+      "heading" : "Speaker View"
+    },
+    {
+      "notes" : "You found the speaker notes. This is what appears in speaker view — only you see this. The audience sees only the slide content. The left column shows the exact HTML comment syntax; the right column describes where notes appear.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "Speaker view and the presentation synchronise through the browser's local storage events, so both windows must be in the same browser on the same device. Opening speaker.html on a phone will not follow a laptop. The timer starts on the first slide change, not on page load. Navigation keys, the buttons and swipes all work in speaker view; break mode, goto, history and timer keys belong to the main window.",
+      "title" : "",
+      "heading" : "Speaker view: layout, sync and timer"
+    },
+    {
+      "notes" : "MD-Slides provides a complete keyboard-driven navigation model. Arrow-key navigation, speaker view, break mode, direct-jump goto, browser-like history, and timer controls — all without touching the mouse.",
+      "title" : "",
+      "heading" : "Navigation"
+    },
+    {
+      "notes" : "Arrow keys and Space are the primary navigation; clickers send Page Up/Down or arrows, so they work without setup. On touch screens, swipe or tap the right 70% (next) or left 30% (previous) of the screen. Speaker view handles the navigation keys; break mode, goto, history and timer keys work in the main window. S opens speaker view in a new window — position it on your laptop while projecting the main view. B hides slides from the audience. P and N provide browser-like history navigation ideal for Q&A sessions where you jump around non-linearly.",
+      "title" : "",
+      "heading" : "Keyboard shortcuts — complete reference"
+    },
+    {
+      "notes" : "Break mode is for pauses and Q&A: the audience sees the break screen while your speaker view keeps your place. Goto pauses the timer while it is open. History follows your real path, so after a goto, P returns to where you were rather than to the previous numbered slide. Goto is disabled while break mode is on.",
+      "title" : "",
+      "heading" : "Break mode, goto and history"
+    },
+    {
+      "notes" : "This section exercises mobile presenting and fit-to-slide. Walk through it on a phone before every release.",
+      "title" : "",
+      "heading" : "Any screen"
+    },
+    {
+      "notes" : "Taps only navigate for touch and pen input, never for a mouse, so text selection on a laptop still works. Vertical drags, pinch-zoomed panning and scrolling a wide code block sideways do not change slides. On phones the layout respects the notch and uses the visible screen height so browser toolbars do not cut slides off.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "Fit-to-slide first shrinks wide tables, diagrams, code and images to the available width, then scales the whole slide to the largest size that fits. If a slide would need to drop below 35 percent it scrolls instead, which usually means the slide has too much on it.",
+      "title" : "",
+      "heading" : "Fit to the screen: a deliberately wide slide"
+    },
+    {
+      "notes" : "Deep links use history.replaceState, which updates the URL without adding history entries. This is what lets you send someone a link to the exact slide a question was about.",
+      "title" : "",
+      "heading" : "Links to a slide"
+    },
+    {
+      "notes" : "MD-Slides has four CLI usage patterns. render is the core command. display adds session logging. report analyzes past sessions. config shows the merged configuration. The smart default picks render or display automatically based on context.",
+      "title" : "",
+      "heading" : "CLI Commands"
+    },
+    {
+      "notes" : "render validates first and collects every problem in one pass. Structural errors and accessibility failures stop the render; density overruns are warnings, because sometimes a dense slide is the right call. The output folder is self-contained: open index.html from disk or host the folder anywhere.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "Themes are found by name in ./themes next to where you run the command, or in the folder set by paths.themesDir in your global config. Run with --help for the full list of commands and options.",
+      "title" : "",
+      "heading" : "render: all flags"
+    },
+    {
+      "notes" : "Useful for diagnosing an unexpected theme or output folder. The real output also lists the priority order and the fields each file accepts.",
+      "title" : "",
+      "heading" : "config command"
+    },
+    {
+      "notes" : "The log stays in the page until you press L, so nothing is sent anywhere. Save it at the end of a talk, or mid-way: a mid-way save is marked as such in the report. report looks in the deck folder, the current folder and ~/Downloads for the newest log for that deck.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "The smart default is the rehearsal loop: run it, present, press L, run it again and you see how the last run went before the deck opens.",
+      "title" : "",
+      "heading" : "Smart default: no subcommand needed"
+    },
+    {
+      "notes" : "The MCP server is stateless and file-in, file-out: an assistant writes Markdown, calls render_deck, and gets the same output the CLI produces. Add it to your assistant's MCP configuration as a command that runs java -jar mdslides-mcp.jar.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "The output is deliberately self-contained — index.html, speaker.html, and all assets in one directory that works without a server. For GitHub Pages, put the output in a docs/ folder or gh-pages branch. PDF via browser print is simplest; headless Chrome gives more control over page size and margins.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "Some browsers block window.open for file:// pages; a local HTTP server avoids that. Both windows must be in the same browser.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "MD-Slides ships with two themes — light and dark. Custom themes are JSON files that override any visual property. Configuration is layered: CLI flags override project config, which overrides global config, which overrides built-in defaults.",
+      "title" : "",
+      "heading" : "Themes and Configuration"
+    },
+    {
+      "notes" : "Built-in themes need no files. Anything else is a theme folder, covered on the next slides.",
+      "title" : "",
+      "heading" : "Built-in themes"
+    },
+    {
+      "notes" : "templateBackgrounds maps a template name to an image, so every section-title slide gets the same art without any per-slide frontmatter.",
+      "title" : "",
+      "heading" : "Theme backgrounds: colour and image"
+    },
+    {
+      "notes" : "A theme with missing sections is rejected, so start from the full schema in the Themes documentation. Themes are looked up by name in ./themes, or in paths.themesDir from your global config.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "templateConfig is keyed by template name. Per-slide frontmatter still wins over it for a single slide.",
+      "title" : "",
+      "heading" : ""
+    },
+    {
+      "notes" : "Per-slide header and footer override the theme and config for this slide only. Set deck-wide ones with templateConfig in the theme, or header and footer in .mdslides/config.json.",
+      "title" : "",
+      "heading" : "Per-slide header and footer: live demo"
+    },
+    {
+      "notes" : "Vertical alignment affects the main content area only. Headers and footers are positioned independently. The center default works well for most slides. Use top for slides with code blocks or large tables where a fixed top position aids readability.",
+      "title" : "",
+      "heading" : "Vertical alignment"
+    },
+    {
+      "notes" : "Project config accepts theme, copyImages, skipAccessibility, accessibilityReportPath, outputDir, header, footer and breakScreen. Global config accepts defaults, author and paths; unknown fields are rejected so typos are caught. Commit the project config so everyone renders the same way.",
+      "title" : "",
+      "heading" : "Four-layer configuration"
+    },
+    {
+      "notes" : "MD-Slides validates every slide before rendering anything. Rather than stopping at the first error, it collects all validation errors using Either[NonEmptyList[ValidationError], SlideDeck] and reports them together. You see every problem in one pass and can fix them all before running again.",
+      "title" : "",
+      "heading" : "Validation"
+    },
+    {
+      "notes" : "Density limits are guidance: a dense slide renders with a warning, and fit-to-slide shrinks it to fit. Errors are things that would make the deck broken or inaccessible.",
+      "title" : "",
+      "heading" : "What gets validated"
+    },
+    {
+      "notes" : "The domain model uses Either[NonEmptyList[ValidationError], SlideDeck], so errors accumulate rather than stopping at the first one.",
+      "title" : "",
+      "heading" : "Validation output: everything at once"
+    },
+    {
+      "notes" : "Start your own deck: java -jar md-slides.jar render my-talk --theme light. The feature-tour.md file is the single authoritative source for this presentation — it exercises every template, every content type, every keyboard shortcut, and every configuration option.",
+      "title" : "",
+      "heading" : "MD-Slides"
+    }
+  ]
+}
+  </script>
+
+  <!-- Sync module for cross-window communication -->
+  <script src="sync.js"></script>
+
+  <!-- Speaker view controller -->
+  <script>
+    // Parse embedded slide data
+    const slideDataElement = document.getElementById('slide-data');
+    const slideData = JSON.parse(slideDataElement.textContent);
+
+    // Initialize slide index from URL parameter or default to 0
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentSlideIndex = parseInt(urlParams.get('slide') || '0', 10);
+    let timerStartTime = null;
+    let timerInterval = null;
+
+    // Update display
+    function updateDisplay() {
+      const slide = slideData.slides[currentSlideIndex];
+      document.getElementById('speaker-prev').disabled = currentSlideIndex <= 0;
+      document.getElementById('speaker-next').disabled = currentSlideIndex >= slideData.totalSlides - 1;
+
+      // Update slide counter
+      document.getElementById('slide-counter').textContent =
+        `Slide ${currentSlideIndex + 1} / ${slideData.totalSlides}`;
+
+      // Update notes
+      const notesArea = document.getElementById('notes-area');
+      if (slide.notes === null || slide.notes === undefined) {
+        notesArea.textContent = 'No notes for this slide';
+        notesArea.className = 'notes-area empty';
+      } else if (slide.notes === '') {
+        notesArea.textContent = '';
+        notesArea.className = 'notes-area';
+      } else {
+        notesArea.textContent = slide.notes;
+        notesArea.className = 'notes-area';
+      }
+
+      // Update preview
+      const previewArea = document.getElementById('preview-area');
+      if (currentSlideIndex < slideData.totalSlides - 1) {
+        const nextSlide = slideData.slides[currentSlideIndex + 1];
+        const nextHeading = nextSlide.heading || nextSlide.title || 'Next Slide';
+        previewArea.textContent = `Next: ${nextHeading}`;
+        previewArea.className = 'preview-area';
+      } else {
+        previewArea.textContent = 'End of presentation';
+        previewArea.className = 'preview-area end';
+      }
+    }
+
+    // Start timer
+    function startTimer() {
+      if (timerStartTime === null) {
+        timerStartTime = Date.now();
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer(); // Immediate update
+      }
+    }
+
+    // Update timer display
+    function updateTimer() {
+      if (timerStartTime === null) return;
+
+      const elapsed = Math.floor((Date.now() - timerStartTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+
+      const formattedTime =
+        String(minutes).padStart(2, '0') + ':' +
+        String(seconds).padStart(2, '0');
+
+      document.getElementById('timer').textContent = formattedTime;
+    }
+
+    // Navigate to slide
+    function goToSlide(index) {
+      if (index >= 0 && index < slideData.totalSlides) {
+        if (timerStartTime === null) {
+          startTimer();
+        }
+        currentSlideIndex = index;
+        updateDisplay();
+      }
+    }
+
+    // Single entry point for all navigation (keys, buttons, swipes): move, then sync main window
+    function navigate(index) {
+      const target = Math.max(0, Math.min(slideData.totalSlides - 1, index));
+      if (target === currentSlideIndex) return;
+      goToSlide(target);
+      MDSlidesSync.sendSlideChange(currentSlideIndex);
+    }
+
+    function isTypingTarget(t) {
+      return !!(t && t.closest && t.closest('input, textarea, select, [contenteditable]'));
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (isTypingTarget(e.target)) return;
+      switch(e.key) {
+        case ' ':
+        case 'Enter':
+          if (e.target && e.target.closest && e.target.closest('button, a')) return;
+          e.preventDefault();
+          navigate(currentSlideIndex + 1);
+          break;
+        case 'ArrowRight':
+        case 'ArrowDown':
+        case 'PageDown':
+          e.preventDefault();
+          navigate(currentSlideIndex + 1);
+          break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+        case 'PageUp':
+          e.preventDefault();
+          navigate(currentSlideIndex - 1);
+          break;
+        case 'Home':
+          e.preventDefault();
+          navigate(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          navigate(slideData.totalSlides - 1);
+          break;
+        case 'Escape':
+          window.close();
+          break;
+      }
+    });
+
+    // On-screen buttons
+    document.getElementById('speaker-prev').addEventListener('click', () => navigate(currentSlideIndex - 1));
+    document.getElementById('speaker-next').addEventListener('click', () => navigate(currentSlideIndex + 1));
+
+    // Horizontal swipe: left = next, right = previous
+    let touchStartInfo = null;
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) { touchStartInfo = null; return; }
+      const t = e.touches[0];
+      touchStartInfo = { x: t.clientX, y: t.clientY, time: Date.now() };
+    }, { passive: true });
+    document.addEventListener('touchcancel', () => { touchStartInfo = null; }, { passive: true });
+    document.addEventListener('touchend', (e) => {
+      const start = touchStartInfo;
+      touchStartInfo = null;
+      if (!start || e.touches.length > 0) return;
+      if (window.visualViewport && window.visualViewport.scale > 1.05) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - start.x;
+      const dy = t.clientY - start.y;
+      const threshold = Math.max(40, 0.08 * window.innerWidth);
+      if (Math.abs(dx) < threshold || Math.abs(dx) <= 1.5 * Math.abs(dy) || Date.now() - start.time >= 800) return;
+      navigate(dx < 0 ? currentSlideIndex + 1 : currentSlideIndex - 1);
+    }, { passive: true });
+
+    // Initialize display
+    updateDisplay();
+
+    // Listen for sync events from main window
+    MDSlidesSync.receiveSlideChange((slideIndex) => {
+      goToSlide(slideIndex);
+    });
+  </script>
+</body>
+</html>

@@ -27,6 +27,13 @@ Updated 2026-10-09 (GL-032, org GROOM-LOG ID; this queue's previous stamp, "GL-0
 
 | ID | Item | Owner | Status | Depends On |
 |----|------|-------|--------|-----------|
+| WQ-077 | **P2 BUG [found 2026-10-21 by the WQ-075 verifier]** `mdslides-docs/validation.md` (rewritten in WQ-075, `d608eb8`) says MD-Slides "reports every problem in one pass — you see them all at once, not one per render", and has a "Why all problems at once?" section. The v1.1.1 jar doesn't do that:
+- a file with three bad slides (two `---column---` lines, an unknown template, a missing delimiter) reports only `Slide 1: MultipleDelimiters(2)`;
+- an alt-text error on slide 3 hides a density warning on slide 4;
+- an unknown template hides two later structure errors;
+- a missing image fails only after "Validation passed".
+
+A failed render also leaves an empty output folder. Two possible fixes, which is Tony's or /groom's call: correct the docs to what the jar does, or make MD-Slides collect every error (an MD-Slides item). Blocks WQ-075's Done. Queued, not diagnosed further. | Claude | Queued | — |
 | WQ-076 | **P2 BUG [found 2026-10-21 by the WQ-073 verifier]** Two reference links in the thesis article "Modern Commerce Discovery: Revisiting Search" return 404: `https://ref.gs1.org/standards/genspecs/` and `https://ref.gs1.org/standards/gpc/` (checked with curl and a browser user-agent; the CI run of 2026-10-19 still passed, so they broke after that). The next scheduled link check will probably fail on them. Queued, not diagnosed. | Claude | Queued | — |
 | WQ-075 | **[Tony directive, 2026-10-17]** MD-Slides live demo at `/mdslides/demo/` (the feature tour rendered from the released jar by `scripts/build-mdslides-demo.sh`), calls to action on `/projects`, `/mdslides`, the docs intro and the MD-Slides README, and a browser check (`scripts/verify-mdslides-demo.mjs`). Plus a full-surface correction of the MD-Slides docs against v1.1.1 (see MD-Slides HL-070). | Claude | **Implementation complete, needs a verifier** — evidence `docs/agents/evidence/WQ-075.md`; live, browser check 23/23, Tony's phone test passed 2026-10-17 | — |
 | WQ-074 | **[Tony directive, 2026-10-17]** Document MD-Slides v1.1.0 (mobile presenting, fit-to-slide) across `/projects`, `/mdslides` and the MD-Slides docs. | Claude | **Implementation complete, needs a verifier** — evidence `docs/agents/evidence/WQ-074.md` | — |

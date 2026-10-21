@@ -10,12 +10,15 @@ MD-Slides checks every slide before it writes anything, and reports every proble
 Problems come in two kinds:
 
 - **Errors** stop the render. Fix them and render again.
-- **Warnings** are reported, and the presentation is still written.
+- **Warnings** are reported, and the presentation is still written. When there are errors too, the warnings
+  are listed after them, so one render shows you everything.
 
 ```
-✗ Validation failed:
+✗ Validation failed with 4 problem(s):
   - Slide 3: Structure Error - Required slot 'heading' is missing
   - Slide 3: Structure Error - Required slot 'body' is missing
+  - Slide 4: Unknown template 'bogus'. Valid templates: title, content, diagram, closing, section-title, two-column
+  - Slide 5: image file 'images/lamp.png' does not exist (looked for images/lamp.png)
 ```
 
 ```

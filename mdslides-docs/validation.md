@@ -5,13 +5,15 @@ title: Validation
 
 # Validation
 
-MD-Slides checks every slide before it writes anything, and reports every problem in one pass — you see them all at once, not one per render.
+MD-Slides checks every slide before it writes anything, and reports the problems on all slides in one pass, not one slide per render.
+
+On a single slide, some problems are reported first and hide the rest until they're fixed: an image without alt text, a missing slot, or a `two-column` slide without exactly one `---column---` line. Fix those, render again, and that slide's remaining problems (length limits, density, missing image files) show up.
 
 Problems come in two kinds:
 
 - **Errors** stop the render. Fix them and render again.
 - **Warnings** are reported, and the presentation is still written. When there are errors too, the warnings
-  are listed after them, so one render shows you everything.
+  are listed after them.
 
 ```
 ✗ Validation failed with 4 problem(s):
@@ -64,9 +66,9 @@ java -jar md-slides.jar render my-talk --skip-accessibility
 java -jar md-slides.jar render my-talk --accessibility-report report.json
 ```
 
-## Why all problems at once?
+## Why report every slide at once?
 
-Stopping at the first problem means a loop: fix, render, find the next one, fix, render. Showing everything at once respects your time. The domain model uses `Either[NonEmptyList[ValidationError], SlideDeck]` — errors accumulate rather than short-circuit.
+Stopping at the first problem means a loop: fix, render, find the next one, fix, render. Checking every slide in one pass cuts that loop to a round or two. The domain model uses `Either[NonEmptyList[ValidationError], SlideDeck]` — errors accumulate rather than short-circuit.
 
 ## Why density guidance?
 

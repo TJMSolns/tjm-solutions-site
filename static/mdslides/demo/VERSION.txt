@@ -1,1 +1,1 @@
-mdslides v1.1.2
+mdslides v1.1.3

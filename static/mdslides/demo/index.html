@@ -765,12 +765,12 @@ scp -r my-talk/ user@server:/var/www/html/
 
 # Email: zip the folder
 zip -r my-talk.zip my-talk/
-</code></pre><p><code>index.html</code> opens in any browser — no server required.</p></section><section class="column column-right" aria-label="Right column" style="color: #d4d4d4"><p><strong>PDF export — browser print:</strong>
-</p><ol><li>Open <code>my-talk/index.html</code></li><li>File → Print (Ctrl/Cmd + P)</li><li>Destination → Save as PDF</li><li>Print</li></ol><p>Or with headless Chrome:
+</code></pre><p><code>index.html</code> opens in any browser — no server required.</p></section><section class="column column-right" aria-label="Right column" style="color: #d4d4d4"><p><strong>PDF export — browser print</strong> (speaker notes stay out of the PDF):
+</p><ol><li>Open <code>my-talk/index.html</code></li><li>File → Print (Ctrl/Cmd + P)</li><li>Destination → Save as PDF, then Print</li></ol><p>Or with headless Chrome:
 </p><pre><code class="language-bash">chromium --headless \
   --print-to-pdf=my-talk.pdf \
   my-talk/index.html
-</code></pre><p>Speaker notes are in <code>speaker.html</code> — not included in the PDF.</p></section></div></div></div></div><div class="slide align-center" data-slide-index="38"><div class="slide-content-wrapper"><div class="two-column-slide" role="region" aria-label="Two-column slide"><div class="two-column-container"><section class="column column-left" aria-label="Left column" style="color: #d4d4d4"><p>Fullscreen and browser tips<strong>Fullscreen:</strong> <strong>F</strong>, the ⛶ button, or <strong>F11</strong> (Windows/Linux) / <strong>Ctrl+Cmd+F</strong> (Mac).
+</code></pre></section></div></div></div></div><div class="slide align-center" data-slide-index="38"><div class="slide-content-wrapper"><div class="two-column-slide" role="region" aria-label="Two-column slide"><div class="two-column-container"><section class="column column-left" aria-label="Left column" style="color: #d4d4d4"><p>Fullscreen and browser tips<strong>Fullscreen:</strong> <strong>F</strong>, the ⛶ button, or <strong>F11</strong> (Windows/Linux) / <strong>Ctrl+Cmd+F</strong> (Mac).
 </p><p><strong>Syntax highlighting</strong> loads from a CDN, so code is highlighted when you're online. Everything else works offline.</p></section><section class="column column-right" aria-label="Right column" style="color: #d4d4d4"><p><strong>Opening speaker view:</strong>
 </p><ol><li>Press <strong>S</strong> in the presentation</li><li>Drag the new window to your laptop screen</li><li>Navigate from either window</li></ol><p><strong>If speaker view won't open,</strong> allow pop-ups for the page, or serve the folder:
 </p><pre><code class="language-bash">python3 -m http.server 8080

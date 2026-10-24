@@ -33,8 +33,9 @@ Problems come in two kinds:
 - A `two-column` slide without exactly one `---column---` line
 - An image without alt text — `![](photo.png)` is reported with its slide and path; write `![what the photo shows](photo.png)`
 - An image file that doesn't exist
-- Text over a length limit: a heading (`content`, `section-title`, `diagram`, `closing`) or a title-slide author over
-  80 characters, or a diagram caption over 100 characters
+- Text over a length limit: a heading (`content`, `section-title`, `diagram`, `closing`) over 80 characters, a
+  title-slide author over 80 characters including its `**` markers (so 76 visible characters), or a diagram caption
+  over 100 characters
 
 ## Warnings
 
@@ -42,14 +43,13 @@ Problems come in two kinds:
 
 | Template | Guidance |
 |----------|----------|
-| `title` | Title ≤ 2 lines, subtitle ≤ 2 lines |
 | `content` | Body ≤ 12 lines, ≤ 150 words |
 | `section-title` | Body ≤ 12 lines, ≤ 150 words |
 | `two-column` | Each column ≤ 10 lines, ≤ 75 words |
 | `closing` | Body ≤ 12 lines, ≤ 150 words |
-| `diagram` | Caption ≤ 1 line |
 
-Blank lines count as lines; code blocks don't count. A two-column slide has no separate heading: a `##` heading
+Blank lines count as lines; code blocks don't count. Words are counted by spaces, so a list marker (`-`, `1.`) or
+a `##` counts as a word. A two-column slide has no separate heading: a `##` heading
 belongs to the left column and counts toward its limit.
 
 **Theme contrast (WCAG 2.1 AA)** — the theme's text, heading, link and accent colours must reach 4.5:1 against its background. All built-in themes pass. A custom theme that doesn't is reported, and the presentation is still written.

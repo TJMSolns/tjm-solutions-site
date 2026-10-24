@@ -68,7 +68,7 @@ template: title
 **Optional author**
 ```
 
-**Constraints:** H1 title ≤ 2 lines; H2 subtitle ≤ 2 lines; author ≤ 80 characters.
+**Constraints:** author ≤ 80 characters, counting its `**` markers (an error above that). Keep the title and subtitle short; they aren't checked.
 
 ### `content`
 

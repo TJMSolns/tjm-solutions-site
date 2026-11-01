@@ -207,6 +207,15 @@ const config: Config = {
       },
     ],
     [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'sga',
+        path: 'sga-docs',
+        routeBasePath: 'sga/docs',
+        sidebarPath: undefined,
+      },
+    ],
+    [
       '@docusaurus/plugin-pwa',
       {
         debug: false,

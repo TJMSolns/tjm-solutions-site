@@ -35,6 +35,19 @@ const projects: Project[] = [
     demo: '/mdslides/demo/',
     github: 'https://github.com/TJMSolns/MD-Slides',
   },
+  {
+    icon: '🧬',
+    name: 'sga',
+    tagline: 'A genetic algorithm as a functional meta-algorithm',
+    description:
+      'A Scala 3 library where the genetic algorithm is the reusable part, and everything that gives a run its meaning (representation, fitness, selection, crossover, mutation, termination) is a function you pass in. Pure, immutable, and reproducible from a seed. Includes feature selection tested on real chemistry and classic datasets: olive oil, wine, gas sensors, Raman spectra, Iris.',
+    tags: ['Scala 3', 'Mill', 'Library', 'MIT'],
+    status: 'Released',
+    to: '/sga',
+    docsTo: '/sga/docs/intro',
+    demo: '/sga/demo/',
+    github: 'https://github.com/TJMSolns/sga',
+  },
 ];
 
 function ProjectCard({ project }: { project: Project }) {

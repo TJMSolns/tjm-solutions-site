@@ -27,6 +27,8 @@ Updated 2026-10-09 (GL-032, org GROOM-LOG ID; this queue's previous stamp, "GL-0
 
 | ID | Item | Owner | Status | Depends On |
 |----|------|-------|--------|-----------|
+| WQ-078 | **sga project launch (Tony, 2026-11-01).** Branch `sga-launch` adds the sga overview page (`/sga`), docs (`/sga/docs`, ported from the sga repo's README and docs), a demo of three real exported runs (`/sga/demo/`), Scaladoc (`/sga/api/`), and the projects card, matching MD-Slides' four links. Build clean, no broken links; pages checked in a headless browser. **Gate:** Tony previews it, then makes `TJMSolns/sga` public; only then merge to main and `npm run deploy`. | Tony, then Claude | Awaiting Tony's preview | sga repo public |
+| WQ-079 | **P3 BUG [found 2026-11-01 while previewing WQ-078]** On `/projects`, the card footer buttons truncate their labels at a 1280px-wide viewport ("Overvie", "Live demo" clipped). Affects the existing MD-Slides card too, so it predates WQ-078. | Claude | Queued | — |
 | WQ-077 | **P2 BUG [found 2026-10-21 by the WQ-075 verifier]** `mdslides-docs/validation.md` (rewritten in WQ-075, `d608eb8`) says MD-Slides "reports every problem in one pass — you see them all at once, not one per render", and has a "Why all problems at once?" section. The v1.1.1 jar doesn't do that:
 - a file with three bad slides (two `---column---` lines, an unknown template, a missing delimiter) reports only `Slide 1: MultipleDelimiters(2)`;
 - an alt-text error on slide 3 hides a density warning on slide 4;

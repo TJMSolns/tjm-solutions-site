@@ -22,7 +22,7 @@ and classic datasets: olive oil, wine, gas sensors, Raman spectra, molecular des
 
 Each row is reproduced by a test suite in `sga/test`, run on every CI build.
 
-| Dataset | Engine | Result | Fitness |
+| Dataset | Engine | Result | Score |
 |---|---|---|---|
 | Iris | Mitchell SGA (leave-one-out) | `petal_length` + `petal_width` | 0.9667 |
 | Iris | PCKaNN reproduction pipeline | `petal_length` + `petal_width` | 0.886 |
@@ -40,6 +40,13 @@ Each row is reproduced by a test suite in `sga/test`, run on every CI build.
 | Iris | Hierarchical clustering (threshold 0.5) | `{sepal_length, petal_length, petal_width}` vs. `{sepal_width}` | n/a |
 | Iris | mRMR vs. relevance-only (top 2) | the redundancy-penalized pair scores *worse* | 0.9533 vs. 0.96 |
 | Iris | RFECV (best across the trajectory) | the full 4-feature set beats every smaller subset | 0.9667 |
+
+**How to read the scores.** Unless a row says held-out, a score is leave-one-out accuracy on the
+samples the search ran on (PCKaNN's row is its own fitness, a class-purity score, and the Boruta
+and clustering rows report their own outcomes). Because the search keeps the best of many feature
+sets scored on those same samples, these scores overstate accuracy on new data: the winner won
+partly by chance, which is selection bias (Ambroise & McLachlan, 2002). The held-out rows are
+measured on samples the search never saw.
 
 *Mitchell SGA* is the Simple Genetic Algorithm as described by Melanie Mitchell in *An
 Introduction to Genetic Algorithms*. *PCKaNN* is a feature-selection
@@ -259,8 +266,6 @@ A few things worth knowing about:
 - Leave-one-out costs O(n²) in the number of samples. The CLI warns about it; it doesn't fix it.
 - Classification only, no regression.
 - AdaBoost handles binary labels only.
-- PCKaNN's fitness weighting for feature-count reduction is left open on purpose: its two
-  primary sources disagree, and the code says so rather than guessing. See [`FAQ.md`](./faq).
 - There is no secrets-handling story in the `io` layer beyond the standard Postgres environment
   variables, which any warehouse-style source would need first.
 
@@ -290,14 +295,16 @@ What's planned next is in [`ROADMAP.md`](https://github.com/TJMSolns/sga/blob/ma
 
 ## References
 
+- Ambroise, C. & McLachlan, G. J. (2002). Selection bias in gene extraction on the basis of
+  microarray gene-expression data. *PNAS* 99(10), 6562–6566.
 - Mitchell, M. (1996). *An Introduction to Genetic Algorithms*. MIT Press.
 - Moores, A. (1998). *PCKaNN: A Feature Selecting Routine*. Department of Chemistry, Clarkson
   University, Potsdam, NY.
 - Moores, A. (2000). *The Learning Genetic Algorithm: A Hybrid Learning System*. M.S. thesis,
   Computer Science, Clarkson University, Potsdam, NY.
 
-The two Moores sources disagree on whether PCKaNN's fitness rewards using fewer features; `sga`
-leaves that open rather than guessing (see [`FAQ.md`](./faq)). The design ideas behind the
+In PCKaNN, feature count only broke ties between genomes of equal fitness; `sga` doesn't
+replicate that detail (see [`FAQ.md`](./faq)). The design ideas behind the
 engine are written up in [Great Martinis & Algorithms are DRY](https://www.tjm.solutions/articles/2026/08/16/great-martinis-and-algorithms-are-dry)
 and [Name the Dragon](https://www.tjm.solutions/articles/2026/07/11/name-the-dragon).
 

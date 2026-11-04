@@ -42,16 +42,12 @@ boosting (SAMME, or a one-vs-rest decomposition) is real, documented,
 not-yet-built work, not an oversight. See
 [Known Limitations](./intro#limitations).
 
-## Why is PCKaNN's reduction-reward weighting unresolved?
+## Does `sga`'s PCKaNN reward using fewer features?
 
-PCKaNN's fitness function — whether/how it weights feature-count reduction
-alongside classification accuracy — is genuinely unresolved between its
-two real primary sources (a 1998 article describing one weighting scheme,
-a 2000 thesis stating the reduction term wasn't originally part of the
-fitness function at all). Rather than guess or invent a resolution, `sga`
-leaves this deferred and documents the disagreement directly in
-`ml.Classification.fitness`'s own docstring. Both sources are listed
-in the README's References.
+No. In the original method, feature count only broke ties between genomes of
+equal fitness, as its author confirms; it was never a weighted term. `sga`
+implements PCKaNN's fitness and pipeline, not every detail of the original
+program, and doesn't break ties by feature count.
 
 ## Does `sga` handle regression, not just classification?
 

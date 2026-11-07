@@ -5,7 +5,7 @@ title: Introduction
 
 # sga
 
-**[Try the live demo](pathname:///sga/demo/)**: three real runs (Iris, olive oil, a 128-feature gas sensor array), plotted. **[API reference](pathname:///sga/api/index.html)** · **[GitHub](https://github.com/TJMSolns/sga)**
+**[Try the live demo](pathname:///sga/demo/)**: sga's own code, compiled to JavaScript, choosing features in your browser on Iris, Wine, Glass, QSAR or generated data, a generation or a pair at a time. **[API reference](pathname:///sga/api/index.html)** · **[GitHub](https://github.com/TJMSolns/sga)**
 
 A simple genetic algorithm, built as a functional meta-algorithm. The evolutionary loop is the
 reusable part. Everything that gives one run its meaning (the genome representation, fitness,
@@ -150,7 +150,7 @@ PGUSER=myuser PGPASSWORD=mypass mill sga.runMain --mainClass solutions.tjm.sga.c
 On a large dataset the CLI warns, but doesn't refuse, when leave-one-out's O(n²) cost is likely
 to make the run slow.
 
-**Looking at a run.** [`visualize.html`](pathname:///sga/demo/) is a standalone page (no build, no
+**Looking at a run.** [`visualize.html`](https://github.com/TJMSolns/sga/blob/main/visualize.html) is a standalone page (no build, no
 server) that plots a run's fitness trajectory, selected features and principal-component scatter
 from the JSON that `Cli.toJson` produces. It has a "Load a sample run" button. The CLI binary
 itself still prints only the plain-text summary; a `--json` flag isn't built yet.

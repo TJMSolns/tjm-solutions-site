@@ -1,595 +1,85 @@
-<title>sga Run Viewer</title>
-<style>
-  :root {
-    --bg: #F5F6F1;
-    --surface: #FFFFFF;
-    --surface-sunken: #EFF1EA;
-    --ink: #16211C;
-    --ink-soft: #4A564E;
-    --ink-faint: #7C877E;
-    --accent: #B9770E;
-    --accent-soft: #F1DFB8;
-    --accent-wash: #FBF3E2;
-    --line: #D8DCD2;
-    --line-strong: #C2C8BA;
-    --danger: #9A3324;
-  }
-  :root:not([data-theme="light"]) {
-    @media (prefers-color-scheme: dark) {
-      --bg: #111613;
-      --surface: #171F1A;
-      --surface-sunken: #0E1310;
-      --ink: #EDEFE9;
-      --ink-soft: #AEB8AC;
-      --ink-faint: #6E786F;
-      --accent: #D89B3C;
-      --accent-soft: #3A2E14;
-      --accent-wash: #241D0F;
-      --line: #2A332B;
-      --line-strong: #3A453B;
-      --danger: #D97862;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #111613;
-    --surface: #171F1A;
-    --surface-sunken: #0E1310;
-    --ink: #EDEFE9;
-    --ink-soft: #AEB8AC;
-    --ink-faint: #6E786F;
-    --accent: #D89B3C;
-    --accent-soft: #3A2E14;
-    --accent-wash: #241D0F;
-    --line: #2A332B;
-    --line-strong: #3A453B;
-    --danger: #D97862;
-  }
-
-  * { box-sizing: border-box; }
-  html { color-scheme: light dark; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-  ::selection { background: var(--accent-soft); }
-
-  .wrap {
-    max-width: 1040px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 5rem;
-  }
-
-  header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--line-strong);
-  }
-  h1 {
-    font-family: "Instrument Serif", Georgia, serif;
-    font-weight: 400;
-    font-size: 2.1rem;
-    letter-spacing: 0.01em;
-    margin: 0;
-    text-wrap: balance;
-  }
-  h1 em {
-    font-style: italic;
-    color: var(--accent);
-  }
-  .tagline {
-    font-size: 0.82rem;
-    color: var(--ink-faint);
-    max-width: 26ch;
-    text-align: right;
-    line-height: 1.4;
-  }
-
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-  }
-
-  /* ---- loader ---- */
-  .loader {
-    padding: 2.25rem 1.75rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    transition: border-color 120ms ease, background 120ms ease;
-  }
-  .loader.drag {
-    border-color: var(--accent);
-    background: var(--accent-wash);
-  }
-  .loader h2 {
-    font-family: "Instrument Serif", serif;
-    font-weight: 400;
-    font-size: 1.3rem;
-    margin: 0 0 0.35rem;
-  }
-  .loader p {
-    color: var(--ink-soft);
-    font-size: 0.88rem;
-    margin: 0 0 1.1rem;
-  }
-  .loader-actions {
-    display: flex;
-    gap: 0.6rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  button, .file-btn {
-    font: inherit;
-    font-family: "IBM Plex Sans", sans-serif;
-    font-size: 0.84rem;
-    font-weight: 500;
-    padding: 0.55rem 1.1rem;
-    border-radius: 7px;
-    border: 1px solid var(--line-strong);
-    background: var(--surface);
-    color: var(--ink);
-    cursor: pointer;
-  }
-  button:hover, .file-btn:hover { border-color: var(--accent); color: var(--accent); }
-  button:focus-visible, .file-btn:focus-visible, input:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-  .file-btn.primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
-  .file-btn.primary:hover { color: #fff; opacity: 0.92; }
-  input[type="file"] { display: none; }
-  .schema-note {
-    margin-top: 1rem;
-    font-size: 0.76rem;
-    color: var(--ink-faint);
-  }
-  .schema-note code {
-    background: var(--surface-sunken);
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
-    font-family: "IBM Plex Mono", monospace;
-  }
-
-  .error {
-    display: none;
-    margin-bottom: 1.5rem;
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--danger);
-    background: var(--accent-wash);
-    color: var(--danger);
-    font-size: 0.85rem;
-  }
-
-  #report { display: none; }
-
-  /* ---- instrument strip ---- */
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-  }
-  .stat {
-    background: var(--surface);
-    padding: 1rem 1.1rem;
-  }
-  .stat .label {
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-faint);
-    margin-bottom: 0.35rem;
-  }
-  .stat .value {
-    font-family: "IBM Plex Mono", monospace;
-    font-variant-numeric: tabular-nums;
-    font-size: 1.5rem;
-    font-weight: 500;
-  }
-  .stat.hero .value { color: var(--accent); }
-  .stat .sub { font-size: 0.72rem; color: var(--ink-faint); margin-top: 0.15rem; }
-
-  /* ---- sections ---- */
-  section.block {
-    padding: 1.4rem 1.5rem 1.6rem;
-    margin-bottom: 1.5rem;
-  }
-  .block h2 {
-    font-family: "Instrument Serif", serif;
-    font-weight: 400;
-    font-size: 1.25rem;
-    margin: 0 0 0.15rem;
-  }
-  .block .desc {
-    font-size: 0.8rem;
-    color: var(--ink-faint);
-    margin-bottom: 1rem;
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  .chip {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.78rem;
-    background: var(--accent-wash);
-    color: var(--accent);
-    border: 1px solid var(--accent-soft);
-    padding: 0.28rem 0.6rem;
-    border-radius: 5px;
-  }
-
-  .chart-scroll { overflow-x: auto; }
-  svg text { fill: var(--ink-faint); font-family: "IBM Plex Mono", monospace; }
-  .grid-line { stroke: var(--line); stroke-width: 1; }
-  .axis-line { stroke: var(--line-strong); stroke-width: 1; }
-  .trajectory-path { fill: none; stroke: var(--accent); stroke-width: 2; }
-  .trajectory-area { fill: var(--accent); opacity: 0.08; }
-  .endpoint-dot { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
-  .endpoint-label {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.72rem;
-    fill: var(--ink);
-    font-weight: 500;
-  }
-
-  .scatter-dot { stroke: var(--surface); stroke-width: 1; opacity: 0.85; }
-  .legend { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 0.9rem; }
-  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--ink-soft); }
-  .legend-swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-
-  .empty-note {
-    font-size: 0.8rem;
-    color: var(--ink-faint);
-    font-style: italic;
-  }
-
-  .reload-row { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
-  .reload-row button { font-size: 0.78rem; padding: 0.4rem 0.85rem; }
-
-  @media (max-width: 640px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    header { flex-direction: column; align-items: flex-start; }
-    .tagline { text-align: left; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
-  }
-</style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sga, in your browser</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
 <div class="wrap">
   <header>
-    <h1>sga <em>Run Viewer</em></h1>
-    <div class="tagline">Reads the JSON a genetic-algorithm run exports — nothing is computed here, only plotted.</div>
+    <h1>sga <em>in your browser</em></h1>
+    <p class="tagline">A genetic algorithm choosing features, running on your machine. Nothing you do here leaves this page.</p>
   </header>
 
-  <div class="error" id="error"></div>
+  <p class="intro">Each preset is a configuration from sga's own tests, with its result pinned by a test. Run one and the page reproduces that result exactly, using the same Scala code compiled to JavaScript. Then pause, step and rewind to see how the population got there.</p>
 
-  <div class="panel loader" id="loader">
-    <h2>Load a run</h2>
-    <p>Look at a real run, or drop in a JSON file exported by <code>sga</code> (<code>Cli.toJson</code>).</p>
-    <div class="loader-actions">
-      <label class="file-btn primary" for="filepick">Choose file&hellip;</label>
-      <input type="file" id="filepick" accept="application/json,.json">
-      <button type="button" data-sample="iris">Iris</button>
-      <button type="button" data-sample="olive">Olive oil</button>
-      <button type="button" data-sample="gas">Gas sensors (128 features)</button>
-    </div>
-    <div class="schema-note">
-      Expects <code>{seed, populationSize, generationsRun, bestFitness, selectedFeatures, fitnessTrajectory}</code>
-      — sga's real, current CLI export shape. An optional <code>pcProjection: [[pc1, pc2, label], &hellip;]</code>
-      array is also read, if present, for the PC scatter panel below (<code>Cli.toJson</code> fills it in when
-      given the dataset).
-    </div>
+  <section class="panel setup" aria-labelledby="setup-heading">
+    <h2 id="setup-heading">Configuration</h2>
+    <p class="preset-row"><label for="preset">Preset</label> <select id="preset"></select> <span id="reset-slot"></span></p>
+    <p id="config" class="config"></p>
+    <div id="dataset-info" class="dataset-info"></div>
+    <div id="settings" class="settings"></div>
+    <div id="invalid" class="invalid" role="alert"></div>
+    <div id="notes" class="notes" aria-live="polite"></div>
+    <p id="estimate" class="note"></p>
+    <details id="code-panel" class="code-panel">
+      <summary>The code behind this configuration</summary>
+      <p class="note">An excerpt: the algorithm value and the run call, over a scaled dataset named <code>scaled</code>. For a whole program, data loading and scaling included, see <a href="../docs/intro#as-a-library">the documentation</a>.</p>
+      <pre><code id="code"></code></pre>
+    </details>
+  </section>
+
+  <section class="panel controls" aria-label="Run controls">
+    <div class="buttons" id="buttons"></div>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+  </section>
+
+  <section class="stats" id="stats" aria-label="The run so far"></section>
+
+  <section class="panel" aria-labelledby="chart-heading">
+    <h2 id="chart-heading">Fitness by generation</h2>
+    <div id="chart"></div>
+    <p id="chart-note" class="note"></p>
+  </section>
+
+  <section class="panel" aria-labelledby="effects-heading">
+    <h2 id="effects-heading">One pair at a time</h2>
+    <div id="effects" aria-live="polite"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="grid-heading">
+    <h2 id="grid-heading">The population, generation by generation</h2>
+    <p class="note">Each block is one generation: a row per genome, best first, a filled cell where it selects that feature, and a bar for its fitness. Scroll back through earlier generations; click a row to see where that genome came from.</p>
+    <div id="grid" class="grid-strip" tabindex="0" aria-label="Population blocks, one per generation; the lineage panel below lists the same individuals by position"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="heatmap-heading">
+    <h2 id="heatmap-heading">Which features the population is settling on</h2>
+    <p class="note">For each generation (across) and feature (down), the share of the population selecting it: darker is more. Planted features are starred. Under it, how many distinct masks each generation holds.</p>
+    <div id="heatmap" class="heatmap"></div>
+    <p id="diversity" class="diversity" role="status" aria-live="polite"></p>
+  </section>
+
+  <div class="two-up">
+    <section class="panel" aria-labelledby="lineage-heading">
+      <h2 id="lineage-heading">Where the best solution came from</h2>
+      <div id="lineage"></div>
+    </section>
+    <section class="panel" aria-labelledby="scatter-heading">
+      <h2 id="scatter-heading">The samples, on the best-ever's features</h2>
+      <div id="scatter"></div>
+    </section>
   </div>
 
-  <div id="report">
-    <div class="reload-row"><button id="reloadBtn" type="button">&larr; Load a different run</button></div>
-    <div class="block desc" id="runCaption"></div>
-
-    <div class="stats" id="stats"></div>
-
-    <section class="block panel">
-      <h2>Fitness trajectory</h2>
-      <div class="desc">Best fitness in each generation. The engine isn't elitist, so a generation can lose the best genome found so far; the best ever is the figure above.</div>
-      <div class="chart-scroll"><svg id="trajectoryChart"></svg></div>
-    </section>
-
-    <section class="block panel">
-      <h2>Selected features</h2>
-      <div class="desc" id="featureDesc"></div>
-      <div class="chips" id="featureChips"></div>
-    </section>
-
-    <section class="block panel" id="pcSection">
-      <h2>PC projection</h2>
-      <div class="desc">Winning genome, masked and projected onto its top 2 principal components.</div>
-      <div id="pcContent"></div>
-    </section>
-  </div>
+  <section class="panel" id="result-panel" aria-labelledby="result-heading" hidden>
+    <h2 id="result-heading">Result</h2>
+    <div id="result"></div>
+  </section>
 </div>
-
-<script>
-(function () {
-  "use strict";
-
-  var $ = function (id) { return document.getElementById(id); };
-  var loader = $("loader"), report = $("report"), errorBox = $("error");
-
-  // Real runs, exported by sga's Cli.toJson (seed 42), not illustrative numbers.
-  var SAMPLES = {
-    iris: { title: "Iris", caption: "Iris flowers, 150 samples, 4 measurements, 3 species. Seed 42.", data: {"seed":42,"populationSize":20,"generationsRun":30,"bestFitness":0.9666666666666667,"selectedFeatures":["petal_length","petal_width"],"fitnessTrajectory":[0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.96,0.9666666666666667,0.9666666666666667,0.96,0.96,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667,0.9666666666666667],"pcProjection":[[1.877842846574178,-0.01752368402791793,"setosa"],[1.877842846574178,-0.01752368402791793,"setosa"],[1.9180329765699815,-0.057713814023721444,"setosa"],[1.8376527165783743,0.022666445967885696,"setosa"],[1.877842846574178,-0.01752368402791793,"setosa"],[1.5711164363186292,-0.08310931430864532,"setosa"],[1.784764836440109,-0.11060169416198695,"setosa"],[1.8376527165783743,0.022666445967885696,"setosa"],[1.877842846574178,-0.01752368402791793,"setosa"],[1.9307307267124434,0.11574445610195461,"setosa"],[1.8376527165783743,0.022666445967885696,"setosa"],[1.7974625865825709,0.06285657596368921,"setosa"],[1.970920856708247,0.07555432610615098,"setosa"],[2.0914912466956577,-0.04501606388125956,"setosa"],[1.958223106565785,-0.09790394401952485,"setosa"],[1.6514966963102362,-0.16348957430025246,"setosa"],[1.7318769563018432,-0.2438698342918596,"setosa"],[1.784764836440109,-0.11060169416198695,"setosa"],[1.664194446452698,0.009968695825423812,"setosa"],[1.7445747064443053,-0.07041156416618333,"setosa"],[1.7572724565867672,0.10304670595949283,"setosa"],[1.6514966963102362,-0.16348957430025246,"setosa"],[2.038603366557392,-0.1782842040111321,"setosa"],[1.4780384261845598,-0.17618732444271445,"setosa"],[1.6768921965951602,0.18342696595109975,"setosa"],[1.7974625865825709,0.06285657596368921,"setosa"],[1.6113065663144326,-0.12329944430444895,"setosa"],[1.8376527165783743,0.022666445967885696,"setosa"],[1.877842846574178,-0.01752368402791793,"setosa"],[1.7974625865825709,0.06285657596368921,"setosa"],[1.7974625865825709,0.06285657596368921,"setosa"],[1.6514966963102362,-0.16348957430025246,"setosa"],[1.9307307267124434,0.11574445610195461,"setosa"],[1.877842846574178,-0.01752368402791793,"setosa"],[1.8376527165783743,0.022666445967885696,"setosa"],[1.958223106565785,-0.09790394401952485,"setosa"],[1.9180329765699815,-0.057713814023721444,"setosa"],[1.970920856708247,0.07555432610615098,"setosa"],[1.9180329765699815,-0.057713814023721444,"setosa"],[1.8376527165783743,0.022666445967885696,"setosa"],[1.8249549664359126,-0.15079182415779047,"setosa"],[1.8249549664359126,-0.15079182415779047,"setosa"],[1.9180329765699815,-0.057713814023721444,"setosa"],[1.4251505460462943,-0.309455464572587,"setosa"],[1.490736176327022,-0.002729054317038404,"setosa"],[1.784764836440109,-0.11060169416198695,"setosa"],[1.7974625865825709,0.06285657596368921,"setosa"],[1.877842846574178,-0.01752368402791793,"setosa"],[1.8376527165783743,0.022666445967885696,"setosa"],[1.877842846574178,-0.01752368402791793,"setosa"],[-0.5653675648961686,0.19181448422477088,"versicolor"],[-0.5780653150386306,0.018356214099094548,"versicolor"],[-0.738825835021845,0.17911673408230883,"versicolor"],[-0.19095864479147467,0.003561584388214814,"versicolor"],[-0.618255445034434,0.05854634409489795,"versicolor"],[-0.3919092947704926,0.20451223436723262,"versicolor"],[-0.751523585164307,0.005658463956632553,"versicolor"],[0.3696062955813576,0.0014647048197971302,"versicolor"],[-0.432099424766296,0.24470236436303602,"versicolor"],[-0.24384652492973996,-0.12970655574165765,"versicolor"],[0.28922603558975046,0.08184496481140427,"versicolor"],[-0.45749492505121997,-0.10221417588831605,"versicolor"],[0.0882753856107326,0.28279561479042203,"versicolor"],[-0.5653675648961686,0.19181448422477088,"versicolor"],[-0.03019812480826045,-0.15719893559499937,"versicolor"],[-0.44479717490875803,0.07124409423736033,"versicolor"],[-0.5780653150386306,0.018356214099094548,"versicolor"],[0.04808525561492916,0.32298574478622544,"versicolor"],[-0.5780653150386306,0.018356214099094548,"versicolor"],[0.035387505472467023,0.1495274746605493,"versicolor"],[-0.9778697354282484,-0.1403074263157021,"versicolor"],[-0.19095864479147467,0.003561584388214814,"versicolor"],[-0.738825835021845,0.17911673408230883,"versicolor"],[-0.37921154462803053,0.3779705044929089,"versicolor"],[-0.3115290347788853,0.12413197437562543,"versicolor"],[-0.44479717490875803,0.07124409423736033,"versicolor"],[-0.6055576948919721,0.23200461422057433,"versicolor"],[-0.9651719852857866,0.033150843809974184,"versicolor"],[-0.5780653150386306,0.018356214099094548,"versicolor"],[0.28922603558975046,0.08184496481140427,"versicolor"],[0.07557763546827062,0.1093373446647457,"versicolor"],[0.2088457755981432,0.16222522480301146,"versicolor"],[-0.05769050466160192,0.05644946452648037,"versicolor"],[-0.912284105147521,0.1664189839398465,"versicolor"],[-0.5780653150386306,0.018356214099094548,"versicolor"],[-0.6711433251726998,-0.07472179603497459,"versicolor"],[-0.6584455750302378,0.09873647409070169,"versicolor"],[-0.3517191647746891,0.16432210437142922,"versicolor"],[-0.23114877478727813,0.04375171438401823,"versicolor"],[-0.19095864479147467,0.003561584388214814,"versicolor"],[-0.25864115464061993,0.2574001145054984,"versicolor"],[-0.5251774349003648,0.15162435422896714,"versicolor"],[-0.09788063465740551,0.09663959452228396,"versicolor"],[0.3696062955813576,0.0014647048197971302,"versicolor"],[-0.2713389047830819,0.08394184437982202,"versicolor"],[-0.17826089464901276,0.17701985451389116,"versicolor"],[-0.2713389047830819,0.08394184437982202,"versicolor"],[-0.3115290347788853,0.12413197437562543,"versicolor"],[0.39709867543469907,-0.21218369530168263,"versicolor"],[-0.23114877478727813,0.04375171438401823,"versicolor"],[-2.111697366316375,-0.3095719373045426,"virginica"],[-1.1915181355497282,-0.11281504646236051,"virginica"],[-1.6991951957842952,0.02254997323593011,"virginica"],[-1.2993907753946772,0.1812136136507264,"virginica"],[-1.7520830759225607,-0.11071816689394276,"virginica"],[-1.9805261057549197,0.3038808832065547,"virginica"],[-0.7642213353067688,-0.16779980616904355,"virginica"],[-1.580721685365302,0.46254452362135123,"virginica"],[-1.3797710353862842,0.26159387364233355,"virginica"],[-2.1518874963121783,-0.2693818073087392,"virginica"],[-1.284596145683797,-0.20589305659642965,"virginica"],[-1.2718983955413354,-0.03243478647075326,"virginica"],[-1.5384346758010807,-0.1382105467472844,"virginica"],[-1.2444060156879937,-0.246083186592233,"virginica"],[-1.6569081862200734,-0.5782050971327057,"virginica"],[-1.6442104360776115,-0.40474682700702935,"virginica"],[-1.2592006453988733,0.1410234836549228,"virginica"],[-2.113794245884793,0.2509930030682894,"virginica"],[-2.2872525160104686,0.23829525292582798,"virginica"],[-0.7790159650176485,0.21930686407811228,"virginica"],[-1.804970956060826,-0.24398630702381485,"virginica"],[-1.2042158856921903,-0.28627331658803645,"virginica"],[-1.9276382256166547,0.4371490233364277,"virginica"],[-1.0180598654240522,-0.10011729631989841,"virginica"],[-1.6188149357926882,-0.05783028675567703,"virginica"],[-1.4601512953778915,0.3419741336339407,"virginica"],[-0.9778697354282484,-0.1403074263157021,"virginica"],[-1.0180598654240522,-0.10011729631989841,"virginica"],[-1.5786248057968844,-0.09802041675148077,"virginica"],[-1.1936150151181462,0.44774989391047165,"virginica"],[-1.593419435507764,0.2890862534956752,"virginica"],[-1.807067835629244,0.31657863334901704,"virginica"],[-1.6717028159309537,-0.1910984268855499,"virginica"],[-0.8192060950134519,0.25949699407391563,"virginica"],[-0.9270787348584006,0.5535256541870028,"virginica"],[-1.96573147604404,-0.08322578704060091,"virginica"],[-1.8578588361990915,-0.3772544471536877,"virginica"],[-1.2592006453988733,0.1410234836549228,"virginica"],[-0.9778697354282484,-0.1403074263157021,"virginica"],[-1.4982445458052773,-0.1784006767430878,"virginica"],[-1.8578588361990915,-0.3772544471536877,"virginica"],[-1.5638301760860043,-0.4851270869986366,"virginica"],[-1.1915181355497282,-0.11281504646236051,"virginica"],[-1.8853512160524333,-0.1636060470322077,"virginica"],[-1.9911269763289643,-0.4301423272919531,"virginica"],[-1.6040203060818081,-0.44493695700283276,"virginica"],[-1.1513280055539248,-0.15300517645816386,"virginica"],[-1.324786275679601,-0.1657029266006258,"virginica"],[-1.6844005660734154,-0.3645566970112256,"virginica"],[-1.098440125415659,-0.0197370363282916,"virginica"]]} },
-    olive: { title: "Olive oil", caption: "Olive oils by region of Italy: 8 fatty acids measured by gas chromatography, a stratified 90-sample subset. Seed 42.", data: {"seed":42,"populationSize":20,"generationsRun":30,"bestFitness":1.0,"selectedFeatures":["stearic","oleic","linolenic","eicosenoic"],"fitnessTrajectory":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"pcProjection":[[2.1167575071450195,0.9007708026048016,"Northern Italy"],[1.7041630591234884,0.9450825084476007,"Northern Italy"],[1.3740150492108212,0.9379605307870219,"Northern Italy"],[1.0063894422896134,1.1500220423632228,"Northern Italy"],[1.269199534753569,0.865082962008283,"Northern Italy"],[0.602793780345639,0.8693265398690028,"Northern Italy"],[2.185669084425016,1.053055604115794,"Northern Italy"],[1.8398937400311672,1.3389852875405104,"Northern Italy"],[0.7289518735397509,0.8785308362722493,"Northern Italy"],[1.9980315404644684,1.0273417330016301,"Northern Italy"],[1.2941687685447707,1.0376024824434802,"Northern Italy"],[1.810466447999363,1.0441992042222814,"Northern Italy"],[1.2915686111019573,0.9893942142904009,"Northern Italy"],[1.7215758429070172,0.6835177997574345,"Northern Italy"],[0.8623186504234288,1.099803466486046,"Northern Italy"],[0.5903059966250725,1.047863231885334,"Northern Italy"],[1.1456415990022708,0.9040869337581158,"Northern Italy"],[0.8148945548711768,0.9689880772692037,"Northern Italy"],[0.8371187282286803,1.0081566448816832,"Northern Italy"],[0.8141506176618656,0.9558685137712328,"Northern Italy"],[0.6919356533383049,0.9359689278473688,"Northern Italy"],[1.3788470182815684,1.0255274894340176,"Northern Italy"],[1.0228276004602834,0.9562104690059195,"Northern Italy"],[0.5196034050274637,0.9076406598744111,"Northern Italy"],[0.35263695408990714,0.8477052952216038,"Northern Italy"],[1.209285974916463,0.8738346747329276,"Northern Italy"],[1.0145655060124847,1.2989168326612683,"Northern Italy"],[1.7334510131796728,1.1111767252009888,"Northern Italy"],[1.7891444487592763,0.8947061589421236,"Northern Italy"],[1.8287680719830883,0.8808967436997281,"Northern Italy"],[-0.9660028291158143,0.5668926180821254,"Southern Italy"],[-0.6337058204665196,0.17185658511954627,"Southern Italy"],[-1.038057281287044,0.8535299337381294,"Southern Italy"],[-2.3398154429187428,1.1123066241440025,"Southern Italy"],[-3.2037317416906848,0.46249289053228215,"Southern Italy"],[-3.3531340289089426,0.7075996326112475,"Southern Italy"],[-2.541698149513615,0.6903108127221086,"Southern Italy"],[-1.5921073862483968,0.3238678678486643,"Southern Italy"],[-2.02462730951932,0.45449022080292256,"Southern Italy"],[-0.09909860483129251,0.8611703376558588,"Southern Italy"],[0.32406556188998853,0.6340214811361334,"Southern Italy"],[-1.3752267599630454,0.5809444743583131,"Southern Italy"],[-1.7449874347821368,0.9441164367889738,"Southern Italy"],[-1.7217972796453933,0.9579024286089017,"Southern Italy"],[-2.8964832753003673,0.5424168513872807,"Southern Italy"],[-0.2248644485831343,0.32324215315809723,"Southern Italy"],[-0.5033514003452982,1.5350639077831332,"Southern Italy"],[-1.1069616869834027,-0.10802711608865598,"Southern Italy"],[-0.9451415400654657,1.728730144124371,"Southern Italy"],[-2.23037316989961,0.2463092677492951,"Southern Italy"],[-3.058730844333762,0.7933517862382127,"Southern Italy"],[-3.9414692571746626,0.129060582102209,"Southern Italy"],[-3.404252716940602,0.6637540911315571,"Southern Italy"],[-1.3765833433181416,0.6833069395341145,"Southern Italy"],[-2.405764993885933,0.5356155376929577,"Southern Italy"],[-1.6157278752822877,-0.6790364908560732,"Southern Italy"],[-1.3420314840053758,-0.7849900972468077,"Southern Italy"],[-1.59267957701595,-1.2399281501370027,"Southern Italy"],[-2.4170340973513955,-1.8727630529966093,"Southern Italy"],[-2.238399191221508,-0.9488096127892653,"Southern Italy"],[-0.3235483161027014,-1.0005074117503445,"Sardinia"],[0.3969006327948629,-0.7159120992772493,"Sardinia"],[0.5817167803752925,-0.7836017513505796,"Sardinia"],[0.18986108049159667,-1.1734347373890548,"Sardinia"],[0.6180018739622455,-0.9022881801392274,"Sardinia"],[0.5726654556817092,-1.5649312861044486,"Sardinia"],[0.9057986638978642,-1.631399008317231,"Sardinia"],[0.786013721443815,-0.9065041985593042,"Sardinia"],[0.5534853528936516,-1.1009457149672528,"Sardinia"],[0.4341722506598704,-1.4754937497618184,"Sardinia"],[0.8581191706820506,-1.0600708386246236,"Sardinia"],[0.4539521563010219,-2.4975461646433375,"Sardinia"],[0.48924981368029763,-2.500350684383566,"Sardinia"],[0.5580889394648516,-2.3906372252073966,"Sardinia"],[0.4532806705871527,-2.4680943858064897,"Sardinia"],[0.36240574361321226,-2.47094401830925,"Sardinia"],[0.4013728956046622,-2.62491879047525,"Sardinia"],[0.32065384444449846,-1.2570858748791904,"Sardinia"],[0.6895860601804975,-0.6592237681403366,"Sardinia"],[0.6720680971476063,-1.2736897399588754,"Sardinia"],[0.5351687144284197,-0.7680261186842511,"Sardinia"],[0.22025911368528178,-0.8638830174336428,"Sardinia"],[1.121060586907408,-0.7256947380217068,"Sardinia"],[0.6368930826981537,-1.0115458079682038,"Sardinia"],[0.3565633466370191,-1.3800422895066458,"Sardinia"],[0.3742412271423029,-0.8500507687789131,"Sardinia"],[0.4346680357851729,-0.7648102191747532,"Sardinia"],[0.3162030317834483,-1.3839320295825803,"Sardinia"],[1.1040486271007273,-1.2415888556910863,"Sardinia"],[0.9876826799932001,-0.8598690044451024,"Sardinia"]]} },
-    gas: { title: "Gas sensors", caption: "A 128-feature electronic-nose sensor array, 6 gases, a stratified 90-sample subset. Seed 42.", data: {"seed":42,"populationSize":20,"generationsRun":30,"bestFitness":0.8666666666666667,"selectedFeatures":["feature_2","feature_4","feature_5","feature_6","feature_7","feature_8","feature_9","feature_12","feature_13","feature_15","feature_16","feature_19","feature_20","feature_23","feature_26","feature_27","feature_28","feature_29","feature_31","feature_33","feature_34","feature_36","feature_37","feature_38","feature_43","feature_44","feature_45","feature_47","feature_48","feature_51","feature_55","feature_57","feature_58","feature_59","feature_60","feature_61","feature_65","feature_70","feature_73","feature_74","feature_75","feature_76","feature_78","feature_82","feature_83","feature_84","feature_86","feature_87","feature_88","feature_89","feature_90","feature_92","feature_95","feature_96","feature_99","feature_101","feature_103","feature_104","feature_105","feature_107","feature_108","feature_109","feature_114","feature_115","feature_116","feature_117","feature_120","feature_122","feature_123","feature_124","feature_125","feature_127"],"fitnessTrajectory":[0.8111111111111111,0.8222222222222222,0.8444444444444444,0.8444444444444444,0.8444444444444444,0.8222222222222222,0.8444444444444444,0.8222222222222222,0.8222222222222222,0.8555555555555555,0.8333333333333334,0.8666666666666667,0.8222222222222222,0.8222222222222222,0.8222222222222222,0.8222222222222222,0.8111111111111111,0.8222222222222222,0.8111111111111111,0.8111111111111111,0.8111111111111111,0.8111111111111111,0.8,0.8111111111111111,0.8,0.8,0.8111111111111111,0.8111111111111111,0.8,0.8,0.8111111111111111],"pcProjection":[[-8.59263076818671,0.6610044336130955,"Acetaldehyde"],[-6.765544693221526,-0.14073455433037746,"Acetaldehyde"],[-5.690637543179399,-0.5128911727661103,"Acetaldehyde"],[-4.599995260430147,-0.9349513744541859,"Acetaldehyde"],[-3.3230931253465923,-1.2376470117187033,"Acetaldehyde"],[-1.3946561481319018,-2.0482283642372496,"Acetaldehyde"],[-0.006227527170285758,-2.7868335516157683,"Acetaldehyde"],[2.232214528142399,-3.503362360585064,"Acetaldehyde"],[3.4064179538673245,-3.7548720696103968,"Acetaldehyde"],[4.700904952031494,-4.458296025542954,"Acetaldehyde"],[6.543921701820709,-4.580888542626628,"Acetaldehyde"],[7.719800642153095,-5.042120560215475,"Acetaldehyde"],[8.507391610777606,-5.463012502710699,"Acetaldehyde"],[9.983224946196204,-6.506632827693826,"Acetaldehyde"],[11.848814281274668,-6.477308056537697,"Acetaldehyde"],[-9.115841913264784,0.26861202447189175,"Acetone"],[-8.112945513010123,-0.7310260998447463,"Acetone"],[-6.824225080902976,-1.9192720483330117,"Acetone"],[-5.764703046559833,-2.8290648213684437,"Acetone"],[-4.019152319284099,-4.010770305503132,"Acetone"],[-3.36539609847922,-4.485018122871438,"Acetone"],[-1.7067096513001219,-5.596197038168407,"Acetone"],[-1.7195885253867669,-5.316929599866879,"Acetone"],[0.5068915336983688,-6.131899967348005,"Acetone"],[3.286888143154651,-7.347736536855859,"Acetone"],[6.389198343888443,-8.605808662556914,"Acetone"],[9.916478249835476,-9.533163499648841,"Acetone"],[11.739106537231798,-10.157275990872762,"Acetone"],[14.113207619082393,-11.335617913591951,"Acetone"],[-9.280017133983442,0.3813506480237472,"Acetone"],[-8.753727034424855,1.7852213598724511,"Ethylene"],[-3.2740621220999158,2.713537012966434,"Ethylene"],[-3.0458197606943727,5.192880783828821,"Ethylene"],[2.086472258244791,4.101444979410643,"Ethylene"],[10.117154088856942,5.3912662042305834,"Ethylene"],[13.032656345391711,5.633960251563879,"Ethylene"],[-8.88076283231901,1.8115634417736228,"Ethylene"],[-3.0191474653703168,2.9835215808653612,"Ethylene"],[2.1841738135329356,4.03972180041934,"Ethylene"],[6.509742598977586,4.800553238424322,"Ethylene"],[10.236213759946352,5.300821751839613,"Ethylene"],[13.334792686347445,5.686076699460531,"Ethylene"],[-8.587355442900327,1.78099077644523,"Ethylene"],[-2.9731000942719965,2.956789180199915,"Ethylene"],[2.58102530792479,4.146275191408079,"Ethylene"],[-7.1796462136544115,1.6756650728671882,"Ammonia"],[-6.502621276675975,2.0862231211558138,"Ammonia"],[-4.277422361844524,2.8288461693332616,"Ammonia"],[-2.9863232218304065,3.4960916275771936,"Ammonia"],[-2.202991882657248,3.532225657931986,"Ammonia"],[-0.5987561496429854,4.220821878139391,"Ammonia"],[0.2919523522923344,4.548522307064766,"Ammonia"],[3.3761612644056065,5.744801087256261,"Ammonia"],[2.165472188761094,4.764893091434488,"Ammonia"],[4.5548430636216475,5.677648839688382,"Ammonia"],[6.906709706361505,6.510746926576568,"Ammonia"],[9.142009896069018,7.223159658527595,"Ammonia"],[10.468884503092276,6.754506311479657,"Ammonia"],[11.528587691849335,7.768814583896121,"Ammonia"],[13.547170296714604,8.421456543017259,"Ammonia"],[-4.142382585691605,-0.6175105155491089,"Toluene"],[-4.980696510804572,-1.4647990644497366,"Toluene"],[-4.889207426680817,-1.6212406914480344,"Toluene"],[-4.599593126546121,-1.9738611662470837,"Toluene"],[-4.271567612412921,-1.986538339141514,"Toluene"],[-3.678211872264868,-2.224852347743979,"Toluene"],[-3.552563898309782,-2.3229499964397515,"Toluene"],[-3.935289755095996,-1.9976199675601964,"Toluene"],[-2.9252451343854666,-2.466016699140117,"Toluene"],[-8.498894326867868,-0.13599464550159238,"Toluene"],[-6.230887206762372,-1.036974111837826,"Toluene"],[-5.820533207337985,-1.127989730131975,"Toluene"],[-4.990227765844569,-1.4835471002961802,"Toluene"],[-4.760697335253577,-1.6588837014481272,"Toluene"],[-4.324657187095817,-1.7917738283423918,"Toluene"],[-8.830908015168786,1.4995824851318602,"Ethanol"],[-8.033950601647081,1.4662302842373816,"Ethanol"],[-6.728812473038588,1.334796062676231,"Ethanol"],[-5.673751625746753,1.3965170330961687,"Ethanol"],[-4.913715884464754,1.2453837107187606,"Ethanol"],[-2.466898400408377,1.1052047417499604,"Ethanol"],[-0.6592395203927438,1.0579262193498589,"Ethanol"],[0.9308710750810751,0.9754209654850585,"Ethanol"],[2.633467140739174,0.8438825075018903,"Ethanol"],[3.856584407159609,0.6946705281082374,"Ethanol"],[5.568643303004792,0.5341106027943481,"Ethanol"],[6.826923390613688,0.4425006824038958,"Ethanol"],[8.106710055977285,0.22419310041660956,"Ethanol"],[9.509464493516266,0.14512574977627632,"Ethanol"],[-8.920115053190788,1.5025525785431246,"Ethanol"]]} }
-  };
-
-  function showError(msg) {
-    errorBox.textContent = msg;
-    errorBox.style.display = "block";
-  }
-  function clearError() { errorBox.style.display = "none"; }
-
-  function validate(data) {
-    var required = ["seed", "populationSize", "generationsRun", "bestFitness", "selectedFeatures", "fitnessTrajectory"];
-    var missing = required.filter(function (k) { return !(k in data); });
-    if (missing.length) {
-      throw new Error("Missing field" + (missing.length > 1 ? "s" : "") + ": " + missing.join(", ") +
-        " — this doesn't look like sga's Cli.toJson output.");
-    }
-    if (!Array.isArray(data.fitnessTrajectory) || !data.fitnessTrajectory.length) {
-      throw new Error("fitnessTrajectory must be a non-empty array.");
-    }
-    if (!Array.isArray(data.selectedFeatures)) {
-      throw new Error("selectedFeatures must be an array.");
-    }
-  }
-
-  function fmtFitness(v) {
-    return (Math.round(v * 10000) / 10000).toFixed(4);
-  }
-
-  function render(data) {
-    validate(data);
-    clearError();
-    loader.style.display = "none";
-    report.style.display = "block";
-
-    renderStats(data);
-    renderTrajectory(data.fitnessTrajectory);
-    renderFeatures(data.selectedFeatures);
-    renderPc(data.pcProjection);
-  }
-
-  function statCard(label, value, sub, hero) {
-    var div = document.createElement("div");
-    div.className = "stat" + (hero ? " hero" : "");
-    div.innerHTML = '<div class="label">' + label + '</div><div class="value">' + value + '</div>' +
-      (sub ? '<div class="sub">' + sub + '</div>' : "");
-    return div;
-  }
-
-  function renderStats(data) {
-    var el = $("stats");
-    el.innerHTML = "";
-    el.appendChild(statCard("Best fitness", fmtFitness(data.bestFitness), null, true));
-    el.appendChild(statCard("Generations run", data.generationsRun));
-    el.appendChild(statCard("Population", data.populationSize));
-    el.appendChild(statCard("Seed", data.seed));
-  }
-
-  function renderFeatures(features) {
-    var desc = $("featureDesc");
-    desc.textContent = features.length + " feature" + (features.length === 1 ? "" : "s") +
-      " selected by the winning genome.";
-    var chips = $("featureChips");
-    chips.innerHTML = "";
-    if (!features.length) {
-      chips.innerHTML = '<div class="empty-note">No features selected.</div>';
-      return;
-    }
-    features.forEach(function (f) {
-      var span = document.createElement("span");
-      span.className = "chip";
-      span.textContent = f;
-      chips.appendChild(span);
-    });
-  }
-
-  function svgEl(tag, attrs) {
-    var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
-    for (var k in attrs) el.setAttribute(k, attrs[k]);
-    return el;
-  }
-
-  function renderTrajectory(trajectory) {
-    var svg = $("trajectoryChart");
-    svg.innerHTML = "";
-    var w = 940, h = 300, padL = 46, padR = 16, padT = 16, padB = 34;
-    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
-    svg.setAttribute("width", "100%");
-    svg.setAttribute("height", h);
-    svg.style.minWidth = "560px";
-
-    var n = trajectory.length;
-    var min = Math.min.apply(null, trajectory);
-    var max = Math.max.apply(null, trajectory);
-    if (min === max) { min -= 0.05; max += 0.05; }
-    var span = max - min;
-    var pad = span * 0.08;
-    min -= pad; max += pad;
-
-    var xAt = function (i) { return padL + (i / Math.max(1, n - 1)) * (w - padL - padR); };
-    var yAt = function (v) { return h - padB - ((v - min) / (max - min)) * (h - padT - padB); };
-
-    // grid + y labels
-    var ticks = 5;
-    for (var t = 0; t <= ticks; t++) {
-      var v = min + (t / ticks) * (max - min);
-      var y = yAt(v);
-      svg.appendChild(svgEl("line", { class: "grid-line", x1: padL, x2: w - padR, y1: y, y2: y }));
-      var lbl = svgEl("text", { x: padL - 8, y: y + 4, "text-anchor": "end", "font-size": "11" });
-      lbl.textContent = v.toFixed(3);
-      svg.appendChild(lbl);
-    }
-    // x axis
-    svg.appendChild(svgEl("line", { class: "axis-line", x1: padL, x2: w - padR, y1: h - padB, y2: h - padB }));
-    var xticks = Math.min(n, 8);
-    for (var xt = 0; xt <= xticks; xt++) {
-      var gi = Math.round((xt / xticks) * (n - 1));
-      var x = xAt(gi);
-      var xlbl = svgEl("text", { x: x, y: h - padB + 18, "text-anchor": "middle", "font-size": "11" });
-      xlbl.textContent = "g" + gi;
-      svg.appendChild(xlbl);
-    }
-
-    // area fill
-    var areaPts = trajectory.map(function (v, i) { return xAt(i) + "," + yAt(v); }).join(" ");
-    var areaPath = "M " + xAt(0) + "," + yAt(min) + " L " + areaPts + " L " + xAt(n - 1) + "," + yAt(min) + " Z";
-    svg.appendChild(svgEl("path", { class: "trajectory-area", d: areaPath }));
-
-    // line
-    var linePts = trajectory.map(function (v, i) { return xAt(i) + "," + yAt(v); }).join(" L ");
-    svg.appendChild(svgEl("path", { class: "trajectory-path", d: "M " + linePts }));
-
-    // endpoint
-    var lastI = n - 1, lastV = trajectory[lastI];
-    svg.appendChild(svgEl("circle", { class: "endpoint-dot", cx: xAt(lastI), cy: yAt(lastV), r: 4.5 }));
-    var endLbl = svgEl("text", {
-      class: "endpoint-label",
-      x: Math.min(xAt(lastI) + 8, w - padR - 4),
-      y: yAt(lastV) - 10,
-      "text-anchor": xAt(lastI) > w - padR - 70 ? "end" : "start"
-    });
-    endLbl.textContent = fmtFitness(lastV);
-    svg.appendChild(endLbl);
-  }
-
-  var PALETTE = ["#B9770E", "#4A6B5A", "#7A5C8C", "#2E6E8E", "#A34848", "#8C7A2E"];
-
-  function renderPc(points) {
-    var section = $("pcSection");
-    var content = $("pcContent");
-    content.innerHTML = "";
-    if (!points || !Array.isArray(points) || !points.length) {
-      section.querySelector(".desc").textContent =
-        "Not present in this file — sga's ml.Visualization.pcProjection computes this, but no CLI export wires it in yet.";
-      content.innerHTML = '<div class="empty-note">No pcProjection data in this run\'s JSON.</div>';
-      return;
-    }
-    section.querySelector(".desc").textContent =
-      "Winning genome, masked and projected onto its top 2 principal components.";
-
-    var labels = [];
-    points.forEach(function (p) { if (labels.indexOf(p[2]) === -1) labels.push(p[2]); });
-    var colorOf = {};
-    labels.forEach(function (l, i) { colorOf[l] = PALETTE[i % PALETTE.length]; });
-
-    var w = 560, h = 420, pad = 40;
-    var xs = points.map(function (p) { return p[0]; });
-    var ys = points.map(function (p) { return p[1]; });
-    var xMin = Math.min.apply(null, xs), xMax = Math.max.apply(null, xs);
-    var yMin = Math.min.apply(null, ys), yMax = Math.max.apply(null, ys);
-    if (xMin === xMax) { xMin -= 1; xMax += 1; }
-    if (yMin === yMax) { yMin -= 1; yMax += 1; }
-    var xPad = (xMax - xMin) * 0.1, yPad = (yMax - yMin) * 0.1;
-    xMin -= xPad; xMax += xPad; yMin -= yPad; yMax += yPad;
-
-    var svg = svgEl("svg", { viewBox: "0 0 " + w + " " + h, width: "100%", height: h });
-    svg.style.maxWidth = "560px";
-    var xAt = function (v) { return pad + ((v - xMin) / (xMax - xMin)) * (w - 2 * pad); };
-    var yAt = function (v) { return h - pad - ((v - yMin) / (yMax - yMin)) * (h - 2 * pad); };
-
-    svg.appendChild(svgEl("line", { class: "axis-line", x1: pad, x2: w - pad, y1: h - pad, y2: h - pad }));
-    svg.appendChild(svgEl("line", { class: "axis-line", x1: pad, x2: pad, y1: pad, y2: h - pad }));
-    var xLbl = svgEl("text", { x: w / 2, y: h - 8, "text-anchor": "middle", "font-size": "11" });
-    xLbl.textContent = "PC1";
-    svg.appendChild(xLbl);
-    var yLbl = svgEl("text", { x: 12, y: h / 2, "text-anchor": "middle", "font-size": "11", transform: "rotate(-90 12 " + (h / 2) + ")" });
-    yLbl.textContent = "PC2";
-    svg.appendChild(yLbl);
-
-    points.forEach(function (p) {
-      svg.appendChild(svgEl("circle", {
-        class: "scatter-dot", cx: xAt(p[0]), cy: yAt(p[1]), r: 4.5, fill: colorOf[p[2]]
-      }));
-    });
-
-    content.appendChild(svg);
-
-    var legend = document.createElement("div");
-    legend.className = "legend";
-    labels.forEach(function (l) {
-      var item = document.createElement("div");
-      item.className = "legend-item";
-      item.innerHTML = '<span class="legend-swatch" style="background:' + colorOf[l] + '"></span>' + l;
-      legend.appendChild(item);
-    });
-    content.appendChild(legend);
-  }
-
-  function loadFile(file) {
-    var reader = new FileReader();
-    reader.onload = function () {
-      try {
-        var data = JSON.parse(reader.result);
-        render(data);
-        $("runCaption").textContent = "";
-      } catch (e) {
-        showError("Couldn't read that file: " + e.message);
-      }
-    };
-    reader.onerror = function () { showError("Couldn't read that file."); };
-    reader.readAsText(file);
-  }
-
-  $("filepick").addEventListener("change", function (e) {
-    if (e.target.files && e.target.files[0]) loadFile(e.target.files[0]);
-  });
-  Array.prototype.forEach.call(document.querySelectorAll("[data-sample]"), function (btn) {
-    btn.addEventListener("click", function () {
-      var run = SAMPLES[btn.getAttribute("data-sample")];
-      render(run.data);
-      $("runCaption").textContent = "Real run: " + run.caption;
-    });
-  });
-  $("reloadBtn").addEventListener("click", function () {
-    report.style.display = "none";
-    loader.style.display = "block";
-    clearError();
-  });
-
-  ["dragenter", "dragover"].forEach(function (evt) {
-    loader.addEventListener(evt, function (e) { e.preventDefault(); loader.classList.add("drag"); });
-  });
-  ["dragleave", "drop"].forEach(function (evt) {
-    loader.addEventListener(evt, function (e) { e.preventDefault(); loader.classList.remove("drag"); });
-  });
-  loader.addEventListener("drop", function (e) {
-    e.preventDefault();
-    var file = e.dataTransfer.files && e.dataTransfer.files[0];
-    if (file) loadFile(file);
-  });
-})();
-</script>
+<noscript><p class="wrap">This page runs sga in your browser, so it needs JavaScript.</p></noscript>
+<script src="main.js"></script>
+</body>
+</html>

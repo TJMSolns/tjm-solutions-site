@@ -70,7 +70,7 @@ export default function Sga(): ReactNode {
             </Link>
             {/* Static page outside the Docusaurus router: plain link, full page load */}
             <a href="/sga/demo/" className={styles.ctaSecondary}>
-              See real runs
+              Run it in your browser
             </a>
             <a
               href="https://github.com/TJMSolns/sga"

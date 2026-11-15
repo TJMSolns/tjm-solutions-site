@@ -99,6 +99,50 @@ val report = runWithReport(ga, populationSize = 20, seed = 42L)
 // report.bestGenome, report.bestFitness, report.fitnessTrajectory
 ```
 
+A whole program, from the data file to the chosen features. It loads Iris, scales it, runs
+that shape on it, and prints the result the [live demo](pathname:///sga/demo/)'s "Iris" preset
+pins:
+
+```scala
+import solutions.tjm.sga._
+import solutions.tjm.sga.data.{Dataset, Scaling}
+import solutions.tjm.sga.io.{Csv, RawRow}
+import solutions.tjm.sga.ml.{Classification, Distance}
+
+// Run with the path to iris.csv (sga/test/resources/iris.csv in this repository).
+@main def chooseIrisFeatures(path: String): Unit = {
+  // Load: a header row, then four measurements in centimeters and the species.
+  val file = scala.io.Source.fromFile(path)
+  val lines = try file.getLines().toVector finally file.close()
+  val features = Vector("sepal_length", "sepal_width", "petal_length", "petal_width")
+  val raw = (for {
+    rows <- Csv.parse(lines)
+    data <- RawRow.toDataset(rows, featureColumns = features, labelColumn = "species")
+  } yield data).fold(err => sys.error(s"$path: $err"), identity)
+
+  // Scale each feature to mean 0 and standard deviation 1, so no feature's units
+  // dominate the distances k-nearest-neighbors measures.
+  val params = Scaling.fit(raw)
+  val scaled = Dataset(raw.samples.map(Scaling.apply(params)))
+
+  val ga = GeneticAlgorithm[Vector[Boolean]](
+    initialize = Initializer.randomBitPopulation(chromosomeLength = 4),
+    fitness = Classification.fitness(k = 5, distance = Distance.euclidean)(scaled),
+    select = Selector.rouletteSelection,
+    crossover = Crossover.singlePointCrossover(pc = 0.7),
+    mutate = Mutation.bitwiseMutation(pm = 1.0 / 4),
+    replace = Replacement.generationalReplacement,
+    terminate = Termination.afterGenerations(maximum = 30)
+  )
+  val report = runWithReport(ga, populationSize = 20, seed = 42L)
+
+  val chosen = Classification.maskFeatures(report.bestGenome, features)
+  val correct = math.round(report.bestFitness * raw.samples.size)
+  println(s"${chosen.mkString(", ")}: $correct/${raw.samples.size} correct")
+  // petal_length, petal_width: 145/150 correct
+}
+```
+
 To see the engine solve a problem it was never built for, a travelling-salesman ordering
 rather than a feature mask, read [`docs/write-your-own-problem.md`](./write-your-own-problem).
 

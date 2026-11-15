@@ -14,30 +14,17 @@
 <div class="wrap">
   <header>
     <h1>sga <em>in your browser</em></h1>
-    <p class="tagline">A genetic algorithm choosing features, running on your machine. Nothing you do here leaves this page.</p>
+    <p class="tagline">sga's own Scala code, compiled to JavaScript and running on your machine. Nothing you do here leaves this page.</p>
   </header>
 
-  <p class="intro">Each preset is a configuration from sga's own tests, with its result pinned by a test. Run one and the page reproduces that result exactly, using the same Scala code compiled to JavaScript. Then pause, step and rewind to see how the population got there.</p>
-
-  <section class="panel setup" aria-labelledby="setup-heading">
-    <h2 id="setup-heading">Configuration</h2>
-    <p class="preset-row"><label for="preset">Preset</label> <select id="preset"></select> <span id="reset-slot"></span></p>
-    <p id="config" class="config"></p>
-    <div id="dataset-info" class="dataset-info"></div>
-    <div id="settings" class="settings"></div>
-    <div id="invalid" class="invalid" role="alert"></div>
-    <div id="notes" class="notes" aria-live="polite"></div>
-    <p id="estimate" class="note"></p>
-    <details id="code-panel" class="code-panel">
-      <summary>The code behind this configuration</summary>
-      <p class="note">An excerpt: the algorithm value and the run call, over a scaled dataset named <code>scaled</code>. For a whole program, data loading and scaling included, see <a href="../docs/intro#as-a-library">the documentation</a>.</p>
-      <pre><code id="code"></code></pre>
-    </details>
-  </section>
+  <p id="lede" class="lede"></p>
 
   <section class="panel controls" aria-label="Run controls">
+    <p class="preset-row"><label for="preset">Preset</label> <select id="preset"></select> <span id="reset-slot"></span></p>
     <div class="buttons" id="buttons"></div>
     <p id="status" class="status" role="status" aria-live="polite"></p>
+    <div id="invalid" class="invalid" role="alert"></div>
+    <div id="notes" class="notes" aria-live="polite"></div>
   </section>
 
   <section class="stats" id="stats" aria-label="The run so far"></section>
@@ -48,9 +35,11 @@
     <p id="chart-note" class="note"></p>
   </section>
 
-  <section class="panel" aria-labelledby="effects-heading">
-    <h2 id="effects-heading">One pair at a time</h2>
-    <div id="effects" aria-live="polite"></div>
+  <section class="panel" aria-labelledby="heatmap-heading">
+    <h2 id="heatmap-heading">Which features the population is settling on</h2>
+    <p class="note">For each generation (across) and feature (down), the share of the population selecting it: darker is more. Planted features are starred. Under it, how many distinct masks each generation holds.</p>
+    <div id="heatmap" class="heatmap"></div>
+    <p id="diversity" class="diversity" role="status" aria-live="polite"></p>
   </section>
 
   <section class="panel" aria-labelledby="grid-heading">
@@ -59,11 +48,9 @@
     <div id="grid" class="grid-strip" tabindex="0" aria-label="Population blocks, one per generation; the lineage panel below lists the same individuals by position"></div>
   </section>
 
-  <section class="panel" aria-labelledby="heatmap-heading">
-    <h2 id="heatmap-heading">Which features the population is settling on</h2>
-    <p class="note">For each generation (across) and feature (down), the share of the population selecting it: darker is more. Planted features are starred. Under it, how many distinct masks each generation holds.</p>
-    <div id="heatmap" class="heatmap"></div>
-    <p id="diversity" class="diversity" role="status" aria-live="polite"></p>
+  <section class="panel" id="result-panel" aria-labelledby="result-heading" hidden>
+    <h2 id="result-heading">Result</h2>
+    <div id="result"></div>
   </section>
 
   <div class="two-up">
@@ -77,10 +64,24 @@
     </section>
   </div>
 
-  <section class="panel" id="result-panel" aria-labelledby="result-heading" hidden>
-    <h2 id="result-heading">Result</h2>
-    <div id="result"></div>
+  <section class="panel" aria-labelledby="effects-heading">
+    <h2 id="effects-heading">One pair at a time</h2>
+    <div id="effects" aria-live="polite"></div>
   </section>
+
+  <details class="panel setup" id="settings-panel">
+    <summary><h2>Change the settings</h2></summary>
+    <p id="config" class="config"></p>
+    <div id="dataset-info" class="dataset-info"></div>
+    <div id="settings" class="settings"></div>
+    <p id="estimate" class="note"></p>
+  </details>
+
+  <details id="code-panel" class="panel code-panel">
+    <summary><h2>The code behind this configuration</h2></summary>
+    <p class="note">An excerpt: the algorithm value and the run call, over a scaled dataset named <code>scaled</code>. For a whole program, data loading and scaling included, see <a href="../docs/intro#as-a-library">the documentation</a>.</p>
+    <pre><code id="code"></code></pre>
+  </details>
 </div>
 <noscript><p class="wrap">This page runs sga in your browser, so it needs JavaScript.</p></noscript>
 <script src="main.js"></script>

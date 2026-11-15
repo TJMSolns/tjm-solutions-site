@@ -60,7 +60,13 @@ h1 em { font-style: italic; color: var(--accent); }
 h2 { font-family: var(--serif); font-weight: 400; font-size: 1.3rem; margin: 0 0 0.75rem; }
 h3 { font-size: 0.95rem; margin: 0 0 0.35rem; }
 .tagline { font-size: 0.82rem; color: var(--ink-faint); max-width: 30ch; text-align: right; margin: 0; }
-.intro { color: var(--ink-soft); max-width: 70ch; margin: 0 0 1.5rem; }
+.lede { font-family: var(--serif); font-size: 1.45rem; line-height: 1.3; margin: 0 0 1.25rem; max-width: 46ch; }
+details.panel > summary { cursor: pointer; list-style: none; }
+details.panel > summary::-webkit-details-marker { display: none; }
+details.panel > summary h2 { display: inline; margin: 0; }
+details.panel > summary h2::before { content: "▸ "; color: var(--accent); }
+details.panel[open] > summary h2::before { content: "▾ "; }
+details.panel[open] > summary { margin-bottom: 0.75rem; }
 
 .panel {
   background: var(--surface);
@@ -157,8 +163,6 @@ button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-v
 .notes { background: var(--accent-wash); border: 1px solid var(--accent-soft); border-radius: 8px; padding: 0.7rem 0.9rem; margin: 0.6rem 0; font-size: 0.86rem; }
 .notes p { margin: 0.3rem 0; }
 .differs { color: var(--accent); }
-.code-panel { margin-top: 0.6rem; }
-.code-panel summary { cursor: pointer; font-size: 0.88rem; color: var(--ink-soft); }
 .code-panel pre { background: var(--surface-sunken); border-radius: 8px; padding: 0.8rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.8rem; line-height: 1.45; }
 .pinned { color: #2f7d3b; font-weight: 600; }
 .missed { color: var(--danger); font-weight: 600; }
